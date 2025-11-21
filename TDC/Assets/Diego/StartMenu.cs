@@ -5,6 +5,7 @@ public class StartMenu : MonoBehaviour
 {
     public string gameSceneName = "GameScene";  // 你的游戏主场景名
     public GameObject configPanel;             // 可选：配置面板
+    public GameObject mainMenuPanel;
 
     // 按钮：JUGAR
     public void Jugar()
@@ -13,16 +14,16 @@ public class StartMenu : MonoBehaviour
     }
 
     // 按钮：CONFIGURACION
-    public void Configuracion()
+    public void AbrirConfiguracion()
     {
-        if (configPanel != null)
-        {
-            configPanel.SetActive(!configPanel.activeSelf);
-        }
-        else
-        {
-            Debug.Log("Abrir configuracion (aún sin panel asignado)");
-        }
+        mainMenuPanel.SetActive(false);
+        configPanel.SetActive(true);
+    }
+
+    public void VolverAlMenu()
+    {
+        configPanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
     }
 
     // 按钮：SALIR
