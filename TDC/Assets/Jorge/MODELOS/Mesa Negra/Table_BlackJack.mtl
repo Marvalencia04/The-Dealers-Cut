@@ -1,0 +1,190 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 22.01.2018 10:02:33
+
+newmtl BlackJack_Chip3
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_3.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_3.jpg
+
+newmtl BlackJack_Chip2
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_2.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_2.jpg
+
+newmtl BlackJack_Chip1
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_1.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_1.jpg
+
+newmtl BlackJack_Chip4
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_4.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_4.jpg
+
+newmtl BlackJack_Chip5
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_5.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Chip_5.jpg
+
+newmtl Cards_front
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\BoardGame_Card_54\Card_diffuse.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\BoardGame_Card_54\Card_diffuse.jpg
+
+newmtl Cards_Back
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.2078 0.2078 0.2078
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\BoardGame_Card_54\Card_Back_diffuse.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\BoardGame_Card_54\Card_Back_diffuse.jpg
+
+newmtl BlackJack_Table_Board
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.7843 0.7843 0.7843
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Table_BlackJack.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Table_BlackJack.jpg
+
+newmtl BlackJack_Table_Feet_Metal
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.0157 0.0196 0.0275
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl BlackJack_Table_Feet_Back_Part
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.0353 0.0353 0.0353
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl BlackJack_Table_Gold
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.8275 0.6588 0.3451
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl BlackJack_Table_Leather
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.0039 0.0039 0.0039
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_bump S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Leather_Bump.jpg
+	bump S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Table_BlackJack\Leather_Bump.jpg
+
+newmtl BlackJack_Sieges_assise_dossier
+	Ns 45.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.1059 0.1059 0.1059
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Chair_SoltMachine\Siege_Casino_diff.jpg
+	map_Kd S:\09 - OBJETS_BOX_Nouveau_site\03_Box_Projets_DCA\Casino_Andorre\Chair_SoltMachine\Siege_Casino_diff.jpg
+
+newmtl BlackJack_Sieges_Pied
+	Ns 50.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.0157 0.0196 0.0275
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
