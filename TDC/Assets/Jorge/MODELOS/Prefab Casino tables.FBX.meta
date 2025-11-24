@@ -3,7 +3,82 @@ guid: a19a176e8760fc040beb6edb242edfeb
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01 - Default
+    second: {fileID: 2100000, guid: 95962d564c4f6c140b47295e23238586, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01 - Default3
+    second: {fileID: 2100000, guid: c10bb42afebdb8846bb8608e81bd491c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01 - Default4
+    second: {fileID: 2100000, guid: 09f54a6ace7ec3c478c5530ab4a51a99, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01 - Default5
+    second: {fileID: 2100000, guid: 31fc5f31fb31907459ad1a2313c6c4d5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 07 - Default
+    second: {fileID: 2100000, guid: 259f0982a2e84534d87c0a1d814ffc3e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 08 - Default
+    second: {fileID: 2100000, guid: 945de380c8df8ca43b6858547e7bf3a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ARCHMODELS_47_029_1
+    second: {fileID: 2100000, guid: 6f7ca7ea463143a4698b33c396b60b43, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ARCHMODELS_47_029_7
+    second: {fileID: 2100000, guid: 4815f436bf451c14e93db1508538b173, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ARCHMODELS_47_031_6
+    second: {fileID: 2100000, guid: 094cdf05b827fb24cb7e8d736b732481, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #10605
+    second: {fileID: 2100000, guid: 5030100ca9bd09148afcd174ad7f90c9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #10606
+    second: {fileID: 2100000, guid: e6bfc1ace116e434f8816c8c02a8e5e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #10608
+    second: {fileID: 2100000, guid: f458991ba19737d439212c1c4b720e56, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #12684
+    second: {fileID: 2100000, guid: fd59b2ebf86453b4f847fa4cfa61ec92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material #12685
+    second: {fileID: 2100000, guid: ba03ea9467f71bd4bafa524658c52bec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: leather_12
+    second: {fileID: 2100000, guid: f8fcdb3ea265bd043b2b46c062122bc7, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -88,7 +163,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.0012
+    globalScale: 1.2
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
