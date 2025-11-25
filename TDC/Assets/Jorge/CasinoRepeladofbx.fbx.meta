@@ -3,7 +3,27 @@ guid: cd15b9bfbf576a043a931c29cd2ca06f
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Alfombra
+    second: {fileID: 2100000, guid: 389f4f42bccb9a74e9c19f41d692b23b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: auto_20
+    second: {fileID: 2100000, guid: 3eb5726028510ad49be72ef058f3d246, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: auto_29
+    second: {fileID: 2100000, guid: b79005e9a9d9bff418cbe721b752d5e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: auto_58
+    second: {fileID: 2100000, guid: 4d140480da5fa1d4aa3d56a1fecbee70, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
