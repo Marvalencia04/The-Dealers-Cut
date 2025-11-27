@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Emilio/EscenarioFinal.unity
+    guid: c5adb9bf92cd2f643a20a747051648d6
+  - enabled: 1
+    path: Assets/Emilio/Video360.unity
+    guid: 105d0fd1f35802c42a058117ee053547
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 73af9d62cadd97b4687ff83b8caa2883,
       type: 2}

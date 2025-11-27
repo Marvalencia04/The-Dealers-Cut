@@ -12,6 +12,6 @@ public class videoMonitoring : MonoBehaviour
     }
     void VideoTerminado(UnityEngine.Video.VideoPlayer vp)
     {
-        SceneManager.LoadSceneAsync("Mainmenu");
+        SceneManager.LoadSceneAsync("EscenarioFinal");
     }
 }
