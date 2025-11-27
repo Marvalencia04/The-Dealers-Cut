@@ -1,16 +1,20 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StartMenu : MonoBehaviour
 {
    
     public GameObject configPanel;
     public GameObject mainMenuPanel;
-    public GameObject locomotion;
 
     public void Jugar()
     {
         mainMenuPanel.SetActive(false);
-        locomotion.SetActive(true);
+    }
+
+    public void Video()
+    {
+        SceneManager.LoadSceneAsync("Video360");
     }
 
     public void AbrirConfiguracion()

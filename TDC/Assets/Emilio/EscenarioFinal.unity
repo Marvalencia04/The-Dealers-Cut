@@ -4491,6 +4491,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 579734432}
   m_CullTransparentMesh: 1
+--- !u!114 &582232163 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1550148043}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b1e8c997df241c1a67045eeac79b41b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &619366816
 GameObject:
   m_ObjectHideFlags: 0
@@ -9145,7 +9157,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configPanel: {fileID: 1746174295}
   mainMenuPanel: {fileID: 2069805999}
-  locomotion: {fileID: 1550148045}
 --- !u!1 &1172868627
 GameObject:
   m_ObjectHideFlags: 0
@@ -9365,7 +9376,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2069806000}
+      - m_Target: {fileID: 582232163}
+        m_TargetAssemblyTypeName: UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets.DynamicMoveProvider,
+          Unity.XR.Interaction.Toolkit.Samples.StarterAssets
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1171419667}
         m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
         m_MethodName: Jugar
         m_Mode: 1
@@ -10570,7 +10594,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1271252208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1171419667}
+        m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
+        m_MethodName: Video
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1271252208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11900,6 +11936,11 @@ PrefabInstance:
       propertyPath: m_OcclusionCulling
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1178791450436251564, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_RequestedTrackingOriginMode
@@ -11968,7 +12009,12 @@ PrefabInstance:
     - target: {fileID: 5167925059111895691, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6640002710935096923, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11982,12 +12028,6 @@ PrefabInstance:
 --- !u!20 &1550148044 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 1767192439, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1550148043}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1550148045 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5167925059111895691, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
     type: 3}
   m_PrefabInstance: {fileID: 1550148043}
   m_PrefabAsset: {fileID: 0}
@@ -14488,7 +14528,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configPanel: {fileID: 1746174295}
   mainMenuPanel: {fileID: 2069805999}
-  locomotion: {fileID: 0}
 --- !u!114 &2069806001
 MonoBehaviour:
   m_ObjectHideFlags: 0
