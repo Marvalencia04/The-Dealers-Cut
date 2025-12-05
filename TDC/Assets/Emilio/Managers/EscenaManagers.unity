@@ -7924,6 +7924,67 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
+--- !u!1 &1337061968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1337061970}
+  - component: {fileID: 1337061969}
+  m_Layer: 0
+  m_Name: TramasManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1337061969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337061968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d837b595a5e693e438ded0ba0e9e7188, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usosInicialMazoVisible: 1
+  usosInicialCartaAElegir: 1
+  usosInicialLlamadaSeguridad: 1
+  usosInicialNormaDealer: 1
+  usosInicialMiraAlli: 1
+  uiManager: {fileID: 525672805}
+  btnMazoVisible: {fileID: 0}
+  btnCartaAElegir: {fileID: 0}
+  btnLlamadaSeguridad: {fileID: 0}
+  btnNormaDealer: {fileID: 0}
+  btnMiraAlli: {fileID: 0}
+  txtMazoVisibleUsos: {fileID: 0}
+  txtCartaAElegirUsos: {fileID: 0}
+  txtLlamadaSeguridadUsos: {fileID: 0}
+  txtNormaDealerUsos: {fileID: 0}
+  txtMiraAlliUsos: {fileID: 0}
+  txtMensajeTrampas: {fileID: 0}
+--- !u!4 &1337061970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337061968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.8905469, y: 1.4694592, z: 16.657097}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1448806000
 GameObject:
   m_ObjectHideFlags: 0
@@ -8532,6 +8593,7 @@ MonoBehaviour:
   currentPhase: 0
   gameManager: {fileID: 624917975}
   moneyManager: {fileID: 1577552890}
+  trampasManager: {fileID: 1337061969}
   uiManager: {fileID: 525672805}
 --- !u!4 &1577566420
 Transform:
@@ -11969,3 +12031,4 @@ SceneRoots:
   - {fileID: 1577552891}
   - {fileID: 1577566420}
   - {fileID: 525672806}
+  - {fileID: 1337061970}

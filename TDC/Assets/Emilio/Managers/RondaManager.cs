@@ -46,7 +46,7 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private MoneyManager moneyManager;
     //[SerializeField] private BlackjackTable blackjackTable;  // ESTE LO IMPLEMENTAS TÚ
-    //[SerializeField] private TrampasManager trampasManager;  // Opcional
+    [SerializeField] private TrampasManager trampasManager;  // Opcional
     [SerializeField] private UIManager uiManager;            // Opcional HUD / textos
 
     // ==== EVENTOS ====
@@ -192,11 +192,11 @@ public class RondaManager : MonoBehaviour
         // Avisar a listeners externos
         OnPhaseChanged?.Invoke(currentPhase);
 
-        /*// Avisar al sistema de trampas para que sepa qué se puede usar ahora
+        // Avisar al sistema de trampas para que sepa qué se puede usar ahora
         if (trampasManager != null)
         {
             trampasManager.OnBlackjackPhaseChanged(currentPhase);
-        }*/
+        }
 
         // Avisar a la UI (texto con el nombre de la fase, por ejemplo)
         if (uiManager != null)
