@@ -101,9 +101,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02a6c5e54c86434d849f302610c884c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  suit: 0
+  rank: 12
   deck: {fileID: 0}
   prefabReference: {fileID: 0}
   currentZone: {fileID: 0}
+  originalScale: {x: 0, y: 0, z: 0}
 --- !u!65 &-5672864701198665616
 BoxCollider:
   m_ObjectHideFlags: 0

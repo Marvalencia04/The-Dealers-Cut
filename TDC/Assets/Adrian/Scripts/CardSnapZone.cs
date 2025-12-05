@@ -1,4 +1,6 @@
+using System.Linq;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class CardSnapZone : MonoBehaviour
@@ -17,8 +19,16 @@ public class CardSnapZone : MonoBehaviour
     public Vector3 localPositionOffset = Vector3.zero;
     public Vector3 localRotationOffsetEuler = Vector3.zero;
 
+    [Header("Auto snap")]
+    [Tooltip("Distancia máxima al slot para que la carta se auto-snapee.")]
+    public float snapDistance = 0.08f;
+
     private Card[] occupied;
     private bool snapEnabled = true;     // para pausar la zona sin borrar estado
+
+    [Header("Blackjack")]
+    public BlackjackHand blackjackHand;
+
 
     private void Awake()
     {
@@ -38,29 +48,56 @@ public class CardSnapZone : MonoBehaviour
         UpdateSlotVisuals();
     }
 
-    // Mientras la carta esté dentro del trigger
     private void OnTriggerStay(Collider other)
+{
+    if (!snapEnabled) return;
+
+    Card card = other.GetComponentInParent<Card>();
+    if (card == null) return;
+
+    XRGrabInteractable grab = other.GetComponentInParent<XRGrabInteractable>();
+
+    // 🔹 Si ya está en esta zona y ahora la vuelven a coger, la sacamos de la mano
+    if (card.currentZone == this)
     {
-        if (!snapEnabled) return;
-
-        Card card = other.GetComponentInParent<Card>();
-        if (card == null) return;
-
-        // Si ya está snappeada en esta zona, no hacemos nada
-        if (card.currentZone == this)
-            return;
-
-        XRGrabInteractable grab = other.GetComponentInParent<XRGrabInteractable>();
-
-        // Si sigue agarrada con la mano, esperamos a que la suelte
         if (grab != null && grab.isSelected)
-            return;
-
-        int index = GetFirstFreeSlot();
-        if (index == -1) return; // zona llena
-
-        SnapCard(card, grab, index);
+        {
+            RemoveCard(card);
+            card.currentZone = null;
+        }
+        return;
     }
+
+    // 🔹 A partir de aquí es una carta que aún NO está snappeada en esta zona
+
+    // Solo miramos el PRIMER slot libre (el resaltado)
+    int index = GetFirstFreeSlot();
+    if (index == -1) return; // zona llena
+
+    Transform targetSlot = slots[index];
+    if (targetSlot == null) return;
+
+    // Distancia de la carta al slot que toca
+    float distance = Vector3.Distance(card.transform.position, targetSlot.position);
+
+    // Si está demasiado lejos del slot, no snappeamos
+    if (distance > snapDistance) return;
+
+    // Si la carta sigue agarrada, la soltamos del interactor
+    if (grab != null && grab.isSelected && grab.interactionManager != null)
+    {
+        var interactors = grab.interactorsSelecting.ToList();
+        foreach (var interactor in interactors)
+        {
+            grab.interactionManager.SelectExit(interactor, grab);
+        }
+    }
+
+    // Ahora sí, snappeamos en ESE slot (el primero libre)
+    SnapCard(card, grab, index);
+}
+
+
 
     // Cuando la carta SALE de esta zona, liberamos el hueco
     private void OnTriggerExit(Collider other)
@@ -84,6 +121,28 @@ public class CardSnapZone : MonoBehaviour
         return -1;
     }
 
+    // 🔍 Nuevo: buscar el slot libre más cercano a la carta
+    private int GetClosestFreeSlotIndex(Vector3 cardPosition, out float minDistance)
+    {
+        int bestIndex = -1;
+        minDistance = float.MaxValue;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] == null) continue;
+            if (occupied[i] != null) continue; // ya hay carta
+
+            float dist = Vector3.Distance(cardPosition, slots[i].position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                bestIndex = i;
+            }
+        }
+
+        return bestIndex;
+    }
+
     private void SnapCard(Card card, XRGrabInteractable grab, int index)
     {
         occupied[index] = card;
@@ -96,6 +155,11 @@ public class CardSnapZone : MonoBehaviour
         t.localPosition = localPositionOffset;
         t.localRotation = Quaternion.Euler(localRotationOffsetEuler);
         t.localScale = card.originalScale;
+
+        if (blackjackHand != null)
+        {
+            blackjackHand.AddCard(card);
+        }
 
         // Si NO quieres que se pueda volver a coger, desactiva el grab
         if (!canGrabAfterSnap && grab != null)
@@ -115,6 +179,11 @@ public class CardSnapZone : MonoBehaviour
                 occupied[i] = null;
                 break;
             }
+        }
+
+        if (blackjackHand != null)
+        {
+            blackjackHand.RemoveCard(card);
         }
 
         UpdateSlotVisuals();
