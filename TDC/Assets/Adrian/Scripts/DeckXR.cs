@@ -17,6 +17,15 @@ public class DeckXR : MonoBehaviour
     [Header("XR")]
     public XRInteractionManager interactionManager;
 
+    [Header("Control del mazo")]
+    [Tooltip("Si es false, NO se pueden sacar cartas del mazo.")]
+    public bool canDrawCards = true;
+
+    [Header("Visual")]
+    [Tooltip("Material que se usa para ocultar las cartas (Joker).")]
+    public Material jokerMaterial;
+
+
     private List<GameObject> runtimeDeck = new List<GameObject>();
 
     private void Awake()
@@ -24,6 +33,10 @@ public class DeckXR : MonoBehaviour
         BuildDeck();
         Shuffle();
     }
+
+    // ===============================
+    // CONSTRUCCIÓN Y BARAJADO
+    // ===============================
 
     private void BuildDeck()
     {
@@ -35,9 +48,7 @@ public class DeckXR : MonoBehaviour
         for (int d = 0; d < numberOfDecks; d++)
         {
             foreach (var card in singleDeckPrefabs)
-            {
                 runtimeDeck.Add(card);
-            }
         }
     }
 
@@ -50,9 +61,19 @@ public class DeckXR : MonoBehaviour
         }
     }
 
-    // Evento al pulsar trigger sobre el mazo
+    // ===============================
+    // SACAR CARTAS
+    // ===============================
+
     public void DrawFromDeck(SelectEnterEventArgs args)
     {
+        // ⛔ No dejar sacar cartas si está bloqueado
+        if (!canDrawCards)
+        {
+            Debug.Log("DeckXR: no se pueden sacar cartas ahora.");
+            return;
+        }
+
         if (runtimeDeck.Count == 0) return;
 
         var interactor = args.interactorObject as UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor;
@@ -65,7 +86,6 @@ public class DeckXR : MonoBehaviour
         GameObject prefab = runtimeDeck[0];
         runtimeDeck.RemoveAt(0);
 
-        // Intentamos usar la transform del interactor (controlador)
         Transform interactorTransform = (interactor as MonoBehaviour)?.transform;
 
         Vector3 pos;
@@ -94,19 +114,28 @@ public class DeckXR : MonoBehaviour
         {
             cardComp.deck = this;
             cardComp.prefabReference = prefab;
+
+            // ⬇⬇ NUEVO: inicializar visual en modo oculto
+            if (jokerMaterial != null)
+            {
+                cardComp.jokerMaterial = jokerMaterial;
+                cardComp.SetHidden(true);   // la carta sale con textura Joker
+            }
         }
 
-        // Que se pueda coger con XR
-        UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab = cardObj.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+
+        // Asegurar XRGrabInteractable
+        var grab = cardObj.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grab == null)
             grab = cardObj.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
 
         if (interactionManager != null)
-        {
             interactionManager.SelectEnter(interactor, grab);
-        }
     }
 
+    // ===============================
+    // DEVOLVER CARTAS
+    // ===============================
 
     public void ReturnToBottom(Card card)
     {
@@ -125,5 +154,14 @@ public class DeckXR : MonoBehaviour
     {
         BuildDeck();
         Shuffle();
+    }
+
+    // ===============================
+    // MÉTODOS PARA EL GAME MANAGER
+    // ===============================
+
+    public void SetCanDrawCards(bool value)
+    {
+        canDrawCards = value;
     }
 }

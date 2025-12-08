@@ -1,40 +1,47 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using TMPro;
 
 public class CardSnapZone : MonoBehaviour
 {
-    [Header("Posiciones donde se snappean las cartas")]
-    public Transform[] slots;            // Slot_1, Slot_2, ...
+    [Header("Posiciones donde se snappean las cartas (en orden)")]
+    public Transform[] slots;            // Slot_0, Slot_1, Slot_2, ...
 
-    [Header("Visual de cada slot (opcional)")]
-    public Renderer[] slotVisuals;       // Visual de cada slot (puede ser null)
-
-    [Header("Opciones")]
-    [Tooltip("Si está en true, podrás volver a coger la carta después de hacer snap.")]
-    public bool canGrabAfterSnap = true;
+    [Header("Visual de cada slot (mismo ORDEN que slots)")]
+    public Renderer[] slotVisuals;       // Visual para cada slot
 
     [Header("Ajuste fino dentro del slot")]
     public Vector3 localPositionOffset = Vector3.zero;
     public Vector3 localRotationOffsetEuler = Vector3.zero;
 
-    [Header("Auto snap")]
-    [Tooltip("Distancia máxima al slot para que la carta se auto-snapee.")]
+    [Header("Snap")]
+    [Tooltip("Distancia máxima al slot para autosnap mientras la carta está en la mano.")]
     public float snapDistance = 0.08f;
 
+    [Tooltip("Tiempo mínimo desde que levantas la carta hasta que puede volver a snappear.")]
+    public float pickupGrace = 0.25f;
+
+    [Header("Lógica de juego")]
+    [Tooltip("Si es false, esta zona NO acepta nuevas cartas (como si estuviera cerrada).")]
+    public bool canReceiveNewCards = true;
+
+    [Tooltip("Si es false, no se pueden coger las cartas que ya están en esta zona.")]
+    public bool canGrabFromZone = true;
+
+    [Header("UI (puntuación)")]
+    public TMP_Text valueText;
+    public bool logDebug = false;
+
     private Card[] occupied;
-    private bool snapEnabled = true;     // para pausar la zona sin borrar estado
-
-    [Header("Blackjack")]
-    public BlackjackHand blackjackHand;
-
 
     private void Awake()
     {
         occupied = new Card[slots.Length];
 
-        // Si no has rellenado visuales, intenta detectarlos automáticamente
+        // Autodetectar visuales si no los pones a mano
         if (slotVisuals == null || slotVisuals.Length == 0)
         {
             slotVisuals = new Renderer[slots.Length];
@@ -44,72 +51,82 @@ public class CardSnapZone : MonoBehaviour
                     slotVisuals[i] = slots[i].GetComponentInChildren<Renderer>(true);
             }
         }
+        else if (slotVisuals.Length != slots.Length)
+        {
+            Debug.LogWarning($"[CardSnapZone:{name}] slotVisuals y slots tienen longitudes distintas. " +
+                             $"Debes tener MISMO tamaño y ORDEN.");
+        }
 
         UpdateSlotVisuals();
+        RecalculateScore();
     }
 
     private void OnTriggerStay(Collider other)
-{
-    if (!snapEnabled) return;
-
-    Card card = other.GetComponentInParent<Card>();
-    if (card == null) return;
-
-    XRGrabInteractable grab = other.GetComponentInParent<XRGrabInteractable>();
-
-    // 🔹 Si ya está en esta zona y ahora la vuelven a coger, la sacamos de la mano
-    if (card.currentZone == this)
-    {
-        if (grab != null && grab.isSelected)
-        {
-            RemoveCard(card);
-            card.currentZone = null;
-        }
-        return;
-    }
-
-    // 🔹 A partir de aquí es una carta que aún NO está snappeada en esta zona
-
-    // Solo miramos el PRIMER slot libre (el resaltado)
-    int index = GetFirstFreeSlot();
-    if (index == -1) return; // zona llena
-
-    Transform targetSlot = slots[index];
-    if (targetSlot == null) return;
-
-    // Distancia de la carta al slot que toca
-    float distance = Vector3.Distance(card.transform.position, targetSlot.position);
-
-    // Si está demasiado lejos del slot, no snappeamos
-    if (distance > snapDistance) return;
-
-    // Si la carta sigue agarrada, la soltamos del interactor
-    if (grab != null && grab.isSelected && grab.interactionManager != null)
-    {
-        var interactors = grab.interactorsSelecting.ToList();
-        foreach (var interactor in interactors)
-        {
-            grab.interactionManager.SelectExit(interactor, grab);
-        }
-    }
-
-    // Ahora sí, snappeamos en ESE slot (el primero libre)
-    SnapCard(card, grab, index);
-}
-
-
-
-    // Cuando la carta SALE de esta zona, liberamos el hueco
-    private void OnTriggerExit(Collider other)
     {
         Card card = other.GetComponentInParent<Card>();
         if (card == null) return;
 
-        if (card.currentZone == this)
+        XRGrabInteractable grab = other.GetComponentInParent<XRGrabInteractable>();
+        bool isGrabbed = (grab != null && grab.isSelected);
+
+        // 1) Si la carta está en ESTA zona y ahora la están cogiendo → quitar del slot
+        if (card.currentZone == this && isGrabbed)
         {
-            RemoveCard(card);
+            if (logDebug) Debug.Log($"[CardSnapZone:{name}] Levantan {card.name} de esta zona");
+
+            InternalRemoveCard(card);           // libera slot + contador + visuales
             card.currentZone = null;
+            card.lastGrabTime = Time.time;      // desde ahora aplicamos grace
+
+            return; // este frame NO snappeamos
         }
+
+        // 2) Si pertenece a otra zona distinta, no la tocamos
+        if (card.currentZone != null && card.currentZone != this)
+            return;
+
+        // 3) A partir de aquí, carta libre (sin zona)
+
+        // Solo queremos autosnap si está en la mano
+        if (!isGrabbed)
+            return;
+
+        // Si la zona NO acepta nuevas cartas, no snappeamos
+        if (!canReceiveNewCards)
+            return;
+
+        // 4) Respeta margen de tiempo desde que la levantaste (para poder sacarla)
+        float dt = Time.time - card.lastGrabTime;
+        if (dt < pickupGrace)
+            return;
+
+        // 5) Usamos SIEMPRE el primer slot libre
+        int index = GetFirstFreeSlot();
+        if (index == -1) return;
+
+        Transform targetSlot = slots[index];
+        if (targetSlot == null) return;
+
+        float distance = Vector3.Distance(card.transform.position, targetSlot.position);
+        if (distance > snapDistance)
+            return;
+
+        // 6) Está agarrada, dentro del trigger, ha pasado el grace y está cerca del slot → autosnap
+        if (grab != null && grab.isSelected && grab.interactionManager != null)
+        {
+            var interactors = grab.interactorsSelecting.ToList();
+            foreach (var it in interactors)
+            {
+                grab.interactionManager.SelectExit(it, grab);
+            }
+        }
+
+        SnapCard(card, index);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // No necesitamos nada aquí por ahora
     }
 
     private int GetFirstFreeSlot()
@@ -121,90 +138,105 @@ public class CardSnapZone : MonoBehaviour
         return -1;
     }
 
-    // 🔍 Nuevo: buscar el slot libre más cercano a la carta
-    private int GetClosestFreeSlotIndex(Vector3 cardPosition, out float minDistance)
+    private void SnapCard(Card card, int index)
     {
-        int bestIndex = -1;
-        minDistance = float.MaxValue;
+        if (logDebug) Debug.Log($"[CardSnapZone:{name}] SnapCard {card.name} en slot {index}");
 
-        for (int i = 0; i < slots.Length; i++)
+        // Limpiar otros slots que tengan esta carta
+        for (int i = 0; i < occupied.Length; i++)
         {
-            if (slots[i] == null) continue;
-            if (occupied[i] != null) continue; // ya hay carta
-
-            float dist = Vector3.Distance(cardPosition, slots[i].position);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                bestIndex = i;
-            }
+            if (occupied[i] == card)
+                occupied[i] = null;
         }
 
-        return bestIndex;
-    }
-
-    private void SnapCard(Card card, XRGrabInteractable grab, int index)
-    {
         occupied[index] = card;
         card.currentZone = this;
 
         Transform t = card.transform;
-
-        // Hacerla hija del slot y alinearla
         t.SetParent(slots[index], worldPositionStays: false);
         t.localPosition = localPositionOffset;
         t.localRotation = Quaternion.Euler(localRotationOffsetEuler);
         t.localScale = card.originalScale;
 
-        if (blackjackHand != null)
-        {
-            blackjackHand.AddCard(card);
-        }
+        // ⬇⬇ NUEVO: revelar la carta al entrar en el slot
+        card.SetHidden(false);
 
-        // Si NO quieres que se pueda volver a coger, desactiva el grab
-        if (!canGrabAfterSnap && grab != null)
+        // Ajustar XRGrab según el estado de canGrabFromZone
+        XRGrabInteractable[] grabs = card.GetComponentsInParent<XRGrabInteractable>(true);
+        foreach (var g in grabs)
         {
-            grab.enabled = false;
+            g.enabled = canGrabFromZone;
         }
 
         UpdateSlotVisuals();
+        RecalculateScore();
+
     }
 
+    /// <summary>
+    /// Quita una carta de la zona (cuando se coge o cuando DeckXR la devuelve al mazo).
+    /// </summary>
     public void RemoveCard(Card card)
     {
+        InternalRemoveCard(card);
+
+        if (card != null && card.currentZone == this)
+            card.currentZone = null;
+    }
+
+    private void InternalRemoveCard(Card card)
+    {
+        if (card == null) return;
+
+        if (logDebug) Debug.Log($"[CardSnapZone:{name}] InternalRemoveCard {card.name}");
+
         for (int i = 0; i < occupied.Length; i++)
         {
             if (occupied[i] == card)
             {
                 occupied[i] = null;
+
+                // Si estaba como hija del slot, sacarla al mundo
+                Transform t = card.transform;
+                if (t != null && t.parent == slots[i])
+                {
+                    t.SetParent(null, true);
+                }
+
                 break;
             }
         }
 
-        if (blackjackHand != null)
-        {
-            blackjackHand.RemoveCard(card);
-        }
-
         UpdateSlotVisuals();
+        RecalculateScore();
     }
 
-    // Borrar TODO el estado (para nueva ronda)
     public void ResetSlots()
     {
         for (int i = 0; i < occupied.Length; i++)
             occupied[i] = null;
 
         UpdateSlotVisuals();
+        RecalculateScore();
     }
 
-    // Siempre enciende SOLO el primer slot libre
     private void UpdateSlotVisuals()
     {
         if (slotVisuals == null || slotVisuals.Length == 0)
             return;
 
-        int firstEmpty = GetFirstFreeSlot(); // -1 si está lleno
+        // 🔴 Si la zona no admite nuevas cartas, apagamos TODOS los visuales y salimos
+        if (!canReceiveNewCards)
+        {
+            for (int i = 0; i < slotVisuals.Length; i++)
+            {
+                if (slotVisuals[i] != null)
+                    slotVisuals[i].enabled = false;
+            }
+            return;
+        }
+
+        int firstEmpty = GetFirstFreeSlot(); // -1 si está llena
 
         for (int i = 0; i < slotVisuals.Length; i++)
         {
@@ -212,7 +244,6 @@ public class CardSnapZone : MonoBehaviour
 
             if (firstEmpty == -1)
             {
-                // No hay huecos libres → apaga todos
                 slotVisuals[i].enabled = false;
             }
             else
@@ -223,52 +254,131 @@ public class CardSnapZone : MonoBehaviour
         }
     }
 
-    // 🔒 Bloquear / desbloquear levantar cartas de los slots (sin tocar estado)
-    public void LockSlotCards(bool locked)
+    private void RecalculateScore()
+    {
+        int total = 0;
+        int aceCount = 0;
+
+        foreach (var card in occupied)
+        {
+            if (card == null) continue;
+
+            int v = card.GetBlackjackValue();
+            total += v;
+
+            if (card.rank == Rank.Ace)
+                aceCount++;
+        }
+
+        // Ajuste Ases (11 -> 1) si nos pasamos de 21
+        while (total > 21 && aceCount > 0)
+        {
+            total -= 10;
+            aceCount--;
+        }
+
+        if (valueText != null)
+            valueText.text = total.ToString();
+
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] RecalculateScore -> Total: {total}");
+    }
+
+    public IEnumerable<Card> GetCurrentCards()
     {
         for (int i = 0; i < occupied.Length; i++)
         {
             if (occupied[i] != null)
+                yield return occupied[i];
+        }
+    }
+
+    // ========================
+    //  MÉTODOS PÚBLICOS
+    // ========================
+
+    /// <summary>
+    /// Activa o desactiva que se puedan coger cartas DEL PLAYERZONE.
+    /// </summary>
+    public void SetCanGrabFromZone(bool canGrab)
+    {
+        canGrabFromZone = canGrab;
+
+        // Actualizamos TODOS los XRGrab de las cartas ocupadas ahora mismo
+        for (int i = 0; i < occupied.Length; i++)
+        {
+            if (occupied[i] == null) continue;
+
+            XRGrabInteractable[] grabs = occupied[i].GetComponentsInParent<XRGrabInteractable>(true);
+            foreach (var g in grabs)
             {
-                XRGrabInteractable grab = occupied[i].GetComponentInParent<XRGrabInteractable>();
-                if (grab != null)
-                    grab.enabled = !locked;  // locked = true → no se puede coger
+                g.enabled = canGrab;
             }
         }
     }
 
-    // ⏸️ Pausar / reanudar el snap sin perder cartas ni ocupados
-    public void SetZoneActive(bool active, bool hideVisualsWhenOff = true)
+    /// <summary>
+    /// Activa o desactiva que esta zona acepte cartas nuevas.
+    /// </summary>
+    public void SetCanReceiveNewCards(bool canReceive)
     {
-        snapEnabled = active;
+        canReceiveNewCards = canReceive;
+        UpdateSlotVisuals();
+    }
 
-        if (!active && hideVisualsWhenOff && slotVisuals != null)
+    // ========================
+    //   MÉTODOS PARA GAME MANAGER 
+    // ========================
+
+    /// <summary>
+    /// Número de slots que tienen una carta.
+    /// </summary>
+    public int GetOccupiedCount()
+    {
+        int count = 0;
+        for (int i = 0; i < occupied.Length; i++)
         {
-            // Oculta todos los visuales, pero NO borra occupied
-            for (int i = 0; i < slotVisuals.Length; i++)
-            {
-                if (slotVisuals[i] != null)
-                    slotVisuals[i].enabled = false;
-            }
+            if (occupied[i] != null) count++;
         }
+        return count;
+    }
 
-        if (active)
+    /// <summary>
+    /// Devuelve true si NO hay ninguna carta en la zona.
+    /// </summary>
+    public bool IsEmpty()
+    {
+        return GetOccupiedCount() == 0;
+    }
+
+    /// <summary>
+    /// Devuelve true si TODOS los slots están ocupados.
+    /// </summary>
+    public bool IsFull()
+    {
+        return GetOccupiedCount() >= occupied.Length;
+    }
+
+    /// <summary>
+    /// Devuelve la carta que está en un slot concreto (o null).
+    /// </summary>
+    public Card GetCardInSlot(int index)
+    {
+        if (index < 0 || index >= occupied.Length) return null;
+        return occupied[index];
+    }
+
+    /// <summary>
+    /// Devuelve una lista de TODAS las cartas actuales.
+    /// </summary>
+    public List<Card> GetAllCards()
+    {
+        List<Card> list = new List<Card>();
+        for (int i = 0; i < occupied.Length; i++)
         {
-            // Al reactivar, recalcula el primer hueco libre según las cartas que haya
-            UpdateSlotVisuals();
+            if (occupied[i] != null)
+                list.Add(occupied[i]);
         }
+        return list;
     }
-
-    // Para OnClick: Pausar zona (sin borrar estado)
-    public void DisableZone()
-    {
-        SetZoneActive(false, true);
-    }
-
-    // Para OnClick: Activar zona
-    public void EnableZone()
-    {
-        SetZoneActive(true, true);
-    }
-
 }
