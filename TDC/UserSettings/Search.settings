@@ -69,6 +69,13 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
+	"SnapTurn"
+	"LeftHand"
+	"LeftHand Locomotion"
+	"XRI Default Input Actions"
+	"RightHa"
+	"RightHand Interaction / Select"
+	"XRI LeftHand Interaction"
 ]
 searchItemFavorites = [
 ]
