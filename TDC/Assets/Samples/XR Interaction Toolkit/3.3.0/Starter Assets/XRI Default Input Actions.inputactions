@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "XRI Default Input Actions",
     "maps": [
         {
@@ -890,7 +891,7 @@
                     "name": "Activate",
                     "type": "Button",
                     "id": "0c0991c5-d329-4afc-8892-1076b440477c",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -980,8 +981,8 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "71a4d23f-3e9a-4513-923b-ba388c5e84bf",
-                    "path": "<XRController>{LeftHand}/{GripButton}",
+                    "id": "df52a7bf-dae5-4df0-b017-2a792c0e57ca",
+                    "path": "<XRController>{LeftHand}/{TriggerButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1101,8 +1102,8 @@
                 },
                 {
                     "name": "",
-                    "id": "487f4f2e-9e9b-49aa-b0f2-4037a24624f5",
-                    "path": "<XRController>{LeftHand}/{TriggerButton}",
+                    "id": "3667d4eb-3b4c-44c2-80f1-16de07ef22a3",
+                    "path": "<XRController>{LeftHand}/{GripButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1983,7 +1984,7 @@
                     "name": "Activate",
                     "type": "Button",
                     "id": "41976d89-60de-4deb-bff9-16b4af96b290",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -2073,8 +2074,8 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "1ce80054-410d-4112-a332-50faa7fb4f23",
-                    "path": "<XRController>{RightHand}/{GripButton}",
+                    "id": "20ed50ad-5d23-4086-8632-60cbec42db02",
+                    "path": "<XRController>{RightHand}/{TriggerButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -2194,8 +2195,8 @@
                 },
                 {
                     "name": "",
-                    "id": "fa59aed1-ae0b-4074-a58c-294b85f46228",
-                    "path": "<XRController>{RightHand}/{TriggerButton}",
+                    "id": "982584d1-b82e-4df6-88d4-7b16c70144c4",
+                    "path": "<XRController>{RightHand}/{GripButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
