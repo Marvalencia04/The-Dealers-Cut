@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Emilio/EscenarioFinal.unity
+    path: Assets/Emilio/EscenarioFinal/EscenarioFinal.unity
     guid: c5adb9bf92cd2f643a20a747051648d6
   - enabled: 1
     path: Assets/Emilio/Video360.unity
