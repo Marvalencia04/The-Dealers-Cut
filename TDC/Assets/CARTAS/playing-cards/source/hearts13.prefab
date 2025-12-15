@@ -109,6 +109,9 @@ MonoBehaviour:
   currentZone: {fileID: 0}
   originalScale: {x: 0, y: 0, z: 0}
   lastGrabTime: -999
+  renderersToSwap: []
+  jokerMaterial: {fileID: 2100000, guid: f88ce44bceff0ce46ba73dc674d88ce3, type: 2}
+  isHidden: 0
 --- !u!65 &4902648253569981726
 BoxCollider:
   m_ObjectHideFlags: 0
