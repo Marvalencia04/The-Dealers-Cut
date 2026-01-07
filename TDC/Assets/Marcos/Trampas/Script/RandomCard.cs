@@ -123,6 +123,18 @@ public class RandomCard : MonoBehaviour
         // Cerrar menú
         if (menuRoot != null)
             menuRoot.SetActive(false);
+        // Activar interacción con ratón
+        if (selectedCard.GetComponent<MouseGrabXRProxy>() == null)
+        {
+            selectedCard.AddComponent<MouseGrabXRProxy>();
+        }
+
+        // Asegurar XRGrabInteractable activo
+        var grab = selectedCard.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        if (grab != null)
+        {
+            grab.enabled = true;
+        }
     }
 
     // =============================
