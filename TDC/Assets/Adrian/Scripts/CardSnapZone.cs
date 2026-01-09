@@ -39,7 +39,7 @@ public class CardSnapZone : MonoBehaviour
 
     // 🔥 OPTIMIZACIÓN: Cachear componentes en diccionario
     private Dictionary<Card, XRGrabInteractable> cardGrabCache = new Dictionary<Card, XRGrabInteractable>();
-
+    
     // 🔥 OPTIMIZACIÓN: Evitar GetComponentInParent cada frame
     private Dictionary<Collider, Card> colliderToCardCache = new Dictionary<Collider, Card>();
 
@@ -79,7 +79,7 @@ public class CardSnapZone : MonoBehaviour
             if (card != null)
             {
                 colliderToCardCache[other] = card;
-
+                
                 // Cachear también el XRGrabInteractable
                 if (!cardGrabCache.ContainsKey(card))
                 {
@@ -87,7 +87,7 @@ public class CardSnapZone : MonoBehaviour
                     if (grab != null)
                     {
                         cardGrabCache[card] = grab;
-
+                        
                         // Suscribirse a eventos de grab
                         grab.selectEntered.AddListener(OnCardGrabbed);
                         grab.selectExited.AddListener(OnCardReleased);
@@ -258,7 +258,7 @@ public class CardSnapZone : MonoBehaviour
         // Limpiar cachés
         lastCheckTime.Remove(card);
         cardGrabCache.Remove(card);
-
+        
         // Limpiar collider cache
         var collidersToRemove = new List<Collider>();
         foreach (var kvp in colliderToCardCache)
@@ -437,5 +437,117 @@ public class CardSnapZone : MonoBehaviour
                 list.Add(occupied[i]);
         }
         return list;
+    }
+
+    // ========================
+    //   MÉTODOS DE CONTROL PARA GAME MANAGER 
+    // ========================
+
+    /// <summary>
+    /// Bloquea completamente esta zona:
+    /// - No acepta nuevas cartas
+    /// - No se pueden coger las cartas existentes
+    /// </summary>
+    public void LockZone()
+    {
+        SetCanReceiveNewCards(false);
+        SetCanGrabFromZone(false);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona bloqueada (locked)");
+    }
+
+    /// <summary>
+    /// Desbloquea completamente esta zona:
+    /// - Acepta nuevas cartas
+    /// - Se pueden coger las cartas existentes
+    /// </summary>
+    public void UnlockZone()
+    {
+        SetCanReceiveNewCards(true);
+        SetCanGrabFromZone(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona desbloqueada (unlocked)");
+    }
+
+    /// <summary>
+    /// Modo "solo lectura": 
+    /// - No acepta nuevas cartas
+    /// - Las cartas existentes pueden verse pero no cogerse
+    /// Útil para mostrar cartas del dealer sin que se puedan mover
+    /// </summary>
+    public void SetReadOnly(bool readOnly)
+    {
+        if (readOnly)
+        {
+            SetCanReceiveNewCards(false);
+            SetCanGrabFromZone(false);
+            if (logDebug)
+                Debug.Log($"[CardSnapZone:{name}] Modo solo lectura activado");
+        }
+        else
+        {
+            SetCanReceiveNewCards(true);
+            SetCanGrabFromZone(true);
+            if (logDebug)
+                Debug.Log($"[CardSnapZone:{name}] Modo solo lectura desactivado");
+        }
+    }
+
+    /// <summary>
+    /// Bloquea solo las cartas existentes (no se pueden coger)
+    /// pero permite que se añadan nuevas cartas
+    /// </summary>
+    public void FreezeCards()
+    {
+        SetCanGrabFromZone(false);
+        // canReceiveNewCards se mantiene como está
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Cartas congeladas (no se pueden coger)");
+    }
+
+    /// <summary>
+    /// Desbloquea las cartas para que se puedan coger
+    /// </summary>
+    public void UnfreezeCards()
+    {
+        SetCanGrabFromZone(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Cartas descongeladas (se pueden coger)");
+    }
+
+    /// <summary>
+    /// Cierra la zona: no acepta más cartas
+    /// pero las que hay se pueden coger
+    /// </summary>
+    public void CloseZone()
+    {
+        SetCanReceiveNewCards(false);
+        // canGrabFromZone se mantiene como está
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona cerrada (no acepta más cartas)");
+    }
+
+    /// <summary>
+    /// Abre la zona: vuelve a aceptar cartas
+    /// </summary>
+    public void OpenZone()
+    {
+        SetCanReceiveNewCards(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona abierta (acepta cartas)");
+    }
+
+    /// <summary>
+    /// Obtiene el estado actual de la zona
+    /// </summary>
+    public (bool canReceive, bool canGrab) GetZoneState()
+    {
+        return (canReceiveNewCards, canGrabFromZone);
     }
 }
