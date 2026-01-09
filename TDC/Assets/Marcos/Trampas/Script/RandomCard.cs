@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System.Collections.Generic;
 
 public class RandomCard : MonoBehaviour
@@ -12,7 +12,7 @@ public class RandomCard : MonoBehaviour
     [Header("Destino de la carta elegida")]
     public Transform selectedCardSlot;
 
-    [Header("Men˙ que se cerrar·")]
+    [Header("Men√∫ que se cerrar√°")]
     public GameObject menuRoot;
 
     private List<GameObject> previewedCards = new List<GameObject>();
@@ -26,7 +26,7 @@ public class RandomCard : MonoBehaviour
 
         if (deck == null || previewSlots == null || previewSlots.Length < 3)
         {
-            Debug.LogWarning("RandomCard: configuraciÛn incompleta.");
+            Debug.LogWarning("RandomCard: configuraci√≥n incompleta.");
             return;
         }
 
@@ -110,32 +110,31 @@ public class RandomCard : MonoBehaviour
         selectedCard.transform.position = selectedCardSlot.position;
         selectedCard.transform.rotation = selectedCardSlot.rotation;
 
-        // Eliminar las otras
+        // ‚ùå Aqu√≠ est√° el problema: destru√≠a las otras cartas mientras XRGrabInteractable estaba activo
         foreach (var card in previewedCards)
         {
             if (card != selectedCard && card != null)
                 Destroy(card);
         }
 
+        // Limpiar lista y dejar solo la carta seleccionada
         previewedCards.Clear();
         previewedCards.Add(selectedCard);
 
-        // Cerrar men˙
+        // Cerrar men√∫
         if (menuRoot != null)
             menuRoot.SetActive(false);
-        // Activar interacciÛn con ratÛn
-        if (selectedCard.GetComponent<MouseGrabXRProxy>() == null)
-        {
-            selectedCard.AddComponent<MouseGrabXRProxy>();
-        }
 
-        // Asegurar XRGrabInteractable activo
+        // Activar interacci√≥n con rat√≥n
+        if (selectedCard.GetComponent<MouseGrabXRProxy>() == null)
+            selectedCard.AddComponent<MouseGrabXRProxy>();
+
+        // Activar XRGrabInteractable
         var grab = selectedCard.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grab != null)
-        {
             grab.enabled = true;
-        }
     }
+
 
     // =============================
     // LIMPIEZA
