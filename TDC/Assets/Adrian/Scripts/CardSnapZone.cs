@@ -8,10 +8,10 @@ using TMPro;
 public class CardSnapZone : MonoBehaviour
 {
     [Header("Posiciones donde se snappean las cartas (en orden)")]
-    public Transform[] slots;            // Slot_0, Slot_1, Slot_2, ...
+    public Transform[] slots;
 
     [Header("Visual de cada slot (mismo ORDEN que slots)")]
-    public Renderer[] slotVisuals;       // Visual para cada slot
+    public Renderer[] slotVisuals;
 
     [Header("Ajuste fino dentro del slot")]
     public Vector3 localPositionOffset = Vector3.zero;
@@ -37,11 +37,20 @@ public class CardSnapZone : MonoBehaviour
 
     private Card[] occupied;
 
+    // 🔥 OPTIMIZACIÓN: Cachear componentes en diccionario
+    private Dictionary<Card, XRGrabInteractable> cardGrabCache = new Dictionary<Card, XRGrabInteractable>();
+
+    // 🔥 OPTIMIZACIÓN: Evitar GetComponentInParent cada frame
+    private Dictionary<Collider, Card> colliderToCardCache = new Dictionary<Collider, Card>();
+
+    // 🔥 OPTIMIZACIÓN: Cooldown para OnTriggerStay
+    private Dictionary<Card, float> lastCheckTime = new Dictionary<Card, float>();
+    private const float CHECK_INTERVAL = 0.05f; // Solo chequear cada 50ms
+
     private void Awake()
     {
         occupied = new Card[slots.Length];
 
-        // Autodetectar visuales si no los pones a mano
         if (slotVisuals == null || slotVisuals.Length == 0)
         {
             slotVisuals = new Renderer[slots.Length];
@@ -53,41 +62,71 @@ public class CardSnapZone : MonoBehaviour
         }
         else if (slotVisuals.Length != slots.Length)
         {
-            Debug.LogWarning($"[CardSnapZone:{name}] slotVisuals y slots tienen longitudes distintas. " +
-                             $"Debes tener MISMO tamaño y ORDEN.");
+            Debug.LogWarning($"[CardSnapZone:{name}] slotVisuals y slots tienen longitudes distintas.");
         }
 
         UpdateSlotVisuals();
         RecalculateScore();
     }
 
+    // 🔥 OPTIMIZACIÓN: Usar OnTriggerEnter y eventos en lugar de OnTriggerStay
+    private void OnTriggerEnter(Collider other)
+    {
+        // Cachear el componente Card para este collider
+        if (!colliderToCardCache.ContainsKey(other))
+        {
+            Card card = other.GetComponentInParent<Card>();
+            if (card != null)
+            {
+                colliderToCardCache[other] = card;
+
+                // Cachear también el XRGrabInteractable
+                if (!cardGrabCache.ContainsKey(card))
+                {
+                    XRGrabInteractable grab = card.GetComponentInParent<XRGrabInteractable>();
+                    if (grab != null)
+                    {
+                        cardGrabCache[card] = grab;
+
+                        // Suscribirse a eventos de grab
+                        grab.selectEntered.AddListener(OnCardGrabbed);
+                        grab.selectExited.AddListener(OnCardReleased);
+                    }
+                }
+            }
+        }
+    }
+
     private void OnTriggerStay(Collider other)
     {
-        Card card = other.GetComponentInParent<Card>();
-        if (card == null) return;
+        // 🔥 OPTIMIZACIÓN: Usar caché en lugar de GetComponentInParent
+        if (!colliderToCardCache.TryGetValue(other, out Card card))
+            return;
 
-        XRGrabInteractable grab = other.GetComponentInParent<XRGrabInteractable>();
-        bool isGrabbed = (grab != null && grab.isSelected);
-
-        // 1) Si la carta está en ESTA zona y ahora la están cogiendo → quitar del slot
-        if (card.currentZone == this && isGrabbed)
+        // 🔥 OPTIMIZACIÓN: Throttling - solo chequear cada X tiempo
+        float currentTime = Time.time;
+        if (lastCheckTime.TryGetValue(card, out float lastTime))
         {
-            if (logDebug) Debug.Log($"[CardSnapZone:{name}] Levantan {card.name} de esta zona");
-
-            InternalRemoveCard(card);           // libera slot + contador + visuales
-            card.currentZone = null;
-            card.lastGrabTime = Time.time;      // desde ahora aplicamos grace
-
-            return; // este frame NO snappeamos
+            if (currentTime - lastTime < CHECK_INTERVAL)
+                return;
         }
+        lastCheckTime[card] = currentTime;
+
+        // 🔥 OPTIMIZACIÓN: Usar caché para XRGrabInteractable
+        if (!cardGrabCache.TryGetValue(card, out XRGrabInteractable grab))
+            return;
+
+        bool isGrabbed = grab != null && grab.isSelected;
+
+        // 1) Si la carta está en ESTA zona y ahora la están cogiendo → ya se maneja en OnCardGrabbed
+        if (card.currentZone == this && isGrabbed)
+            return;
 
         // 2) Si pertenece a otra zona distinta, no la tocamos
         if (card.currentZone != null && card.currentZone != this)
             return;
 
-        // 3) A partir de aquí, carta libre (sin zona)
-
-        // Solo queremos autosnap si está en la mano
+        // 3) Solo queremos autosnap si está en la mano
         if (!isGrabbed)
             return;
 
@@ -95,8 +134,8 @@ public class CardSnapZone : MonoBehaviour
         if (!canReceiveNewCards)
             return;
 
-        // 4) Respeta margen de tiempo desde que la levantaste (para poder sacarla)
-        float dt = Time.time - card.lastGrabTime;
+        // 4) Respeta margen de tiempo desde que la levantaste
+        float dt = currentTime - card.lastGrabTime;
         if (dt < pickupGrace)
             return;
 
@@ -111,8 +150,8 @@ public class CardSnapZone : MonoBehaviour
         if (distance > snapDistance)
             return;
 
-        // 6) Está agarrada, dentro del trigger, ha pasado el grace y está cerca del slot → autosnap
-        if (grab != null && grab.isSelected && grab.interactionManager != null)
+        // 6) Autosnap
+        if (grab.isSelected && grab.interactionManager != null)
         {
             var interactors = grab.interactorsSelecting.ToList();
             foreach (var it in interactors)
@@ -124,9 +163,49 @@ public class CardSnapZone : MonoBehaviour
         SnapCard(card, index);
     }
 
+    // 🔥 NUEVO: Listener para cuando se coge una carta
+    private void OnCardGrabbed(SelectEnterEventArgs args)
+    {
+        if (args.interactableObject is XRGrabInteractable grab)
+        {
+            Card card = grab.GetComponent<Card>();
+            if (card != null && card.currentZone == this)
+            {
+                if (logDebug) Debug.Log($"[CardSnapZone:{name}] Levantan {card.name} de esta zona");
+
+                InternalRemoveCard(card);
+                card.currentZone = null;
+                card.lastGrabTime = Time.time;
+            }
+        }
+    }
+
+    // 🔥 NUEVO: Listener para cuando se suelta una carta
+    private void OnCardReleased(SelectExitEventArgs args)
+    {
+        // Podrías usar esto si necesitas lógica adicional al soltar
+    }
+
     private void OnTriggerExit(Collider other)
     {
-        // No necesitamos nada aquí por ahora
+        // Limpiar caché cuando sale del trigger
+        if (colliderToCardCache.TryGetValue(other, out Card card))
+        {
+            lastCheckTime.Remove(card);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Limpiar listeners
+        foreach (var kvp in cardGrabCache)
+        {
+            if (kvp.Value != null)
+            {
+                kvp.Value.selectEntered.RemoveListener(OnCardGrabbed);
+                kvp.Value.selectExited.RemoveListener(OnCardReleased);
+            }
+        }
     }
 
     private int GetFirstFreeSlot()
@@ -142,7 +221,6 @@ public class CardSnapZone : MonoBehaviour
     {
         if (logDebug) Debug.Log($"[CardSnapZone:{name}] SnapCard {card.name} en slot {index}");
 
-        // Limpiar otros slots que tengan esta carta
         for (int i = 0; i < occupied.Length; i++)
         {
             if (occupied[i] == card)
@@ -158,30 +236,40 @@ public class CardSnapZone : MonoBehaviour
         t.localRotation = Quaternion.Euler(localRotationOffsetEuler);
         t.localScale = card.originalScale;
 
-        // ⬇⬇ NUEVO: revelar la carta al entrar en el slot
         card.SetHidden(false);
 
-        // Ajustar XRGrab según el estado de canGrabFromZone
-        XRGrabInteractable[] grabs = card.GetComponentsInParent<XRGrabInteractable>(true);
-        foreach (var g in grabs)
+        // 🔥 OPTIMIZACIÓN: Usar caché en lugar de GetComponentsInParent
+        if (cardGrabCache.TryGetValue(card, out XRGrabInteractable grab))
         {
-            g.enabled = canGrabFromZone;
+            grab.enabled = canGrabFromZone;
         }
 
         UpdateSlotVisuals();
         RecalculateScore();
-
     }
 
-    /// <summary>
-    /// Quita una carta de la zona (cuando se coge o cuando DeckXR la devuelve al mazo).
-    /// </summary>
     public void RemoveCard(Card card)
     {
         InternalRemoveCard(card);
 
         if (card != null && card.currentZone == this)
             card.currentZone = null;
+
+        // Limpiar cachés
+        lastCheckTime.Remove(card);
+        cardGrabCache.Remove(card);
+
+        // Limpiar collider cache
+        var collidersToRemove = new List<Collider>();
+        foreach (var kvp in colliderToCardCache)
+        {
+            if (kvp.Value == card)
+                collidersToRemove.Add(kvp.Key);
+        }
+        foreach (var col in collidersToRemove)
+        {
+            colliderToCardCache.Remove(col);
+        }
     }
 
     private void InternalRemoveCard(Card card)
@@ -196,7 +284,6 @@ public class CardSnapZone : MonoBehaviour
             {
                 occupied[i] = null;
 
-                // Si estaba como hija del slot, sacarla al mundo
                 Transform t = card.transform;
                 if (t != null && t.parent == slots[i])
                 {
@@ -216,6 +303,11 @@ public class CardSnapZone : MonoBehaviour
         for (int i = 0; i < occupied.Length; i++)
             occupied[i] = null;
 
+        // Limpiar cachés
+        lastCheckTime.Clear();
+        cardGrabCache.Clear();
+        colliderToCardCache.Clear();
+
         UpdateSlotVisuals();
         RecalculateScore();
     }
@@ -225,7 +317,6 @@ public class CardSnapZone : MonoBehaviour
         if (slotVisuals == null || slotVisuals.Length == 0)
             return;
 
-        // 🔴 Si la zona no admite nuevas cartas, apagamos TODOS los visuales y salimos
         if (!canReceiveNewCards)
         {
             for (int i = 0; i < slotVisuals.Length; i++)
@@ -236,7 +327,7 @@ public class CardSnapZone : MonoBehaviour
             return;
         }
 
-        int firstEmpty = GetFirstFreeSlot(); // -1 si está llena
+        int firstEmpty = GetFirstFreeSlot();
 
         for (int i = 0; i < slotVisuals.Length; i++)
         {
@@ -248,7 +339,6 @@ public class CardSnapZone : MonoBehaviour
             }
             else
             {
-                // Solo se enciende el primer slot libre
                 slotVisuals[i].enabled = (i == firstEmpty);
             }
         }
@@ -270,7 +360,6 @@ public class CardSnapZone : MonoBehaviour
                 aceCount++;
         }
 
-        // Ajuste Ases (11 -> 1) si nos pasamos de 21
         while (total > 21 && aceCount > 0)
         {
             total -= 10;
@@ -293,46 +382,26 @@ public class CardSnapZone : MonoBehaviour
         }
     }
 
-    // ========================
-    //  MÉTODOS PÚBLICOS
-    // ========================
-
-    /// <summary>
-    /// Activa o desactiva que se puedan coger cartas DEL PLAYERZONE.
-    /// </summary>
     public void SetCanGrabFromZone(bool canGrab)
     {
         canGrabFromZone = canGrab;
 
-        // Actualizamos TODOS los XRGrab de las cartas ocupadas ahora mismo
+        // 🔥 OPTIMIZACIÓN: Usar caché
         for (int i = 0; i < occupied.Length; i++)
         {
-            if (occupied[i] == null) continue;
-
-            XRGrabInteractable[] grabs = occupied[i].GetComponentsInParent<XRGrabInteractable>(true);
-            foreach (var g in grabs)
+            if (occupied[i] != null && cardGrabCache.TryGetValue(occupied[i], out XRGrabInteractable grab))
             {
-                g.enabled = canGrab;
+                grab.enabled = canGrab;
             }
         }
     }
 
-    /// <summary>
-    /// Activa o desactiva que esta zona acepte cartas nuevas.
-    /// </summary>
     public void SetCanReceiveNewCards(bool canReceive)
     {
         canReceiveNewCards = canReceive;
         UpdateSlotVisuals();
     }
 
-    // ========================
-    //   MÉTODOS PARA GAME MANAGER 
-    // ========================
-
-    /// <summary>
-    /// Número de slots que tienen una carta.
-    /// </summary>
     public int GetOccupiedCount()
     {
         int count = 0;
@@ -343,34 +412,22 @@ public class CardSnapZone : MonoBehaviour
         return count;
     }
 
-    /// <summary>
-    /// Devuelve true si NO hay ninguna carta en la zona.
-    /// </summary>
     public bool IsEmpty()
     {
         return GetOccupiedCount() == 0;
     }
 
-    /// <summary>
-    /// Devuelve true si TODOS los slots están ocupados.
-    /// </summary>
     public bool IsFull()
     {
         return GetOccupiedCount() >= occupied.Length;
     }
 
-    /// <summary>
-    /// Devuelve la carta que está en un slot concreto (o null).
-    /// </summary>
     public Card GetCardInSlot(int index)
     {
         if (index < 0 || index >= occupied.Length) return null;
         return occupied[index];
     }
 
-    /// <summary>
-    /// Devuelve una lista de TODAS las cartas actuales.
-    /// </summary>
     public List<Card> GetAllCards()
     {
         List<Card> list = new List<Card>();
