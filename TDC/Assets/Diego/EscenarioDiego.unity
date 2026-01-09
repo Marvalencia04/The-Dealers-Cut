@@ -322,6 +322,74 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1175663280}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &35890903
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.82264274
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.323
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -8.49076
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 205669511625425430, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 689472922691016876, guid: ef42df94e10863f4dae4ba065c1d7d6f,
+        type: 3}
+      propertyPath: m_Name
+      value: Mano carta Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ef42df94e10863f4dae4ba065c1d7d6f, type: 3}
 --- !u!1001 &46346115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6748,6 +6816,74 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.1894233, y: 1.1627162, z: 1.40101}
   m_Center: {x: 0.00000011920933, y: -0.0046451096, z: -0.001388729}
+--- !u!1001 &944716333
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.78150535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.315
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -8.71942
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239005516907661092, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6764044741405023646, guid: 7f049c79f1814b04badec3cd2dd3d1c9,
+        type: 3}
+      propertyPath: m_Name
+      value: Mano tragaperra
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7f049c79f1814b04badec3cd2dd3d1c9, type: 3}
 --- !u!1 &947268926
 GameObject:
   m_ObjectHideFlags: 0
@@ -15612,3 +15748,5 @@ SceneRoots:
   - {fileID: 947268927}
   - {fileID: 2038788325}
   - {fileID: 1388918371}
+  - {fileID: 35890903}
+  - {fileID: 944716333}

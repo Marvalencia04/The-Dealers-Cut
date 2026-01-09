@@ -36,35 +36,36 @@ public class Card : MonoBehaviour
     [HideInInspector] public CardSnapZone currentZone;
     [HideInInspector] public Vector3 originalScale;
 
-    // Para saber cuándo se ha levantado de un slot
     [HideInInspector] public float lastGrabTime = -999f;
 
     [Header("Materiales / Visual")]
-    [Tooltip("Renderers donde se cambiará el material al ocultar la carta. " +
-             "Si está vacío, se usarán automáticamente todos los Renderers hijos.")]
+    [Tooltip("Renderers donde se cambiará el material al ocultar la carta.")]
     public Renderer[] renderersToSwap;
 
     [Tooltip("Material que se usa como 'Joker' para ocultar la carta.")]
     public Material jokerMaterial;
 
-    // Guardamos los materiales originales para poder restaurarlos
     private Material[][] originalMaterials;
     private bool materialsCached = false;
 
     [HideInInspector] public bool isHidden = false;
 
+    // 🔥 OPTIMIZACIÓN: Cachear el valor de blackjack
+    private int cachedBlackjackValue = -1;
+
     private void Awake()
     {
-        // Escala original (ya lo tenías)
         originalScale = transform.localScale;
 
-        // Si no has rellenado renderers a mano, pillamos todos los hijos
         if (renderersToSwap == null || renderersToSwap.Length == 0)
         {
             renderersToSwap = GetComponentsInChildren<Renderer>(true);
         }
 
         CacheOriginalMaterials();
+
+        // 🔥 OPTIMIZACIÓN: Calcular el valor una sola vez
+        cachedBlackjackValue = CalculateBlackjackValue();
     }
 
     private void CacheOriginalMaterials()
@@ -85,13 +86,12 @@ public class Card : MonoBehaviour
         materialsCached = true;
     }
 
-    /// <summary>
-    /// Oculta o muestra la carta cambiando el material.
-    /// hide = true  -> pone el material Joker
-    /// hide = false -> restaura los materiales originales
-    /// </summary>
     public void SetHidden(bool hide)
     {
+        // 🔥 OPTIMIZACIÓN: No hacer nada si ya está en ese estado
+        if (isHidden == hide)
+            return;
+
         if (renderersToSwap == null || renderersToSwap.Length == 0) return;
 
         CacheOriginalMaterials();
@@ -100,25 +100,24 @@ public class Card : MonoBehaviour
         {
             if (jokerMaterial == null) return;
 
-            // Cambiar TODOS los sub-materiales por el Joker
             for (int i = 0; i < renderersToSwap.Length; i++)
             {
                 var r = renderersToSwap[i];
                 if (r == null) continue;
 
-                var mats = r.materials;
+                // 🔥 OPTIMIZACIÓN: Reutilizar array en lugar de crear uno nuevo
+                var mats = r.sharedMaterials;
                 for (int m = 0; m < mats.Length; m++)
                 {
                     mats[m] = jokerMaterial;
                 }
-                r.materials = mats;
+                r.sharedMaterials = mats;
             }
         }
         else
         {
             if (originalMaterials == null) return;
 
-            // Restaurar materiales originales
             for (int i = 0; i < renderersToSwap.Length; i++)
             {
                 var r = renderersToSwap[i];
@@ -126,7 +125,7 @@ public class Card : MonoBehaviour
 
                 if (i < originalMaterials.Length && originalMaterials[i] != null)
                 {
-                    r.materials = originalMaterials[i];
+                    r.sharedMaterials = originalMaterials[i];
                 }
             }
         }
@@ -134,8 +133,8 @@ public class Card : MonoBehaviour
         isHidden = hide;
     }
 
-    // Valor del blackjack (figuras = 10, As = 11, resto número)
-    public int GetBlackjackValue()
+    // 🔥 OPTIMIZACIÓN: Método privado para calcular el valor
+    private int CalculateBlackjackValue()
     {
         switch (rank)
         {
@@ -150,6 +149,12 @@ public class Card : MonoBehaviour
             default:
                 return (int)rank;
         }
+    }
+
+    // 🔥 OPTIMIZACIÓN: Devolver valor cacheado
+    public int GetBlackjackValue()
+    {
+        return cachedBlackjackValue;
     }
 
     public override string ToString()
