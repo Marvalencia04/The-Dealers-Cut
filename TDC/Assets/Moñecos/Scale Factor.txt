@@ -1,0 +1,8 @@
+Buenorra Woman	0.3
+Business Man	0.9
+Business Woman	0.87
+Casual Man	0.9
+Casual Woman	0.87
+Dress Woman	0.87
+Hoodie Man	0.9
+Morgan Freeman	0.34
