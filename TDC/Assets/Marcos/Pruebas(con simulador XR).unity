@@ -433,7 +433,7 @@ PrefabInstance:
     - target: {fileID: 7162214248566776577, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7507108353313618363, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
@@ -1477,6 +1477,11 @@ MonoBehaviour:
   - {fileID: 2952170623951299656}
   - {fileID: 3252748829834250556}
   - {fileID: 221159472038263758}
+  delayBetweenCards: 0.5
+  flipDuration: 0.5
+  flipAngleX: 0
+  flipAngleY: 0
+  flipAngleZ: 180
 --- !u!4 &949850213
 Transform:
   m_ObjectHideFlags: 0
@@ -2167,6 +2172,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 8992329585622858483, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: m_Name
@@ -2235,6 +2251,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 8992329585622858483, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: m_Name
@@ -2580,6 +2607,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 2677500320318803108, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 8992329585622858483, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: m_Name
@@ -3046,6 +3084,7 @@ MonoBehaviour:
   usosInicialLlamadaSeguridad: 1
   usosInicialNormaDealer: 3
   usosInicialMiraAlli: 1
+  blackjackTable: {fileID: 0}
   uiManager: {fileID: 0}
   btnMazoVisible: {fileID: 0}
   btnCartaAElegir: {fileID: 0}
@@ -4017,13 +4056,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491649618922305029}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0004967749, y: 0.70710653, z: -0.70710677, w: 0.0004966259}
-  m_LocalPosition: {x: 26.150038, y: 12.357157, z: 0.55505335}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 26.2, y: 12.357157, z: -25}
   m_LocalScale: {x: 273.97287, y: 736.15765, z: 357.14285}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6326175433728043403}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &345196836546234891
 GameObject:
   m_ObjectHideFlags: 0
@@ -4843,13 +4882,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4870014079828929627}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.01159659, y: 0.7070117, z: -0.7070117, w: 0.011596471}
-  m_LocalPosition: {x: -31.506113, y: 12.357157, z: -3.3371794}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -31.5, y: 12.357157, z: -16.1}
   m_LocalScale: {x: 274.15778, y: 734.82684, z: 357.1429}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6326175433728043403}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &2970973102514831778
 GameObject:
   m_ObjectHideFlags: 0
@@ -4882,6 +4921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configPanel: {fileID: 0}
   mainMenuPanel: {fileID: 9088633072957584783}
+  gameManager: {fileID: 0}
 --- !u!1 &3207719277695404186
 GameObject:
   m_ObjectHideFlags: 0
@@ -4934,13 +4974,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6263035030819207544}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0004967749, y: 0.7071066, z: -0.7071067, w: 0.0004966557}
-  m_LocalPosition: {x: -3.4109097, y: 12.357157, z: 0.27072024}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.4, y: 12.357157, z: -13.4}
   m_LocalScale: {x: 273.97287, y: 736.1576, z: 357.14285}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6326175433728043403}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &3275472380136889767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5891,9 +5931,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 949850212}
         m_TargetAssemblyTypeName: PreviewNextCards, Assembly-CSharp
-        m_MethodName: ShowNextThree
+        m_MethodName: ShowNextThreeSequential
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6472,7 +6512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8522992255005614509
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6639,9 +6679,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
-        m_MethodName: Salir
+      - m_Target: {fileID: 8494095640142470552}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 949850212}
+        m_TargetAssemblyTypeName: PreviewNextCards, Assembly-CSharp
+        m_MethodName: ClearPreview
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

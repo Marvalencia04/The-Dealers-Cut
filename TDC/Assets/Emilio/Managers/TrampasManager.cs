@@ -336,9 +336,17 @@ public class TrampasManager : MonoBehaviour
         switch (rarity)
         {
             case TrapRarity.Comun:
-                // Ejemplo: intento sumar a Mazo visible, si quieres puedes aleatorizar entre comunes
-                usosMazoVisible++;
-                ShowTrapMessage("La tragaperras te ha dado +1 uso de Mazo visible (Común).");
+                // 50/50 entre MazoVisible y NormaDealer
+                if (UnityEngine.Random.value < 0.5f)
+                {
+                    usosMazoVisible++;
+                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Mazo Visible (Común).");
+                }
+                else
+                {
+                    usosNormaDealer++;
+                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Norma Dealer (Común).");
+                }
                 break;
 
             case TrapRarity.Rara:
