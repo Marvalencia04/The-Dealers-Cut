@@ -424,10 +424,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 'New Text
+
+'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1f3127a8dae853e4fb553561617cce0a, type: 2}
+  m_sharedMaterial: {fileID: -1564029777524531763, guid: 1f3127a8dae853e4fb553561617cce0a,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1838,9 +1841,11 @@ MonoBehaviour:
   - {fileID: 7142363231401320773}
   - {fileID: 6683926014421665894}
   - {fileID: 3470039061272744177}
-  canGrabAfterSnap: 1
   localPositionOffset: {x: 0, y: 0, z: 0}
   localRotationOffsetEuler: {x: 0, y: 0, z: 0}
   snapDistance: 0.08
+  pickupGrace: 0.25
+  canReceiveNewCards: 1
+  canGrabFromZone: 1
   valueText: {fileID: 2677500320318803108}
   logDebug: 1
