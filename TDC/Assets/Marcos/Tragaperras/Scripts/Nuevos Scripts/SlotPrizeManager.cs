@@ -2,22 +2,12 @@
 using System.Collections;
 
 /// <summary>
-/// Evalúa combinaciones ganadoras en la tragaperras,
-/// activa efectos, sonidos y actualiza el saldo del jugador.
+/// Evalúa combinaciones ganadoras en la tragaperras y recompensa con trampas según el triple.
 /// </summary>
 public class SlotPrizeManager : MonoBehaviour
 {
     [Header("Referencia al controlador principal")]
     public Giro slotMachine;
-
-    [Header("Sistema de monedas")]
-    public SlotCurrencyManager currencyManager; // 💰 Nuevo sistema
-
-    [Header("Premios configurables")]
-    public int premioTresIguales = 100;
-
-    public int premioTriple7 = 500;
-    public string mensajeSinPremio = "Sigue intentando...";
 
     [Header("Gestión de sonidos (opcional)")]
     public SlotSoundManager soundManager;
@@ -30,21 +20,19 @@ public class SlotPrizeManager : MonoBehaviour
     public float stopEffectsAfter = 5f;
 
     private Coroutine activeCoroutine;
-
     public AudioSource audioGanar;
 
     private void Start()
     {
         if (slotMachine == null)
             Debug.LogWarning("⚠️ SlotPrizeManager: no hay referencia a Giro.");
-        if (currencyManager == null)
-            Debug.LogWarning("⚠️ SlotPrizeManager: no hay referencia a SlotCurrencyManager.");
+        if (TrampasManager.Instance == null)
+            Debug.LogWarning("⚠️ SlotPrizeManager: no hay referencia a TrampasManager en escena.");
     }
 
     // ==========================================================
     // 🏆 Evaluación del resultado
     // ==========================================================
-
     public void EvaluarResultado(int[] resultado)
     {
         StartCoroutine(EvaluarResultadoConRetraso(resultado));
@@ -66,89 +54,80 @@ public class SlotPrizeManager : MonoBehaviour
         Debug.Log("⏳ Esperando 4 segundos antes de evaluar el resultado...");
         yield return new WaitForSeconds(4f);
 
-        // 🔹 CASO 1: Triple 7
+        // 🔹 CASO 1: Triple 7 → Trampa Legendaria
         if (a == 0 && b == 0 && c == 0)
         {
-            Debug.Log($"🎉 ¡Triple 7! Premio: {premioTriple7}");
-            OnWin(premioTriple7, "¡Triple 7!", true);
+            Debug.Log("🎉 Triple 7 → recompensa Trampa Legendaria");
+            OnWinTrap(TrapRarity.Legendaria, "¡Triple 7!");
             yield break;
         }
 
-        // 🔹 CASO 2: Tres iguales
+        // 🔹 CASO 2: Tres iguales (otros símbolos)
         if (a == b && b == c)
         {
-            Debug.Log($"🎉 Tres iguales ({a}) → Premio: {premioTresIguales}");
-            OnWin(premioTresIguales, "Tres iguales", false);
+            switch (a)
+            {
+                case 1: // Campana
+                    Debug.Log("🎉 Triple Campana → recompensa Trampa Comun");
+                    OnWinTrap(TrapRarity.Comun, "Triple Campana");
+                    break;
+                case 2: // Cereza
+                    Debug.Log("🎉 Triple Cereza → recompensa Trampa Epica");
+                    OnWinTrap(TrapRarity.Epica, "Triple Cereza");
+                    break;
+                case 3: // BAR
+                    Debug.Log("🎉 Triple BAR → recompensa Trampa Rara");
+                    OnWinTrap(TrapRarity.Rara, "Triple BAR");
+                    break;
+            }
             yield break;
         }
 
         // 🔹 CASO 3: Sin premio
-        Debug.Log(mensajeSinPremio);
+        Debug.Log("Sigue intentando...");
         OnLose();
     }
-
 
     // ==========================================================
     // 🔔 Reacciones a victoria o derrota
     // ==========================================================
-
-    protected virtual async void OnWin(int cantidad, string tipo, bool isTriple7)
+    protected void OnWinTrap(TrapRarity rarity, string tipo)
     {
-        Debug.Log($"🏅 Ganaste {cantidad} monedas por: {tipo}");
+        Debug.Log($"🏅 Has ganado una trampa {rarity} por: {tipo}");
 
-       
+        // 💎 Añadir trampa al jugador
+        if (TrampasManager.Instance != null)
+        {
+            TrampasManager.Instance.RecoverTrap(rarity);
+            TrampasManager.Instance.LogUsosActuales();
 
-        // 💰 Añadir monedas al jugador
-        if (currencyManager != null)
-            currencyManager.AñadirPremio(cantidad);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ No hay TrampasManager en escena.");
+        }
 
         // 🔊 Sonido de victoria
         if (soundManager != null)
             soundManager.OnWin();
 
-        // 🔄 Cancelar efectos anteriores si los hubiera
-        if (activeCoroutine != null)
-            StopCoroutine(activeCoroutine);
-
-        // 🎊 Confeti (para cualquier victoria)
-        if (confettiFX && isTriple7 != null)
-        {
-            
-            var em = confettiFX.emission;
-            em.enabled = true;
+        // 🎊 Efectos visuales
+        if (confettiFX != null)
             confettiFX.Play(true);
-            Debug.Log("🎉 Confeti activado.");
-            var emC = coinsFX.emission;
-            emC.enabled = true;
+        if (coinsFX != null)
             coinsFX.Play(true);
-            Debug.Log("💰 Monedas activadas.");
 
-            if (audioGanar != null)
-            {
-                audioGanar.Play();
-                Debug.Log("🔊 Sonido de ganar reproducido.");
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ No se asignó el AudioSource 'audioGanar' en el inspector.");
-            }
+        // 🔉 Audio de ganar
+        if (audioGanar != null)
+            audioGanar.Play();
 
-        }
-
-        // 💰 Monedas (solo para triple 7)'''
-        //if (isTriple7 && coinsFX != null)
-        //{
-        //    var em = coinsFX.emission;
-        //    em.enabled = true;
-         //   coinsFX.Play(true);
-         //   Debug.Log("💰 Monedas activadas.");
-       // }
-
+        // 💨 Detener efectos después de stopEffectsAfter
         if (stopEffectsAfter > 0)
             activeCoroutine = StartCoroutine(FadeOutEffects());
     }
 
-    protected virtual void OnLose()
+
+    protected void OnLose()
     {
         if (soundManager != null)
             soundManager.OnLose();
@@ -175,7 +154,7 @@ public class SlotPrizeManager : MonoBehaviour
             Debug.Log("⏹ Deteniendo monedas.");
         }
 
-        // Esperar un poco a que las partículas se disipen
+        // Esperar a que las partículas se disipen
         yield return new WaitForSeconds(2f);
 
         if (confettiFX != null) confettiFX.Clear();

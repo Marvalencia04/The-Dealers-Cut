@@ -4,20 +4,16 @@ using UnityEngine;
 public class Giro : MonoBehaviour
 {
     [Header("Reels")]
-    public ReelSpinner r1; // Cylinder.001
-    public ReelSpinner r2; // Cylinder.002
-    public ReelSpinner r3; // Cylinder.003
+    public ReelSpinner r1;
+    public ReelSpinner r2;
+    public ReelSpinner r3;
 
     [Header("Referencias externas")]
-    public SlotCurrencyManager currencyManager;  // 💰 Sustituye a CurrencyController
-    public SlotPrizeManager prizeManager;        // 🎁 Evaluador de premios
-
+    public SlotPrizeManager prizeManager; // 🎁 Ahora solo necesita SlotPrizeManager
 
     [Header("Timing")]
     public float delayBetweenReels = 0.15f;
 
-    // ORDEN del reel (16 casillas)
-    // Mapeo: 0=7, 1=Campana, 2=Cereza, 3=BAR
     public int[] reelOrder = new int[]
     {
         1,2,3, 1,0,2,3, 1,2,3, 1,2,3, 1,2,3
@@ -29,60 +25,32 @@ public class Giro : MonoBehaviour
     public int shiftR3 = 0;
 
     [Header("Probabilidades de símbolos")]
-    [Tooltip("Pesos de aparición para cada símbolo (la suma puede ser cualquier número)")]
     public int[] symbolWeights = new int[4] { 1, 3, 3, 1 };
-    // Ejemplo: [7, Campana, Cereza, BAR] => 7 raro, campana y cereza comunes, BAR raro.
-
-    // ============================================================
-    // 🎮 Control principal
-    // ============================================================
 
     private void Update()
     {
-        // Inicia una jugada con SPACE o clic de prueba
+        // Giro normal
         if (Input.GetKeyDown(KeyCode.Space))
             IntentarGiro();
 
-        // Depuración: forzar triples con teclas
-        if (Input.GetKeyDown(KeyCode.Alpha1)) ForceResult(0); // Triple 7
-        if (Input.GetKeyDown(KeyCode.Alpha2)) ForceResult(1); // Triple Campana
-        if (Input.GetKeyDown(KeyCode.Alpha3)) ForceResult(2); // Triple Cereza
-        if (Input.GetKeyDown(KeyCode.Alpha4)) ForceResult(3); // Triple BAR
+        // Forzar triples
+        if (Input.GetKeyDown(KeyCode.Alpha1)) ForceTriple(0); // Triple 7
+        if (Input.GetKeyDown(KeyCode.Alpha2)) ForceTriple(1); // Triple Campana
+        if (Input.GetKeyDown(KeyCode.Alpha3)) ForceTriple(2); // Triple Cereza
+        if (Input.GetKeyDown(KeyCode.Alpha4)) ForceTriple(3); // Triple BAR
+
+        // Forzar combinación personalizada (ejemplo Ctrl+5)
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Alpha5))
+            ForceResult(0, 1, 2); // 7, Campana, Cereza
     }
 
-    // ============================================================
-    // 💰 Control de monedas y ejecución del giro
-    // ============================================================
-
+    // ==========================================================
+    // Giro normal
+    // ==========================================================
     public void IntentarGiro()
     {
-        if (currencyManager == null)
-        {
-            Debug.LogWarning("⚠️ No hay SlotCurrencyManager asignado.");
-            return;
-        }
-
-        // Resta monedas antes de girar
-        if (!currencyManager.RestarCostoJugada())
-        {
-            Debug.Log("❌ No hay suficientes monedas para jugar.");
-            return;
-        }
-
-        // Si hay monedas → genera resultado y gira
         int[] generated = GenerateWeightedArray();
         PlayRequested(generated);
-    }
-
-    // ============================================================
-    // 🎯 Métodos de resultado
-    // ============================================================
-
-    void ForceResult(int symbol)
-    {
-        int[] forced = new int[3] { symbol, symbol, symbol };
-        Debug.Log($"🎯 Forzando resultado: [{symbol},{symbol},{symbol}]");
-        PlayRequested(forced);
     }
 
     public int[] GenerateWeightedArray()
@@ -110,10 +78,33 @@ public class Giro : MonoBehaviour
         return 0;
     }
 
-    // ============================================================
-    // 🎞️ Control de animaciones y sincronización
-    // ============================================================
+    // ==========================================================
+    // Forzar resultados
+    // ==========================================================
 
+    /// <summary>
+    /// Fuerza un triple de un mismo símbolo (0..3)
+    /// </summary>
+    public void ForceTriple(int symbol)
+    {
+        int[] forced = new int[3] { symbol, symbol, symbol };
+        Debug.Log($"🎯 Forzando triple: [{symbol},{symbol},{symbol}]");
+        PlayRequested(forced);
+    }
+
+    /// <summary>
+    /// Fuerza un resultado específico de 3 símbolos
+    /// </summary>
+    public void ForceResult(int symbol1, int symbol2, int symbol3)
+    {
+        int[] forced = new int[3] { symbol1, symbol2, symbol3 };
+        Debug.Log($"🎯 Forzando resultado: [{symbol1},{symbol2},{symbol3}]");
+        PlayRequested(forced);
+    }
+
+    // ==========================================================
+    // Animación de rodillos
+    // ==========================================================
     public void PlayRequested(int[] requestSymbols)
     {
         if (requestSymbols == null || requestSymbols.Length != 3)
@@ -127,25 +118,21 @@ public class Giro : MonoBehaviour
 
     IEnumerator SpinAllSequential(int[] req)
     {
-        // Reel 1
         int idx1 = FindNextIndexForSymbol(r1, req[0], shiftR1);
         r1.SpinToIndex(idx1);
         yield return new WaitForSeconds(delayBetweenReels);
 
-        // Reel 2
         int idx2 = FindNextIndexForSymbol(r2, req[1], shiftR2);
         r2.SpinToIndex(idx2);
         yield return new WaitForSeconds(delayBetweenReels);
 
-        // Reel 3
         int idx3 = FindNextIndexForSymbol(r3, req[2], shiftR3);
         r3.SpinToIndex(idx3);
 
-        // Esperar hasta que los 3 terminen
         float timeout = Mathf.Max(r1.spinDuration, r2.spinDuration, r3.spinDuration) + 2f;
         float elapsed = 0f;
 
-      /* while ((r1.IsSpinning || r2.IsSpinning || r3.IsSpinning) && elapsed < timeout)
+        /*while ((r1.IsSpinning || r2.IsSpinning || r3.IsSpinning) && elapsed < timeout)
         {
             elapsed += Time.deltaTime;
             yield return null;
@@ -154,7 +141,6 @@ public class Giro : MonoBehaviour
         if (elapsed >= timeout)
             Debug.LogWarning("Timeout esperando rodillos.");
 
-        // Evaluar resultado
         if (prizeManager != null)
         {
             Debug.Log("Evaluando resultado final: [" + string.Join(", ", req) + "]");
@@ -162,10 +148,13 @@ public class Giro : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No hay PrizeManager asignado, no se evalúa el resultado.");
+            Debug.LogWarning("No hay PrizeManager asignado.");
         }
     }
 
+    // ==========================================================
+    // Cálculo del siguiente índice para el rodillo
+    // ==========================================================
     int FindNextIndexForSymbol(ReelSpinner reel, int symbol, int shift)
     {
         int items = Mathf.Max(1, reel.items);

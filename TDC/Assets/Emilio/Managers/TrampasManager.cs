@@ -379,4 +379,14 @@ public class TrampasManager : MonoBehaviour
 
         Debug.Log("[TrampasManager] " + msg);
     }
+    public void LogUsosActuales()
+    {
+        Debug.Log($"[DEBUG] Usos actuales de trampas:");
+        Debug.Log($"MazoVisible: {usosMazoVisible}");
+        Debug.Log($"CartaAElegir: {usosCartaAElegir}");
+        Debug.Log($"LlamadaSeguridad: {usosLlamadaSeguridad}");
+        Debug.Log($"NormaDealer: {usosNormaDealer}");
+        Debug.Log($"MiraAlli: {usosMiraAlli}");
+    }
+
 }
