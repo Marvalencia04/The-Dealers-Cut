@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using TMPro;
 
 /// <summary>
 /// Tipos de trampas disponibles.
@@ -55,7 +56,7 @@ public class TrampasManager : MonoBehaviour
     // ==== REFERENCIAS ====
 
     [Header("Referencias")]
-    //[SerializeField] private BlackjackTable blackjackTable;   // Implementas tú este script
+    [SerializeField] private BlackjackTable blackjackTable;   // Implementas tú este script
     [SerializeField] private UIManager uiManager;             // Opcional, por si quieres mensajes extra
 
     // ==== UI DE TRAMPAS ====
@@ -68,11 +69,11 @@ public class TrampasManager : MonoBehaviour
     [SerializeField] private Button btnMiraAlli;
 
     [Header("UI - Textos de usos restantes")]
-    [SerializeField] private Text txtMazoVisibleUsos;
-    [SerializeField] private Text txtCartaAElegirUsos;
-    [SerializeField] private Text txtLlamadaSeguridadUsos;
-    [SerializeField] private Text txtNormaDealerUsos;
-    [SerializeField] private Text txtMiraAlliUsos;
+    [SerializeField] private TextMeshProUGUI txtMazoVisibleUsos;
+    [SerializeField] private TextMeshProUGUI txtCartaAElegirUsos;
+    [SerializeField] private TextMeshProUGUI txtLlamadaSeguridadUsos;
+    [SerializeField] private TextMeshProUGUI txtNormaDealerUsos;
+    [SerializeField] private TextMeshProUGUI txtMiraAlliUsos;
 
     // Mensajes generales (opcional)
     [Header("UI - Mensajes")]
@@ -260,11 +261,11 @@ public class TrampasManager : MonoBehaviour
     {
         if (!TryUseTrap(TrapType.MazoVisible)) return;
 
-       /* if (blackjackTable != null)
+        if (blackjackTable != null)
         {
             // Dentro de BlackjackTable tú implementas la lógica real
             blackjackTable.ShowNextThreeCards();
-        }*/
+        }
 
         ShowTrapMessage("Has usado Mazo visible: ves las siguientes 3 cartas.");
     }
@@ -273,11 +274,11 @@ public class TrampasManager : MonoBehaviour
     {
         if (!TryUseTrap(TrapType.CartaAElegir)) return;
 
-       /* if (blackjackTable != null)
+        if (blackjackTable != null)
         {
             // Mostrar UI de 3 cartas y dejar que el jugador elija una
             blackjackTable.StartCartaAElegirMode();
-        }*/
+        }
 
         ShowTrapMessage("Has usado Carta a elegir: elige una de 3 cartas.");
     }
@@ -286,11 +287,11 @@ public class TrampasManager : MonoBehaviour
     {
         if (!TryUseTrap(TrapType.LlamadaSeguridad)) return;
 
-       /* if (blackjackTable != null)
+        if (blackjackTable != null)
         {
             // Activa modo de seleccionar jugador para echarlo de la mesa
             blackjackTable.StartLlamadaSeguridadMode();
-        }*/
+        }
 
         ShowTrapMessage("Has llamado a seguridad: elige un jugador para expulsar.");
     }
@@ -299,11 +300,11 @@ public class TrampasManager : MonoBehaviour
     {
         if (!TryUseTrap(TrapType.NormaDealer)) return;
 
-       /* if (blackjackTable != null)
+        if (blackjackTable != null)
         {
             // El dealer puede ignorar las reglas de robar/pararse esta ronda
             blackjackTable.EnableIgnoreDealerRulesForThisRound();
-        }*/
+        }
 
         ShowTrapMessage("Has alterado la norma del dealer para esta ronda.");
     }
@@ -312,12 +313,12 @@ public class TrampasManager : MonoBehaviour
     {
         if (!TryUseTrap(TrapType.MiraAlli)) return;
 
-      /*  if (blackjackTable != null)
+        if (blackjackTable != null)
         {
             // Activa modo “Mira allí”: los jugadores se distraen durante X segundos
             // Dentro de BlackjackTable, controla el tiempo y penalización si hay cartas mal.
             blackjackTable.StartMiraAlliMode();
-        }*/
+        }
 
         ShowTrapMessage("Has usado Mira allí: tienes unos segundos para manipular.");
     }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartMenu : MonoBehaviour
+public class StartMenuEmilio : MonoBehaviour
 {
    
     public GameObject configPanel;
