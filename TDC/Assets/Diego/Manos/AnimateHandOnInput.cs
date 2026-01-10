@@ -11,11 +11,6 @@ public class AnimateHandOnInput : MonoBehaviour
     public string triggerName = "Trigger";
     public string gripName = "Grip";
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
