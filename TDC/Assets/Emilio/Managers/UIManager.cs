@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System;
 
 /// <summary>
@@ -34,13 +35,13 @@ public class UIManager : MonoBehaviour
     // ==== TEXTOS HUD / INFO ====
 
     [Header("Texts (HUD / Info)")]
-    [SerializeField] private Text dayText;
-    [SerializeField] private Text quotaText;
-    [SerializeField] private Text moneyText;
-    [SerializeField] private Text roundText;
-    [SerializeField] private Text phaseText;
-    [SerializeField] private Text stateText;
-    [SerializeField] private Text messageText;
+    [SerializeField] private TextMeshProUGUI dayText;
+    [SerializeField] private TextMeshProUGUI quotaText;
+    [SerializeField] private TextMeshProUGUI moneyText;
+    [SerializeField] private TextMeshProUGUI roundText;
+    [SerializeField] private TextMeshProUGUI phaseText;
+    [SerializeField] private TextMeshProUGUI stateText;
+    [SerializeField] private TextMeshProUGUI messageText;
 
     // ==== REFERENCIAS A MANAGERS (opcionales, se pueden pillar con Instance) ====
 
