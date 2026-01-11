@@ -16174,6 +16174,7 @@ MonoBehaviour:
   txtNormaDealerUsos: {fileID: 753876068}
   txtMiraAlliUsos: {fileID: 1433876564}
   txtMensajeTrampas: {fileID: 0}
+  normaDealerTrap: {fileID: 2012445048}
 --- !u!4 &1337061970
 Transform:
   m_ObjectHideFlags: 0
@@ -18654,6 +18655,8 @@ MonoBehaviour:
   currentRound: 1
   currentPhase: 0
   autoAdvanceAfterBets: 1
+  autoSkipRevealDealerSecondCard: 1
+  autoSkipRevealDelay: 0.05
 --- !u!4 &1577566420
 Transform:
   m_ObjectHideFlags: 0
@@ -19941,7 +19944,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1656753475}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1337061969}
+        m_TargetAssemblyTypeName: TrampasManager, Assembly-CSharp
+        m_MethodName: OnClick_NormaDealer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1656753475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23494,6 +23509,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2002533869}
   m_CullTransparentMesh: 1
+--- !u!1 &2012445047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2012445049}
+  - component: {fileID: 2012445048}
+  m_Layer: 0
+  m_Name: NormaDealerTrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2012445048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012445047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdcc61b94729ac44fabb87b1e322b09e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blackjackTable: {fileID: 27430041}
+--- !u!4 &2012445049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012445047}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2016299987
 GameObject:
   m_ObjectHideFlags: 0
@@ -25484,3 +25544,4 @@ SceneRoots:
   - {fileID: 82339968}
   - {fileID: 1241450134}
   - {fileID: 39998324}
+  - {fileID: 2012445049}
