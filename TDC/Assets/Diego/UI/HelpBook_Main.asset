@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 443b670c1c044fb42803c85fca3b6b99, type: 3}
+  m_Name: HelpBook_Main
+  m_EditorClassIdentifier: 
+  pages:
+  - {fileID: 11400000, guid: d02f6e73b622dfc488ee929ef493fb5a, type: 2}
+  - {fileID: 11400000, guid: b28a6e26b9315ff428bb626bc2c64d46, type: 2}
