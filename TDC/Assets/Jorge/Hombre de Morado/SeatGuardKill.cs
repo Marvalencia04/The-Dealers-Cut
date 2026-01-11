@@ -46,16 +46,16 @@ public class SeatGuardKill : MonoBehaviour
         // Aparece el guardia
         guard.SetActive(true);
 
-        // Espera en tiempo real (funciona correctamente en Play Mode)
+        // ✨ SONIDO AL INICIO (en cuanto aparece el guardia)
+        if (audioSource && sfx) audioSource.PlayOneShot(sfx);
+
+        // Espera en tiempo real
         float elapsed = 0f;
         while (elapsed < visibleTime)
         {
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
-
-        // Sonido
-        if (audioSource && sfx) audioSource.PlayOneShot(sfx);
 
         // Desaparece el NPC activo y el guardia
         activeNpc.SetActive(false);
