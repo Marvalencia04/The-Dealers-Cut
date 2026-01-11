@@ -89,11 +89,14 @@ public class BlackjackNPCManager : MonoBehaviour
     /// </summary>
     public void GenerateBetsForCurrentRound()
     {
+        Debug.Log(">>> GenerateBetsForCurrentRound CALLED <<<");
         int day = gameManager != null ? gameManager.CurrentDay : 1;
         int minBet = moneyManager != null ? moneyManager.GetMinBetForDay(day) : 100;
+        Debug.Log($"NPC COUNT = {npcs.Count}");
 
         foreach (var npc in npcs)
         {
+            Debug.Log($"NPC {npc.Id} removedBySecurity={npc.IsRemovedBySecurity}");
             if (npc.IsRemovedBySecurity) { npc.PlaceBet(0); continue; }
 
             int maxBet = Mathf.Max(minBet, minBet * Mathf.Max(1, maxBetMultiplier));
@@ -235,4 +238,15 @@ public class BlackjackNPCManager : MonoBehaviour
             }
         }
     }
+
+    public BlackjackNPC GetNPCById(int id)
+    {
+        foreach (var npc in npcs)
+        {
+            if (npc != null && npc.Id == id)
+                return npc;
+        }
+        return null;
+    }
+
 }

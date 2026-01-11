@@ -47,11 +47,17 @@ public class BlackjackInteractionGateXR : MonoBehaviour
                 break;
 
             case BlackjackPhase.TurnoJugadores:
-                // Los NPCs “juegan” (si es automático interno), pero el dealer puede intervenir con trampas.
-                // Normalmente bloqueas el deck (para evitar repartir extra), y dejas trampas.
-                SetDeck(false);
-                SetAllZonesCanGrab(false); // para que no se toque manos ya repartidas
+                SetDeck(true);
+
+                // Dejar que BlackjackTable controle por zona
+                SetAllZonesReadOnly(false);
+
+                // No mover cartas existentes
+                SetAllZonesCanGrab(false);
+
+                // No forzamos canReceive global
                 break;
+
 
             case BlackjackPhase.RevelarSegundaCarta:
                 // Mostrar botón/acción de revelar
@@ -59,12 +65,17 @@ public class BlackjackInteractionGateXR : MonoBehaviour
                 break;
 
             case BlackjackPhase.TurnoDealer:
-                // Dealer juega manual: habilitar deck, permitir coger cartas
                 SetDeck(true);
+
+                // No tocar manos de NPCs en turno del dealer
+                SetAllZonesCanGrab(false);
+                SetAllZonesCanReceive(false);
                 SetAllZonesReadOnly(false);
-                SetAllZonesCanReceive(true);
-                SetAllZonesCanGrab(true);
+
+                // Solo el dealer zone queda controlado por BlackjackTable.ApplyDealerTurnRules()
+                // asi que no lo forces aqui.
                 break;
+
 
             case BlackjackPhase.Resultados:
                 // Bloquear cartas y mostrar botón para resolver

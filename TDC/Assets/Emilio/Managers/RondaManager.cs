@@ -43,6 +43,14 @@ public class RondaManager : MonoBehaviour
 
     // Estado de fase
     [SerializeField] private BlackjackPhase currentPhase = BlackjackPhase.None;
+
+    [SerializeField] private bool autoAdvanceAfterBets = true;
+
+    [Header("Auto skip phases (temporary)")]
+    [SerializeField] private bool autoSkipRevealDealerSecondCard = true;
+
+    [SerializeField] private float autoSkipRevealDelay = 0.05f; // pequeno delay para que UI se refresque
+
     public BlackjackPhase CurrentPhase => currentPhase;
 
     public int CurrentRound => currentRound;
@@ -51,6 +59,7 @@ public class RondaManager : MonoBehaviour
     public event Action<BlackjackPhase> OnPhaseChanged;
     public event Action<int> OnRoundStarted;
     public event Action<int> OnRoundEnded;
+    private Coroutine dealCheckCoroutine;
 
     private void Awake()
     {
@@ -124,37 +133,100 @@ public class RondaManager : MonoBehaviour
     {
         currentPhase = newPhase;
 
-        Debug.Log($"[RondaManager] Fase -> {currentPhase}");
-
-        // UI
         uiManager?.UpdateBlackjackPhase(currentPhase);
-
-        // Trampas: habilitar/deshabilitar según fase
         trampasManager?.OnBlackjackPhaseChanged(currentPhase);
-
-        // Gate VR: habilitar/bloquear interacciones
         interactionGate?.ApplyPhase(currentPhase);
 
-        // Evento externo
         OnPhaseChanged?.Invoke(currentPhase);
 
-        // Entradas de fase (solo cálculos internos; NUNCA acciones físicas del dealer)
         switch (currentPhase)
         {
             case BlackjackPhase.Apuestas:
-                // Aquí sí hacemos cálculo: apuestas NPCs, etc.
                 tableFlow?.ComputeBetsForThisRound();
+
+                if (autoAdvanceAfterBets)
+                    StartCoroutine(AutoAdvanceFromBets());
+                break;
+
+            case BlackjackPhase.Reparto:
+                // no mates todas las coroutines del juego
+                if (dealCheckCoroutine != null)
+                    StopCoroutine(dealCheckCoroutine);
+
+                dealCheckCoroutine = StartCoroutine(WaitForInitialDealComplete());
                 break;
 
             case BlackjackPhase.TurnoJugadores:
-                // Si tus NPCs deciden automáticamente, arráncalo aquí.
-                // Si NO quieres automático, comenta esta línea.
-                tableFlow?.StartNPCDecisionTurn();
+                tableFlow?.StartNPCDecisionTurn(); // si lo usas
                 break;
 
-                // Reparto / TurnoDealer: el jugador reparte y juega manualmente.
+            case BlackjackPhase.RevelarSegundaCarta:
+                if (autoSkipRevealDealerSecondCard)
+                    StartCoroutine(AutoAdvanceFromRevealSecondCard());
+                break;
+
+            case BlackjackPhase.TurnoDealer:
+                (tableFlow as BlackjackTable)?.StartDealerTurnXR();
+                break;
+
+            case BlackjackPhase.Resultados:
+                tableFlow?.ResolveRoundPayouts(); // dentro llamas a ResolveResultsFromZonesAndPayout()
+                break;
+
+
+
+
         }
     }
+
+
+    private System.Collections.IEnumerator AutoAdvanceFromBets()
+    {
+        // Espera 1 frame para que se reflejen los textos
+        yield return null;
+
+        // Solo avanza si seguimos en Apuestas
+        if (currentPhase == BlackjackPhase.Apuestas)
+            GoToPhase(BlackjackPhase.Reparto);
+    }
+
+    private System.Collections.IEnumerator WaitForInitialDealComplete()
+    {
+        // Espera a que el jugador rellene las 4 manos con 2 cartas cada una
+        while (currentPhase == BlackjackPhase.Reparto)
+        {
+            // Necesitamos acceder al BlackjackTable real:
+            var table = blackjackTableComponent as BlackjackTable; // o BlackjackTableXR si es el tuyo
+            if (table != null && table.AreInitialHandsComplete(2))
+            {
+                GoToPhase(BlackjackPhase.TurnoJugadores);
+                yield break;
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    private System.Collections.IEnumerator AutoAdvanceFromRevealSecondCard()
+    {
+        // Pequeno delay para que se actualice la UI y quede claro que hubo fase
+        if (autoSkipRevealDelay > 0f)
+            yield return new WaitForSeconds(autoSkipRevealDelay);
+
+        // Aqui dejaremos el hook para el futuro:
+        // Cuando implementes la fase, pondras autoSkipRevealDealerSecondCard = false
+        // y llamaras a tableFlow?.RevealDealerSecondCardInternal() desde un boton.
+        GoToPhase(BlackjackPhase.TurnoDealer);
+    }
+
+    public void OnDealerTurnCompleted()
+    {
+        if (currentPhase != BlackjackPhase.TurnoDealer) return;
+        GoToPhase(BlackjackPhase.Resultados);
+    }
+
+
+
 
     // ----------------------------------------------------------------------
     // Métodos que llamará EL JUGADOR (botones/acciones)
@@ -233,8 +305,8 @@ public class RondaManager : MonoBehaviour
 
     public void OnPlayersTurnCompleted()
     {
-        // Si quieres que los NPCs "avancen" automáticamente, podrías hacer:
-        // if (currentPhase == BlackjackPhase.TurnoJugadores) GoToPhase(BlackjackPhase.RevelarSegundaCarta);
+        if (currentPhase != BlackjackPhase.TurnoJugadores) return;
+        GoToPhase(BlackjackPhase.RevelarSegundaCarta);
 
         Debug.Log("[RondaManager] OnPlayersTurnCompleted recibido (no cambia fase automáticamente).");
     }
