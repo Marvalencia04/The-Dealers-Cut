@@ -148,6 +148,10 @@ public class RondaManager : MonoBehaviour
         switch (currentPhase)
         {
             case BlackjackPhase.Apuestas:
+
+                // 1) UI de ronda SIEMPRE que entramos en apuestas (garantiza refresco)
+                if (uiManager != null)
+                    uiManager.ShowRoundIntro(currentRound, totalRoundsPerDay); // usa TU variable real
                 tableFlow?.ComputeBetsForThisRound();
 
                 if (autoAdvanceAfterBets)
