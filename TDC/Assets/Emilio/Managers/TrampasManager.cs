@@ -109,6 +109,10 @@ public class TrampasManager : MonoBehaviour
     [Tooltip("Si esta activo, este script vincula automaticamente los onClick de los botones de ambas manos.")]
     [SerializeField] private bool autoBindButtonsOnAwake = true;
 
+    [Header("Trap Scripts (solo funcionalidad)")]
+    [SerializeField] private LlamadaSeguridadTrap llamadaSeguridadTrap;
+
+
     // Evento opcional para cuando cambian usos (otras UI pueden escuchar)
     public event Action OnTrapsChanged;
 
@@ -331,13 +335,29 @@ public class TrampasManager : MonoBehaviour
 
     public void OnClick_LlamadaSeguridad()
     {
-        if (!TryUseTrap(TrapType.LlamadaSeguridad)) return;
+        // Validar fase/usos, pero NO consumimos aun
+        if (!IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad))
+        {
+            ShowTrapMessage("No puedes usar esta trampa en esta fase.");
+            return;
+        }
 
-        if (blackjackTable != null)
-            blackjackTable.StartLlamadaSeguridadMode();
+        if (usosLlamadaSeguridad <= 0)
+        {
+            ShowTrapMessage("No te quedan usos de Llamada de seguridad.");
+            return;
+        }
 
-        ShowTrapMessage("Has llamado a seguridad: elige un jugador para expulsar.");
+        if (llamadaSeguridadTrap == null)
+        {
+            ShowTrapMessage("LlamadaSeguridadTrap no asignada.");
+            return;
+        }
+
+        llamadaSeguridadTrap.BeginSelection();
+        ShowTrapMessage("Modo seguridad: selecciona un NPC.");
     }
+
 
     public void OnClick_NormaDealer()
     {
@@ -384,6 +404,25 @@ public class TrampasManager : MonoBehaviour
 
         ShowTrapMessage("Has usado Mira alli: tienes unos segundos para manipular.");
     }
+
+
+    public void TrySelectSecurityTarget(SecurityTarget target)
+    {
+        if (llamadaSeguridadTrap == null) return;
+        if (!llamadaSeguridadTrap.IsSelecting) return;
+
+        bool applied = llamadaSeguridadTrap.TryApply(target);
+        if (!applied) return;
+
+        // Si se aplico, consumimos uso
+        usosLlamadaSeguridad--;
+
+        OnTrapsChanged?.Invoke();
+        UpdateTrapsUI();
+
+        ShowTrapMessage("Seguridad se lo llevo. Apuesta robada.");
+    }
+
 
     // ----------------------------------------------------------------------
     // RECOMPENSAS DESDE TRAGAPERRAS

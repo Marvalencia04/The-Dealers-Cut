@@ -336,6 +336,19 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     }
 
 
+    public void OnSecurityCallApplied(int npcId)
+    {
+        // Poner apuesta a 0 para que no vuelva a contar en payouts
+        if (currentBets.ContainsKey(npcId))
+            currentBets[npcId] = 0;
+
+        // Actualizar texto de apuesta (si lo usas)
+        NPCBetText bt = GetBetTextForNpc(npcId);
+        if (bt != null)
+            bt.SetBet(0);
+    }
+
+
 
 
     private bool IsZoneBust(CardSnapZone zone) => GetZoneScoreFromSnapZone(zone) > 21;
