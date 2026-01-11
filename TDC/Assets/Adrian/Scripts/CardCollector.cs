@@ -125,4 +125,11 @@ public class CardCollector : MonoBehaviour
         if (!value)
             StopCollecting();
     }
+
+    // Codigo de Emilio, necesario para conexion con los managers
+    public void SetCanCollect(bool canCollect)
+    {
+        canCollectCards = canCollect;
+    }
+
 }

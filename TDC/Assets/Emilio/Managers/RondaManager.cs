@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
-using System.Collections;
 
 /// <summary>
 /// Fases internas de una ronda de Blackjack.
+/// Player-driven: SOLO cambia de fase cuando el jugador lo ordena.
 /// </summary>
 public enum BlackjackPhase
 {
@@ -16,64 +16,53 @@ public enum BlackjackPhase
     Resultados
 }
 
-/// <summary>
-/// RondaManager: controla el número de rondas por día
-/// y el flujo de fases de cada ronda de Blackjack.
-/// </summary>
 public class RondaManager : MonoBehaviour
 {
     public static RondaManager Instance { get; private set; }
 
-    // ==== CONFIGURACIÓN GENERAL ====
-
     [Header("Rondas por día")]
-    [Tooltip("Número de rondas de Blackjack a jugar cada día (se puede sobrescribir desde GameManager).")]
     [SerializeField] private int defaultRoundsPerDay = 5;
 
-    // ==== ESTADO ACTUAL ====
+    [Header("Referencias")]
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private TrampasManager trampasManager;
 
+    [Tooltip("Gate que habilita/bloquea interacciones VR según fase (DeckXR, recoger, zonas...).")]
+    [SerializeField] private BlackjackInteractionGateXR interactionGate;
+
+    [Tooltip("Mesa XR o controlador de blackjack que hace cálculos internos (apuestas, resultados, revelar carta...).")]
+    [SerializeField] private MonoBehaviour blackjackTableComponent;
+
+    // Si tu mesa implementa estas funciones (las que venimos usando)
+    private IBlackjackTableFlow tableFlow;
+
+    // Estado de día
     [SerializeField] private int totalRoundsPerDay;
     [SerializeField] private int currentRound;
 
+    // Estado de fase
     [SerializeField] private BlackjackPhase currentPhase = BlackjackPhase.None;
-    public int CurrentRound => currentRound;
-    public int TotalRoundsPerDay => totalRoundsPerDay;
+
+    [SerializeField] private bool autoAdvanceAfterBets = true;
+
+    [Header("Auto skip phases (temporary)")]
+    [SerializeField] private bool autoSkipRevealDealerSecondCard = true;
+
+    [SerializeField] private float autoSkipRevealDelay = 0.05f; // pequeno delay para que UI se refresque
+
     public BlackjackPhase CurrentPhase => currentPhase;
 
-    // ==== REFERENCIAS A OTROS SISTEMAS ====
+    public int CurrentRound => currentRound;
+    public int TotalRoundsPerDay => totalRoundsPerDay;
 
-    [Header("Referencias (asignar en el Inspector)")]
-    [SerializeField] private GameManager gameManager;
-    [SerializeField] private MoneyManager moneyManager;
-    //[SerializeField] private BlackjackTable blackjackTable;  // ESTE LO IMPLEMENTAS TÚ
-    [SerializeField] private TrampasManager trampasManager;  // Opcional
-    [SerializeField] private UIManager uiManager;            // Opcional HUD / textos
-
-    // ==== EVENTOS ====
-
-    /// <summary>
-    /// Evento llamado cuando cambia la fase de la ronda.
-    /// Útil para UI, trampas, etc.
-    /// </summary>
     public event Action<BlackjackPhase> OnPhaseChanged;
-
-    /// <summary>
-    /// Evento llamado cuando empieza una nueva ronda.
-    /// </summary>
     public event Action<int> OnRoundStarted;
-
-    /// <summary>
-    /// Evento llamado cuando termina una ronda.
-    /// </summary>
     public event Action<int> OnRoundEnded;
-
-    // ----------------------------------------------------------------------
-    //                          CICLO DE VIDA
-    // ----------------------------------------------------------------------
+    private Coroutine dealCheckCoroutine;
 
     private void Awake()
     {
-        // Singleton clásico
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -81,315 +70,265 @@ public class RondaManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
-        if (totalRoundsPerDay <= 0)
+        if (gameManager == null) gameManager = GameManager.Instance;
+
+        // Casteo a "flow" (opcional, pero recomendado)
+        tableFlow = blackjackTableComponent as IBlackjackTableFlow;
+        if (blackjackTableComponent != null && tableFlow == null)
         {
-            totalRoundsPerDay = defaultRoundsPerDay;
+            Debug.LogWarning("[RondaManager] blackjackTableComponent no implementa IBlackjackTableFlow. " +
+                             "Podrás cambiar fases, pero no ejecutar cálculos de apuestas/resultados.");
         }
     }
 
     // ----------------------------------------------------------------------
-    //                          CONFIGURACIÓN POR DÍA
+    // Configuración por día (llamado por GameManager)
     // ----------------------------------------------------------------------
 
-    /// <summary>
-    /// Llamado por GameManager al empezar un día nuevo.
-    /// </summary>
     public void SetupForNewDay(int rounds)
     {
         totalRoundsPerDay = rounds > 0 ? rounds : defaultRoundsPerDay;
         currentRound = 0;
         currentPhase = BlackjackPhase.None;
 
-        Debug.Log($"[RondaManager] Setup nuevo día. Rondas totales: {totalRoundsPerDay}");
+        Debug.Log($"[RondaManager] Nuevo día configurado. Rondas: {totalRoundsPerDay}");
     }
 
-    /// <summary>
-    /// Llamado por GameManager para arrancar la primera ronda del día.
-    /// </summary>
     public void StartFirstRound()
     {
         StartNextRound();
     }
 
-    // ----------------------------------------------------------------------
-    //                          CONTROL DE RONDAS
-    // ----------------------------------------------------------------------
-
-    /// <summary>
-    /// Comienza la siguiente ronda o avisa al GameManager de que se han terminado todas.
-    /// </summary>
     public void StartNextRound()
     {
         currentRound++;
 
         if (currentRound > totalRoundsPerDay)
         {
-            Debug.Log("[RondaManager] Todas las rondas del día han terminado.");
-            // Avisamos al GameManager para que evalúe la cuota y decida qué hacer.
-            if (gameManager != null)
-            {
-                gameManager.OnAllRoundsFinished();
-            }
-            else
-            {
-                Debug.LogError("[RondaManager] GameManager no asignado.");
-            }
+            Debug.Log("[RondaManager] Día terminado: todas las rondas completadas.");
+            gameManager?.OnAllRoundsFinished();
             return;
         }
 
-        Debug.Log($"[RondaManager] Comienza ronda {currentRound}/{totalRoundsPerDay}");
+        Debug.Log($"[RondaManager] Ronda {currentRound}/{totalRoundsPerDay} iniciada.");
 
-        /*// Reseteamos la mesa de Blackjack para una nueva ronda.
-        if (blackjackTable != null)
-        {
-            blackjackTable.ResetTableForNewRound();
-        }
-        else
-        {
-            Debug.LogWarning("[RondaManager] BlackjackTable no asignado. No se puede gestionar la lógica de cartas.");
-        }*/
+        // Reseteo interno de la mesa (cartas, estados, etc.)
+        tableFlow?.ResetForNewRound();
 
-        // Avisar a otros sistemas (UI, etc.)
+        // UI
+        uiManager?.ShowRoundIntro(currentRound, totalRoundsPerDay);
+
         OnRoundStarted?.Invoke(currentRound);
-        if (uiManager != null)
-        {
-            uiManager.ShowRoundIntro(currentRound, totalRoundsPerDay);
-        }
 
-        // Primera fase: apuestas
+        // Entramos en apuestas (cálculo interno + permisos)
         GoToPhase(BlackjackPhase.Apuestas);
     }
 
-    /// <summary>
-    /// Termina la ronda actual y pasa a la siguiente.
-    /// </summary>
-    private void EndCurrentRound()
-    {
-        Debug.Log($"[RondaManager] Ronda {currentRound} terminada.");
-
-        OnRoundEnded?.Invoke(currentRound);
-
-        // Pequeña transición / delay si quieres (o menú de siguiente ronda).
-        StartNextRound();
-    }
-
     // ----------------------------------------------------------------------
-    //                          CONTROL DE FASES
+    // Cambio de fase (solo aquí se cambia)
     // ----------------------------------------------------------------------
 
-    /// <summary>
-    /// Cambia la fase actual y ejecuta la lógica de entrada de la nueva fase.
-    /// </summary>
     public void GoToPhase(BlackjackPhase newPhase)
     {
         currentPhase = newPhase;
-        Debug.Log($"[RondaManager] Fase cambiada a: {currentPhase}");
 
-        // Avisar a listeners externos
+        uiManager?.UpdateBlackjackPhase(currentPhase);
+        trampasManager?.OnBlackjackPhaseChanged(currentPhase);
+        interactionGate?.ApplyPhase(currentPhase);
+
         OnPhaseChanged?.Invoke(currentPhase);
 
-        // Avisar al sistema de trampas para que sepa qué se puede usar ahora
-        if (trampasManager != null)
-        {
-            trampasManager.OnBlackjackPhaseChanged(currentPhase);
-        }
-
-        // Avisar a la UI (texto con el nombre de la fase, por ejemplo)
-        if (uiManager != null)
-        {
-            uiManager.UpdateBlackjackPhase(currentPhase);
-        }
-
-        // Lógica de entrada a fase
         switch (currentPhase)
         {
             case BlackjackPhase.Apuestas:
-                StartApuestasPhase();
+                tableFlow?.ComputeBetsForThisRound();
+
+                if (autoAdvanceAfterBets)
+                    StartCoroutine(AutoAdvanceFromBets());
                 break;
 
             case BlackjackPhase.Reparto:
-                StartRepartoPhase();
+                // no mates todas las coroutines del juego
+                if (dealCheckCoroutine != null)
+                    StopCoroutine(dealCheckCoroutine);
+
+                dealCheckCoroutine = StartCoroutine(WaitForInitialDealComplete());
                 break;
 
             case BlackjackPhase.TurnoJugadores:
-                StartTurnoJugadoresPhase();
+                tableFlow?.StartNPCDecisionTurn(); // si lo usas
                 break;
 
             case BlackjackPhase.RevelarSegundaCarta:
-                StartRevelarSegundaCartaPhase();
+                if (autoSkipRevealDealerSecondCard)
+                    StartCoroutine(AutoAdvanceFromRevealSecondCard());
                 break;
 
             case BlackjackPhase.TurnoDealer:
-                StartTurnoDealerPhase();
+                (tableFlow as BlackjackTable)?.StartDealerTurnXR();
                 break;
 
             case BlackjackPhase.Resultados:
-                StartResultadosPhase();
+                tableFlow?.ResolveRoundPayouts(); // dentro llamas a ResolveResultsFromZonesAndPayout()
                 break;
+
+
+
+
         }
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 1: APUeSTAS
-    // ----------------------------------------------------------------------
 
-    private void StartApuestasPhase()
+    private System.Collections.IEnumerator AutoAdvanceFromBets()
     {
-        // Aquí los jugadores IA deciden cuánto apuestan,
-        // y el jugador (croupier) ve las fichas en la mesa.
+        // Espera 1 frame para que se reflejen los textos
+        yield return null;
 
-       /* if (blackjackTable != null)
-        {
-            blackjackTable.GenerateBetsForPlayers();   // método sugerido
-        }*/
-
-        // En VR, probablemente esperes a que el jugador haga algo (por ejemplo,
-        // pulsar un botón "Repartir" o confirmar las apuestas).
-        // Dejo una función pública que puedas llamar desde un botón u otro script:
-        // ConfirmApuestasAndContinue();
-
-        // Si quieres que sea automático, puedes descomentar esto:
-        // ConfirmApuestasAndContinue();
+        // Solo avanza si seguimos en Apuestas
+        if (currentPhase == BlackjackPhase.Apuestas)
+            GoToPhase(BlackjackPhase.Reparto);
     }
 
-    /// <summary>
-    /// Llamar desde la UI / input cuando el jugador quiera seguir tras las apuestas.
-    /// </summary>
-    public void ConfirmApuestasAndContinue()
+    private System.Collections.IEnumerator WaitForInitialDealComplete()
+    {
+        // Espera a que el jugador rellene las 4 manos con 2 cartas cada una
+        while (currentPhase == BlackjackPhase.Reparto)
+        {
+            // Necesitamos acceder al BlackjackTable real:
+            var table = blackjackTableComponent as BlackjackTable; // o BlackjackTableXR si es el tuyo
+            if (table != null && table.AreInitialHandsComplete(2))
+            {
+                GoToPhase(BlackjackPhase.TurnoJugadores);
+                yield break;
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    private System.Collections.IEnumerator AutoAdvanceFromRevealSecondCard()
+    {
+        // Pequeno delay para que se actualice la UI y quede claro que hubo fase
+        if (autoSkipRevealDelay > 0f)
+            yield return new WaitForSeconds(autoSkipRevealDelay);
+
+        // Aqui dejaremos el hook para el futuro:
+        // Cuando implementes la fase, pondras autoSkipRevealDealerSecondCard = false
+        // y llamaras a tableFlow?.RevealDealerSecondCardInternal() desde un boton.
+        GoToPhase(BlackjackPhase.TurnoDealer);
+    }
+
+    public void OnDealerTurnCompleted()
+    {
+        if (currentPhase != BlackjackPhase.TurnoDealer) return;
+        GoToPhase(BlackjackPhase.Resultados);
+    }
+
+
+
+
+    // ----------------------------------------------------------------------
+    // Métodos que llamará EL JUGADOR (botones/acciones)
+    // ----------------------------------------------------------------------
+
+    /// <summary>Apuestas -> Reparto</summary>
+    public void PlayerConfirmBets()
     {
         if (currentPhase != BlackjackPhase.Apuestas) return;
-
-        // Aquí podrías validar que todas las apuestas son válidas, etc.
         GoToPhase(BlackjackPhase.Reparto);
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 2: REPARTO
-    // ----------------------------------------------------------------------
-
-    private void StartRepartoPhase()
+    /// <summary>Reparto -> TurnoJugadores</summary>
+    public void PlayerConfirmInitialDealDone()
     {
-       /* if (blackjackTable != null)
-        {
-            blackjackTable.DealInitialCards();
-        }*/
-
-        // Si quieres animaciones con tiempo, podrías usar una corrutina.
-        // Por ahora, pasamos directamente al turno de jugadores:
+        if (currentPhase != BlackjackPhase.Reparto) return;
         GoToPhase(BlackjackPhase.TurnoJugadores);
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 3: TURNO JUGADORES
-    // ----------------------------------------------------------------------
-
-    private void StartTurnoJugadoresPhase()
-    {
-        // Aquí empieza el HIT/STAND de cada jugador IA,
-        // y también del dealer si interviene como jugador en algún sentido.
-
-       /* if (blackjackTable != null)
-        {
-            blackjackTable.StartPlayersTurn();
-        }*/
-
-        // IMPORTANTE:
-        // No avanzamos de fase hasta que la mesa nos avise de que
-        // todos los jugadores han terminado. Para eso dejamos este método:
-        // OnPlayersTurnCompleted() que blackjackTable llamará.
-    }
-
-    /// <summary>
-    /// Llamar desde BlackjackTable cuando todos los jugadores han decidido HIT/STAND.
-    /// </summary>
-    public void OnPlayersTurnCompleted()
+    /// <summary>TurnoJugadores -> RevelarSegundaCarta</summary>
+    public void PlayerEndPlayersTurn()
     {
         if (currentPhase != BlackjackPhase.TurnoJugadores) return;
         GoToPhase(BlackjackPhase.RevelarSegundaCarta);
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 4: REVELAR 2ª CARTA DEALER
-    // ----------------------------------------------------------------------
-
-    private void StartRevelarSegundaCartaPhase()
+    /// <summary>RevelarSegundaCarta -> TurnoDealer (y se revela internamente la carta si corresponde)</summary>
+    public void PlayerRevealDealerSecondCard()
     {
-       /* if (blackjackTable != null)
-        {
-            blackjackTable.RevealDealerSecondCard();
-        }*/
+        if (currentPhase != BlackjackPhase.RevelarSegundaCarta) return;
 
-        // Se puede hacer una pequeña pausa visual si quieres (corrutina).
+        tableFlow?.RevealDealerSecondCardInternal();
+
         GoToPhase(BlackjackPhase.TurnoDealer);
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 5: TURNO DEALER
-    // ----------------------------------------------------------------------
-
-    private void StartTurnoDealerPhase()
+    /// <summary>TurnoDealer -> Resultados</summary>
+    public void PlayerEndDealerTurn()
     {
-       /* if (blackjackTable != null)
-        {
-            blackjackTable.PlayDealerTurn(); // El dealer roba hasta 17+
-        }*/
-
-        // Igual que antes, puedes hacer esto sincrónico o asíncrono.
+        if (currentPhase != BlackjackPhase.TurnoDealer) return;
         GoToPhase(BlackjackPhase.Resultados);
     }
 
-    // ----------------------------------------------------------------------
-    //                          FASE 6: RESULTADOS
-    // ----------------------------------------------------------------------
-
-    private void StartResultadosPhase()
+    /// <summary>
+    /// Resultados: hace cálculos de ganancia/pérdida con MoneyManager.
+    /// NO pasa de ronda automáticamente: el jugador decide cuándo.
+    /// </summary>
+    public void PlayerResolveResults()
     {
-        /*if (blackjackTable != null)
-        {
-            // Este método debería encargarse de:
-            // - Comparar manos
-            // - Llamar a MoneyManager.DealerWins / DealerPays...
-            // - Aplicar penalizaciones de trampas si procede
-            blackjackTable.ResolveBetsAndPayouts();
-        }*/
+        if (currentPhase != BlackjackPhase.Resultados) return;
 
-        // Puedes mostrar los resultados un rato en pantalla antes de pasar
-        // a la siguiente ronda. Aquí te dejo una corrutina simple de ejemplo.
-        StartCoroutine(WaitAndEndRound(1.5f));
+        tableFlow?.ResolveRoundPayouts();
+
+        Debug.Log("[RondaManager] Resultados resueltos. Esperando a que el jugador pase a la siguiente ronda.");
+
+        // Aquí puedes mostrar un mensaje en UI si quieres
+        // uiManager?.ShowCustomMessage("Resultados aplicados. Limpia la mesa y pulsa 'Siguiente Ronda'.");
     }
 
-    private IEnumerator WaitAndEndRound(float waitTime)
+    /// <summary>
+    /// Resultados -> Siguiente ronda (cuando el jugador haya limpiado la mesa).
+    /// </summary>
+    public void PlayerNextRound()
     {
-        yield return new WaitForSeconds(waitTime);
-        EndCurrentRound();
+        if (currentPhase != BlackjackPhase.Resultados) return;
+
+        OnRoundEnded?.Invoke(currentRound);
+
+        StartNextRound();
     }
 
     // ----------------------------------------------------------------------
-    //                          DEBUG / UTILIDADES
+    // Compatibilidad: si algún código viejo llama a esto (NPCs), lo mantenemos.
+    // Ahora NO auto-avanza, solo sirve para que tú uses ese evento si quieres.
     // ----------------------------------------------------------------------
 
-#if UNITY_EDITOR
-    [ContextMenu("Debug/Forzar siguiente fase")]
-    private void Debug_ForceNextPhase()
+    public void OnPlayersTurnCompleted()
     {
-        switch (currentPhase)
-        {
-            case BlackjackPhase.Apuestas:
-                ConfirmApuestasAndContinue();
-                break;
+        if (currentPhase != BlackjackPhase.TurnoJugadores) return;
+        GoToPhase(BlackjackPhase.RevelarSegundaCarta);
 
-            case BlackjackPhase.TurnoJugadores:
-                OnPlayersTurnCompleted();
-                break;
-
-            default:
-                Debug.LogWarning("[RondaManager] Solo se fuerza desde Apuestas o TurnoJugadores en este debug.");
-                break;
-        }
+        Debug.Log("[RondaManager] OnPlayersTurnCompleted recibido (no cambia fase automáticamente).");
     }
-#endif
+}
+
+/// <summary>
+/// Interfaz de "flujo lógico" de mesa para que el RondaManager haga cálculos internos
+/// sin controlar acciones físicas del dealer.
+/// </summary>
+public interface IBlackjackTableFlow
+{
+    void ResetForNewRound();
+
+    // Apuestas
+    void ComputeBetsForThisRound();
+
+    // NPC turn (si automático)
+    void StartNPCDecisionTurn();
+
+    // Dealer reveal (interno, no físico)
+    void RevealDealerSecondCardInternal();
+
+    // Payouts
+    void ResolveRoundPayouts();
 }

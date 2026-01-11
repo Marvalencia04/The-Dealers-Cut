@@ -31,6 +31,20 @@ public class CardSnapZone : MonoBehaviour
     [Tooltip("Si es false, no se pueden coger las cartas que ya están en esta zona.")]
     public bool canGrabFromZone = true;
 
+    //----------------------------------------------------------------------------
+    // Cambios Emilio
+    //----------------------------------------------------------------------------
+    [Tooltip("Maximo numero de cartas permitidas en esta zona (independiente del numero de slots).")]
+    [SerializeField] private int maxCards = 2;
+    //----------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------
+    // Cambios Emilio
+    //----------------------------------------------------------------------------
+    public System.Action<CardSnapZone> OnZoneChanged;
+    //----------------------------------------------------------------------------
+
+
     [Header("UI (puntuación)")]
     public TMP_Text valueText;
     public bool logDebug = false;
@@ -39,7 +53,7 @@ public class CardSnapZone : MonoBehaviour
 
     // 🔥 OPTIMIZACIÓN: Cachear componentes en diccionario
     private Dictionary<Card, XRGrabInteractable> cardGrabCache = new Dictionary<Card, XRGrabInteractable>();
-
+    
     // 🔥 OPTIMIZACIÓN: Evitar GetComponentInParent cada frame
     private Dictionary<Collider, Card> colliderToCardCache = new Dictionary<Collider, Card>();
 
@@ -79,7 +93,7 @@ public class CardSnapZone : MonoBehaviour
             if (card != null)
             {
                 colliderToCardCache[other] = card;
-
+                
                 // Cachear también el XRGrabInteractable
                 if (!cardGrabCache.ContainsKey(card))
                 {
@@ -87,7 +101,7 @@ public class CardSnapZone : MonoBehaviour
                     if (grab != null)
                     {
                         cardGrabCache[card] = grab;
-
+                        
                         // Suscribirse a eventos de grab
                         grab.selectEntered.AddListener(OnCardGrabbed);
                         grab.selectExited.AddListener(OnCardReleased);
@@ -126,13 +140,44 @@ public class CardSnapZone : MonoBehaviour
         if (card.currentZone != null && card.currentZone != this)
             return;
 
+        /* Cambio Emilio
         // 3) Solo queremos autosnap si está en la mano
         if (!isGrabbed)
             return;
+        */
+
+        //----------------------------------------------------------------------------
+        //Cambios Emilio: permitir snap al soltar la carta
+        //----------------------------------------------------------------------------
+        if (!isGrabbed)
+        {
+            // Si ya pertenece a otra zona, no tocar
+            if (card.currentZone != null)
+                return;
+
+            // Esperar un pequeño margen tras soltar
+            float dtRelease = currentTime - card.lastGrabTime;
+            if (dtRelease < pickupGrace)
+                return;
+        }
 
         // Si la zona NO acepta nuevas cartas, no snappeamos
         if (!canReceiveNewCards)
             return;
+
+
+
+
+        //----------------------------------------------------------------------------
+        // Cambios Emilio: limite duro de cartas
+        //----------------------------------------------------------------------------
+        if (GetOccupiedCount() >= Mathf.Max(1, maxCards))
+        {
+            if (logDebug)
+                Debug.Log($"[CardSnapZone:{name}] Limite maxCards alcanzado ({maxCards})");
+            return;
+        }
+        //----------------------------------------------------------------------------
 
         // 4) Respeta margen de tiempo desde que la levantaste
         float dt = currentTime - card.lastGrabTime;
@@ -219,6 +264,18 @@ public class CardSnapZone : MonoBehaviour
 
     private void SnapCard(Card card, int index)
     {
+
+        //----------------------------------------------------------------------------
+        // Cambios Emilio: proteccion extra
+        //----------------------------------------------------------------------------
+        if (!canReceiveNewCards) return;
+
+        int count = GetOccupiedCount();
+        bool cardAlreadyInZone = (card.currentZone == this);
+        if (!cardAlreadyInZone && count >= Mathf.Max(1, maxCards))
+            return;
+        //----------------------------------------------------------------------------
+
         if (logDebug) Debug.Log($"[CardSnapZone:{name}] SnapCard {card.name} en slot {index}");
 
         for (int i = 0; i < occupied.Length; i++)
@@ -246,6 +303,13 @@ public class CardSnapZone : MonoBehaviour
 
         UpdateSlotVisuals();
         RecalculateScore();
+
+        //----------------------------------------------------------------------------
+        // Cambios Emilio
+        //----------------------------------------------------------------------------
+        OnZoneChanged?.Invoke(this);
+        //----------------------------------------------------------------------------
+
     }
 
     public void RemoveCard(Card card)
@@ -258,7 +322,7 @@ public class CardSnapZone : MonoBehaviour
         // Limpiar cachés
         lastCheckTime.Remove(card);
         cardGrabCache.Remove(card);
-
+        
         // Limpiar collider cache
         var collidersToRemove = new List<Collider>();
         foreach (var kvp in colliderToCardCache)
@@ -296,6 +360,13 @@ public class CardSnapZone : MonoBehaviour
 
         UpdateSlotVisuals();
         RecalculateScore();
+
+        //----------------------------------------------------------------------------
+        // Cambios Emilio
+        //----------------------------------------------------------------------------
+        OnZoneChanged?.Invoke(this);
+        //----------------------------------------------------------------------------
+
     }
 
     public void ResetSlots()
@@ -316,6 +387,20 @@ public class CardSnapZone : MonoBehaviour
     {
         if (slotVisuals == null || slotVisuals.Length == 0)
             return;
+
+        //----------------------------------------------------------------------------
+        // Cambios Emilio: si se alcanzo el maxCards, no mostrar mas slot (aunque existan mas slots)
+        //----------------------------------------------------------------------------
+        if (GetOccupiedCount() >= Mathf.Max(1, maxCards))
+        {
+            for (int i = 0; i < slotVisuals.Length; i++)
+            {
+                if (slotVisuals[i] != null)
+                    slotVisuals[i].enabled = false;
+            }
+            return;
+        }
+        //----------------------------------------------------------------------------
 
         if (!canReceiveNewCards)
         {
@@ -438,4 +523,138 @@ public class CardSnapZone : MonoBehaviour
         }
         return list;
     }
+
+    // ========================
+    //   MÉTODOS DE CONTROL PARA GAME MANAGER 
+    // ========================
+
+    /// <summary>
+    /// Bloquea completamente esta zona:
+    /// - No acepta nuevas cartas
+    /// - No se pueden coger las cartas existentes
+    /// </summary>
+    public void LockZone()
+    {
+        SetCanReceiveNewCards(false);
+        SetCanGrabFromZone(false);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona bloqueada (locked)");
+    }
+
+    /// <summary>
+    /// Desbloquea completamente esta zona:
+    /// - Acepta nuevas cartas
+    /// - Se pueden coger las cartas existentes
+    /// </summary>
+    public void UnlockZone()
+    {
+        SetCanReceiveNewCards(true);
+        SetCanGrabFromZone(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona desbloqueada (unlocked)");
+    }
+
+    /// <summary>
+    /// Modo "solo lectura": 
+    /// - No acepta nuevas cartas
+    /// - Las cartas existentes pueden verse pero no cogerse
+    /// Útil para mostrar cartas del dealer sin que se puedan mover
+    /// </summary>
+    public void SetReadOnly(bool readOnly)
+    {
+        if (readOnly)
+        {
+            SetCanReceiveNewCards(false);
+            SetCanGrabFromZone(false);
+            if (logDebug)
+                Debug.Log($"[CardSnapZone:{name}] Modo solo lectura activado");
+        }
+        else
+        {
+            SetCanReceiveNewCards(true);
+            SetCanGrabFromZone(true);
+            if (logDebug)
+                Debug.Log($"[CardSnapZone:{name}] Modo solo lectura desactivado");
+        }
+    }
+
+    /// <summary>
+    /// Bloquea solo las cartas existentes (no se pueden coger)
+    /// pero permite que se añadan nuevas cartas
+    /// </summary>
+    public void FreezeCards()
+    {
+        SetCanGrabFromZone(false);
+        // canReceiveNewCards se mantiene como está
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Cartas congeladas (no se pueden coger)");
+    }
+
+    /// <summary>
+    /// Desbloquea las cartas para que se puedan coger
+    /// </summary>
+    public void UnfreezeCards()
+    {
+        SetCanGrabFromZone(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Cartas descongeladas (se pueden coger)");
+    }
+
+    /// <summary>
+    /// Cierra la zona: no acepta más cartas
+    /// pero las que hay se pueden coger
+    /// </summary>
+    public void CloseZone()
+    {
+        SetCanReceiveNewCards(false);
+        // canGrabFromZone se mantiene como está
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona cerrada (no acepta más cartas)");
+    }
+
+    /// <summary>
+    /// Abre la zona: vuelve a aceptar cartas
+    /// </summary>
+    public void OpenZone()
+    {
+        SetCanReceiveNewCards(true);
+        
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Zona abierta (acepta cartas)");
+    }
+
+    /// <summary>
+    /// Obtiene el estado actual de la zona
+    /// </summary>
+    public (bool canReceive, bool canGrab) GetZoneState()
+    {
+        return (canReceiveNewCards, canGrabFromZone);
+    }
+
+    //----------------------------------------------------------------------------
+    // Cambios Emilio
+    //----------------------------------------------------------------------------
+    /// <summary>
+    /// Cambia el limite duro de cartas en esta zona (independiente del numero de slots).
+    /// </summary>
+    public void SetMaxCards(int newMax)
+    {
+        maxCards = Mathf.Max(1, newMax);
+        UpdateSlotVisuals();
+    }
+
+    /// <summary>
+    /// Devuelve el limite duro actual de cartas.
+    /// </summary>
+    public int GetMaxCards()
+    {
+        return Mathf.Max(1, maxCards);
+    }
+    //----------------------------------------------------------------------------
+
 }

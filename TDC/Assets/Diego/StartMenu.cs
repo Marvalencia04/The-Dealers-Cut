@@ -6,10 +6,13 @@ public class StartMenu : MonoBehaviour
    
     public GameObject configPanel;
     public GameObject mainMenuPanel;
+    public GameManager gameManager;
 
     public void Jugar()
     {
         mainMenuPanel.SetActive(false);
+        gameManager.StartGame();
+
     }
 
     public void Video()

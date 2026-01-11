@@ -40,9 +40,7 @@ public class GameManager : MonoBehaviour
     [Tooltip("Curva opcional para calcular la cuota según el día (si está vacía, se usa fórmula simple). X = día, Y = cuota.")]
     [SerializeField] private AnimationCurve quotaByDayCurve;
 
-    [Header("Opciones de inicio")]
-    [Tooltip("Si está marcado, el juego se inicia automáticamente al cargar la escena.")]
-    [SerializeField] private bool autoStartGameOnPlay = true;
+
 
     // ==== ESTADO ACTUAL ====
 
@@ -84,14 +82,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (autoStartGameOnPlay)
-        {
-            StartGame();
-        }
-        else
-        {
-            SetGameState(GameState.MainMenu);
-        }
+        SetGameState(GameState.MainMenu);
     }
 
     // ----------------------------------------------------------------------
