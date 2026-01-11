@@ -14,7 +14,12 @@ public enum TrapType
     NormaDealer,
     MiraAlli
 }
-
+[Serializable]
+public class TrapSpriteData
+{
+    public TrapType trapType;
+    public Sprite sprite;
+}
 /// <summary>
 /// Rareza de las trampas (para recompensas de la tragaperras).
 /// </summary>
@@ -52,6 +57,11 @@ public class TrampasManager : MonoBehaviour
     private int usosMiraAlli;
 
     private BlackjackPhase currentPhase = BlackjackPhase.None;
+
+    // ==== SPRITES DE TRAMPAS ====
+    [Header("Sprites de trampas")]
+    [SerializeField] private TrapSpriteData[] trapSprites;
+
 
     // ==== REFERENCIAS ====
 
@@ -210,7 +220,17 @@ public class TrampasManager : MonoBehaviour
 
         return false;
     }
+    public Sprite GetTrapSprite(TrapType type)
+    {
+        foreach (var data in trapSprites)
+        {
+            if (data.trapType == type)
+                return data.sprite;
+        }
 
+        Debug.LogWarning($"[TrampasManager] No hay sprite asignado para {type}");
+        return null;
+    }
     // ----------------------------------------------------------------------
     // USO DE TRAMPAS (LLAMADO POR BOTONES UI)
     // ----------------------------------------------------------------------
@@ -363,43 +383,53 @@ public class TrampasManager : MonoBehaviour
     /// Llamado desde SlotsManager cuando se obtiene una recompensa
     /// de determinada rareza. Devuelve usos de trampas.
     /// </summary>
-    public void RecoverTrap(TrapRarity rarity)
+    public TrapType RecoverTrap(TrapRarity rarity)
     {
+        TrapType rewardedTrap = TrapType.MazoVisible;
+
         switch (rarity)
         {
             case TrapRarity.Comun:
-                // 50/50 entre MazoVisible y NormaDealer
                 if (UnityEngine.Random.value < 0.5f)
                 {
                     usosMazoVisible++;
+                    rewardedTrap = TrapType.MazoVisible;
                     ShowTrapMessage("La tragaperras te ha dado +1 uso de Mazo Visible (Común).");
                 }
                 else
                 {
                     usosNormaDealer++;
+                    rewardedTrap = TrapType.NormaDealer;
                     ShowTrapMessage("La tragaperras te ha dado +1 uso de Norma Dealer (Común).");
                 }
                 break;
 
             case TrapRarity.Rara:
                 usosCartaAElegir++;
+                rewardedTrap = TrapType.CartaAElegir;
                 ShowTrapMessage("La tragaperras te ha dado +1 uso de Carta a elegir (Rara).");
                 break;
 
             case TrapRarity.Epica:
                 usosMiraAlli++;
+                rewardedTrap = TrapType.MiraAlli;
                 ShowTrapMessage("La tragaperras te ha dado +1 uso de Mira allí (Épica).");
                 break;
 
             case TrapRarity.Legendaria:
                 usosLlamadaSeguridad++;
+                rewardedTrap = TrapType.LlamadaSeguridad;
                 ShowTrapMessage("La tragaperras te ha dado +1 uso de Llamada de seguridad (Legendaria).");
                 break;
         }
 
         OnTrapsChanged?.Invoke();
         UpdateTrapsUI();
+
+        return rewardedTrap;
     }
+
+
 
     // ----------------------------------------------------------------------
     // MENSAJES

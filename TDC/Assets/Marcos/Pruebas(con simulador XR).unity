@@ -417,9 +417,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 536566851634000267, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
+      propertyPath: coinsFX
+      value: 
+      objectReference: {fileID: 86632773128035671, guid: b94de8b20e033d64c9a98bcbbaebb906,
+        type: 3}
+    - target: {fileID: 536566851634000267, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
+      propertyPath: confettiFX
+      value: 
+      objectReference: {fileID: 7661562783661119918, guid: 311565a857dfbfc439666f402d530304,
+        type: 3}
+    - target: {fileID: 536566851634000267, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
+      propertyPath: resultText
+      value: 
+      objectReference: {fileID: 1895497043}
+    - target: {fileID: 536566851634000267, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
       propertyPath: trapReward
       value: 
       objectReference: {fileID: 1675610846}
+    - target: {fileID: 536566851634000267, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
+      propertyPath: rewardTrapImage
+      value: 
+      objectReference: {fileID: 406550293}
     - target: {fileID: 5461429850652497264, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
       propertyPath: m_Enabled
@@ -3119,6 +3141,17 @@ MonoBehaviour:
   usosInicialLlamadaSeguridad: 1
   usosInicialNormaDealer: 3
   usosInicialMiraAlli: 1
+  trapSprites:
+  - trapType: 0
+    sprite: {fileID: 21300000, guid: 581f63ed5edfbc34eb0a554a473e62fd, type: 3}
+  - trapType: 1
+    sprite: {fileID: 21300000, guid: eae47c5f9588cb045aa88cfa988e8362, type: 3}
+  - trapType: 2
+    sprite: {fileID: 21300000, guid: f3b20ac66c7fffb46a64e220e7b13cfb, type: 3}
+  - trapType: 3
+    sprite: {fileID: 21300000, guid: 7a84951fe0157e74683a91d3a3d4997f, type: 3}
+  - trapType: 4
+    sprite: {fileID: 21300000, guid: 76b560549f5e0f14e9d365c04813807b, type: 3}
   blackjackTable: {fileID: 0}
   uiManager: {fileID: 0}
   btnMazoVisible: {fileID: 0}
@@ -3132,6 +3165,7 @@ MonoBehaviour:
   txtNormaDealerUsos: {fileID: 0}
   txtMiraAlliUsos: {fileID: 0}
   txtMensajeTrampas: {fileID: 0}
+  normaDealerTrap: {fileID: 0}
 --- !u!4 &1675610848
 Transform:
   m_ObjectHideFlags: 0
@@ -3160,7 +3194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingMoney: 1000
-  baseMinBetDay1: 100
+  baseMinBetDay1: 500
   minBetByDayCurve:
     serializedVersion: 2
     m_Curve: []
@@ -3398,15 +3432,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1895497041}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.44846, y: 0.44846, z: 0.44846}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 0.2994188, y: 0.2994188, z: 0.2994188}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 810320712}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 9.9, y: 31.6}
+  m_AnchoredPosition: {x: -3.1, y: 31.6}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1895497043
@@ -3429,7 +3463,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Enhorabuena
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3456,14 +3490,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
