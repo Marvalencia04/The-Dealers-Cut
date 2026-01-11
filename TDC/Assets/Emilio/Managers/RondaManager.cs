@@ -45,6 +45,12 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private BlackjackPhase currentPhase = BlackjackPhase.None;
 
     [SerializeField] private bool autoAdvanceAfterBets = true;
+
+    [Header("Auto skip phases (temporary)")]
+    [SerializeField] private bool autoSkipRevealDealerSecondCard = true;
+
+    [SerializeField] private float autoSkipRevealDelay = 0.05f; // pequeno delay para que UI se refresque
+
     public BlackjackPhase CurrentPhase => currentPhase;
 
     public int CurrentRound => currentRound;
@@ -153,6 +159,23 @@ public class RondaManager : MonoBehaviour
             case BlackjackPhase.TurnoJugadores:
                 tableFlow?.StartNPCDecisionTurn(); // si lo usas
                 break;
+
+            case BlackjackPhase.RevelarSegundaCarta:
+                if (autoSkipRevealDealerSecondCard)
+                    StartCoroutine(AutoAdvanceFromRevealSecondCard());
+                break;
+
+            case BlackjackPhase.TurnoDealer:
+                (tableFlow as BlackjackTable)?.StartDealerTurnXR();
+                break;
+
+            case BlackjackPhase.Resultados:
+                tableFlow?.ResolveRoundPayouts(); // dentro llamas a ResolveResultsFromZonesAndPayout()
+                break;
+
+
+
+
         }
     }
 
@@ -183,6 +206,26 @@ public class RondaManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
     }
+
+    private System.Collections.IEnumerator AutoAdvanceFromRevealSecondCard()
+    {
+        // Pequeno delay para que se actualice la UI y quede claro que hubo fase
+        if (autoSkipRevealDelay > 0f)
+            yield return new WaitForSeconds(autoSkipRevealDelay);
+
+        // Aqui dejaremos el hook para el futuro:
+        // Cuando implementes la fase, pondras autoSkipRevealDealerSecondCard = false
+        // y llamaras a tableFlow?.RevealDealerSecondCardInternal() desde un boton.
+        GoToPhase(BlackjackPhase.TurnoDealer);
+    }
+
+    public void OnDealerTurnCompleted()
+    {
+        if (currentPhase != BlackjackPhase.TurnoDealer) return;
+        GoToPhase(BlackjackPhase.Resultados);
+    }
+
+
 
 
     // ----------------------------------------------------------------------
