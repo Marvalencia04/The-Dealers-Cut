@@ -14,7 +14,12 @@ public enum TrapType
     NormaDealer,
     MiraAlli
 }
-
+[Serializable]
+public class TrapSpriteData
+{
+    public TrapType trapType;
+    public Sprite sprite;
+}
 /// <summary>
 /// Rareza de las trampas (para recompensas de la tragaperras).
 /// </summary>
@@ -28,13 +33,18 @@ public enum TrapRarity
 
 /// <summary>
 /// TrampasManager: gestiona usos, disponibilidad por fase
-/// y activación de trampas, además de actualizar la UI.
+/// y activacion de trampas, ademas de actualizar la UI.
+/// 
+/// Version: Doble UI (Canvas en cada mano)
+/// - Dos grupos de botones/textos (Left/Right) en el Inspector
+/// - Misma logica, se refleja en ambas manos
+/// - Autobindeo opcional de botones (evita configurar OnClick en cada canvas)
 /// </summary>
 public class TrampasManager : MonoBehaviour
 {
     public static TrampasManager Instance { get; private set; }
 
-    // ==== CONFIGURACIÓN INICIAL ====
+    // ==== CONFIGURACION INICIAL ====
 
     [Header("Usos iniciales por trampa")]
     [SerializeField] private int usosInicialMazoVisible = 3;
@@ -53,35 +63,51 @@ public class TrampasManager : MonoBehaviour
 
     private BlackjackPhase currentPhase = BlackjackPhase.None;
 
+    // ==== SPRITES DE TRAMPAS ====
+    [Header("Sprites de trampas")]
+    [SerializeField] private TrapSpriteData[] trapSprites;
+
+
     // ==== REFERENCIAS ====
 
     [Header("Referencias")]
-    [SerializeField] private BlackjackTable blackjackTable;   // Implementas tú este script
-    [SerializeField] private UIManager uiManager;             // Opcional, por si quieres mensajes extra
+    [SerializeField] private BlackjackTable blackjackTable;
+    [SerializeField] private UIManager uiManager;
 
-    // ==== UI DE TRAMPAS ====
-
-    [Header("UI - Botones de trampas")]
-    [SerializeField] private Button btnMazoVisible;
-    [SerializeField] private Button btnCartaAElegir;
-    [SerializeField] private Button btnLlamadaSeguridad;
-    [SerializeField] private Button btnNormaDealer;
-    [SerializeField] private Button btnMiraAlli;
-
-    [Header("UI - Textos de usos restantes")]
-    [SerializeField] private TextMeshProUGUI txtMazoVisibleUsos;
-    [SerializeField] private TextMeshProUGUI txtCartaAElegirUsos;
-    [SerializeField] private TextMeshProUGUI txtLlamadaSeguridadUsos;
-    [SerializeField] private TextMeshProUGUI txtNormaDealerUsos;
-    [SerializeField] private TextMeshProUGUI txtMiraAlliUsos;
-
-    // Mensajes generales (opcional)
-    [Header("UI - Mensajes")]
-    [SerializeField] private Text txtMensajeTrampas;
+    // ==== TRAP SCRIPTS (solo funcionalidad) ====
 
     [Header("Trap Scripts (solo funcionalidad)")]
     [SerializeField] private DealerNormaTrap normaDealerTrap;
 
+    // ==== DOBLE UI ====
+
+    [Serializable]
+    private class TrapsHandUI
+    {
+        [Header("UI - Botones de trampas")]
+        public Button btnMazoVisible;
+        public Button btnCartaAElegir;
+        public Button btnLlamadaSeguridad;
+        public Button btnNormaDealer;
+        public Button btnMiraAlli;
+
+        [Header("UI - Textos de usos restantes")]
+        public TextMeshProUGUI txtMazoVisibleUsos;
+        public TextMeshProUGUI txtCartaAElegirUsos;
+        public TextMeshProUGUI txtLlamadaSeguridadUsos;
+        public TextMeshProUGUI txtNormaDealerUsos;
+        public TextMeshProUGUI txtMiraAlliUsos;
+
+        [Header("UI - Mensajes (opcional por mano)")]
+        public TextMeshProUGUI txtMensajeTrampas;
+    }
+
+    [Header("UI - Manos (0 = Izquierda, 1 = Derecha)")]
+    [SerializeField] private TrapsHandUI[] handUI = new TrapsHandUI[2];
+
+    [Header("UI - Opciones")]
+    [Tooltip("Si esta activo, este script vincula automaticamente los onClick de los botones de ambas manos.")]
+    [SerializeField] private bool autoBindButtonsOnAwake = true;
 
     // Evento opcional para cuando cambian usos (otras UI pueden escuchar)
     public event Action OnTrapsChanged;
@@ -97,8 +123,12 @@ public class TrampasManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (autoBindButtonsOnAwake)
+            AutoBindButtons();
     }
 
     private void Start()
@@ -108,7 +138,7 @@ public class TrampasManager : MonoBehaviour
     }
 
     // ----------------------------------------------------------------------
-    // INICIALIZACIÓN / RESET
+    // INICIALIZACION / RESET
     // ----------------------------------------------------------------------
 
     /// <summary>
@@ -131,7 +161,7 @@ public class TrampasManager : MonoBehaviour
 
     /// <summary>
     /// Llamado desde RondaManager cuando cambia la fase del Blackjack.
-    /// Aquí decidimos qué trampas se pueden usar.
+    /// Aqui decidimos que trampas se pueden usar.
     /// </summary>
     public void OnBlackjackPhaseChanged(BlackjackPhase phase)
     {
@@ -140,83 +170,99 @@ public class TrampasManager : MonoBehaviour
     }
 
     // ----------------------------------------------------------------------
-    // UI: ACTUALIZAR BOTONES Y TEXTOS
+    // UI: ACTUALIZAR BOTONES Y TEXTOS (DOBLE UI)
     // ----------------------------------------------------------------------
 
     private void UpdateTrapsUI()
     {
-        // Textos de usos
-        if (txtMazoVisibleUsos != null) txtMazoVisibleUsos.text = usosMazoVisible.ToString();
-        if (txtCartaAElegirUsos != null) txtCartaAElegirUsos.text = usosCartaAElegir.ToString();
-        if (txtLlamadaSeguridadUsos != null) txtLlamadaSeguridadUsos.text = usosLlamadaSeguridad.ToString();
-        if (txtNormaDealerUsos != null) txtNormaDealerUsos.text = usosNormaDealer.ToString();
-        if (txtMiraAlliUsos != null) txtMiraAlliUsos.text = usosMiraAlli.ToString();
+        for (int i = 0; i < handUI.Length; i++)
+        {
+            var h = handUI[i];
+            if (h == null) continue;
 
-        // Botones: interactables según usos y fase
-        if (btnMazoVisible != null)
-            btnMazoVisible.interactable = usosMazoVisible > 0 && IsTrapAllowedInCurrentPhase(TrapType.MazoVisible);
+            // Textos de usos
+            if (h.txtMazoVisibleUsos != null) h.txtMazoVisibleUsos.text = usosMazoVisible.ToString();
+            if (h.txtCartaAElegirUsos != null) h.txtCartaAElegirUsos.text = usosCartaAElegir.ToString();
+            if (h.txtLlamadaSeguridadUsos != null) h.txtLlamadaSeguridadUsos.text = usosLlamadaSeguridad.ToString();
+            if (h.txtNormaDealerUsos != null) h.txtNormaDealerUsos.text = usosNormaDealer.ToString();
+            if (h.txtMiraAlliUsos != null) h.txtMiraAlliUsos.text = usosMiraAlli.ToString();
 
-        if (btnCartaAElegir != null)
-            btnCartaAElegir.interactable = usosCartaAElegir > 0 && IsTrapAllowedInCurrentPhase(TrapType.CartaAElegir);
+            // Botones: interactables segun usos y fase
+            if (h.btnMazoVisible != null)
+                h.btnMazoVisible.interactable = usosMazoVisible > 0 && IsTrapAllowedInCurrentPhase(TrapType.MazoVisible);
 
-        if (btnLlamadaSeguridad != null)
-            btnLlamadaSeguridad.interactable = usosLlamadaSeguridad > 0 && IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad);
+            if (h.btnCartaAElegir != null)
+                h.btnCartaAElegir.interactable = usosCartaAElegir > 0 && IsTrapAllowedInCurrentPhase(TrapType.CartaAElegir);
 
-        if (btnNormaDealer != null)
-            btnNormaDealer.interactable = usosNormaDealer > 0 && IsTrapAllowedInCurrentPhase(TrapType.NormaDealer);
+            if (h.btnLlamadaSeguridad != null)
+                h.btnLlamadaSeguridad.interactable = usosLlamadaSeguridad > 0 && IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad);
 
-        if (btnMiraAlli != null)
-            btnMiraAlli.interactable = usosMiraAlli > 0 && IsTrapAllowedInCurrentPhase(TrapType.MiraAlli);
+            if (h.btnNormaDealer != null)
+                h.btnNormaDealer.interactable = usosNormaDealer > 0 && IsTrapAllowedInCurrentPhase(TrapType.NormaDealer);
+
+            if (h.btnMiraAlli != null)
+                h.btnMiraAlli.interactable = usosMiraAlli > 0 && IsTrapAllowedInCurrentPhase(TrapType.MiraAlli);
+        }
     }
 
     // ----------------------------------------------------------------------
-    // LÓGICA DE FASES PERMITIDAS
+    // Lï¿½GICA DE FASES PERMITIDAS
     // ----------------------------------------------------------------------
 
     /// <summary>
-    /// Devuelve true si una trampa se puede usar en la fase actual,
-    /// según el documento de diseño.
+    /// Devuelve true si una trampa se puede usar en la fase actual.
     /// </summary>
     private bool IsTrapAllowedInCurrentPhase(TrapType type)
     {
         switch (type)
         {
             case TrapType.MazoVisible:
-                // Mazo visible: fases 1,2,3,5 (Apuestas, Reparto, TurnoJugadores, TurnoDealer)
+                // Fases 1,2,3,5
                 return currentPhase == BlackjackPhase.Apuestas ||
                        currentPhase == BlackjackPhase.Reparto ||
                        currentPhase == BlackjackPhase.TurnoJugadores ||
                        currentPhase == BlackjackPhase.TurnoDealer;
 
             case TrapType.CartaAElegir:
-                // Carta a elegir: fases 1,2,3,5
+                // Fases 1,2,3,5
                 return currentPhase == BlackjackPhase.Apuestas ||
                        currentPhase == BlackjackPhase.Reparto ||
                        currentPhase == BlackjackPhase.TurnoJugadores ||
                        currentPhase == BlackjackPhase.TurnoDealer;
 
             case TrapType.LlamadaSeguridad:
-                // Llamada de seguridad: todas las fases
+                // Todas las fases
                 return true;
 
             case TrapType.NormaDealer:
-                // Norma del dealer: solo fase 5 (TurnoDealer)
+                // Solo TurnoDealer
                 return currentPhase == BlackjackPhase.TurnoDealer;
 
             case TrapType.MiraAlli:
-                // Mira allí: todas las fases
+                // Todas las fases
                 return true;
         }
 
         return false;
     }
+    public Sprite GetTrapSprite(TrapType type)
+    {
+        foreach (var data in trapSprites)
+        {
+            if (data.trapType == type)
+                return data.sprite;
+        }
 
+        Debug.LogWarning($"[TrampasManager] No hay sprite asignado para {type}");
+        return null;
+    }
     // ----------------------------------------------------------------------
-    // USO DE TRAMPAS (LLAMADO POR BOTONES UI)
+    // USO DE TRAMPAS
     // ----------------------------------------------------------------------
 
     /// <summary>
     /// Intenta usar una trampa. Valida usos y fase.
+    /// (Para NormaDealer NO se usa, porque esa trampa puede fallar y no queremos consumir uso).
     /// </summary>
     private bool TryUseTrap(TrapType type)
     {
@@ -249,7 +295,7 @@ public class TrampasManager : MonoBehaviour
                 break;
 
             case TrapType.MiraAlli:
-                if (usosMiraAlli <= 0) { ShowTrapMessage("No te quedan usos de Mira allí."); return false; }
+                if (usosMiraAlli <= 0) { ShowTrapMessage("No te quedan usos de Mira alli."); return false; }
                 usosMiraAlli--;
                 break;
         }
@@ -259,17 +305,16 @@ public class TrampasManager : MonoBehaviour
         return true;
     }
 
-    // --- Botones UI ---
+    // ----------------------------------------------------------------------
+    // BOTONES (se pueden llamar desde cualquier canvas)
+    // ----------------------------------------------------------------------
 
     public void OnClick_MazoVisible()
     {
         if (!TryUseTrap(TrapType.MazoVisible)) return;
 
         if (blackjackTable != null)
-        {
-            // Dentro de BlackjackTable tú implementas la lógica real
             blackjackTable.ShowNextThreeCards();
-        }
 
         ShowTrapMessage("Has usado Mazo visible: ves las siguientes 3 cartas.");
     }
@@ -279,10 +324,7 @@ public class TrampasManager : MonoBehaviour
         if (!TryUseTrap(TrapType.CartaAElegir)) return;
 
         if (blackjackTable != null)
-        {
-            // Mostrar UI de 3 cartas y dejar que el jugador elija una
             blackjackTable.StartCartaAElegirMode();
-        }
 
         ShowTrapMessage("Has usado Carta a elegir: elige una de 3 cartas.");
     }
@@ -292,17 +334,15 @@ public class TrampasManager : MonoBehaviour
         if (!TryUseTrap(TrapType.LlamadaSeguridad)) return;
 
         if (blackjackTable != null)
-        {
-            // Activa modo de seleccionar jugador para echarlo de la mesa
             blackjackTable.StartLlamadaSeguridadMode();
-        }
 
         ShowTrapMessage("Has llamado a seguridad: elige un jugador para expulsar.");
     }
 
     public void OnClick_NormaDealer()
     {
-        // 1) Validar fase y usos, PERO NO consumimos aun
+        Debug.Log("NorMa Dealer Activada");
+        // NormaDealer: valida fase/usos, ejecuta, si no se aplica NO consume.
         if (!IsTrapAllowedInCurrentPhase(TrapType.NormaDealer))
         {
             ShowTrapMessage("No puedes usar esta trampa en esta fase.");
@@ -315,16 +355,13 @@ public class TrampasManager : MonoBehaviour
             return;
         }
 
-        // 2) Ejecutar efecto
         bool applied = false;
 
-        // Si has añadido la referencia al script (recomendado)
         if (normaDealerTrap != null)
             applied = normaDealerTrap.Apply();
         else if (blackjackTable != null)
             applied = blackjackTable.ApplyNormaDealer_ForceStandNow();
 
-        // 3) Si se aplico, consumimos uso. Si no, no consumimos.
         if (!applied)
         {
             ShowTrapMessage("No se puede usar: el dealer ya tiene 17 o mas.");
@@ -332,27 +369,20 @@ public class TrampasManager : MonoBehaviour
         }
 
         usosNormaDealer--;
-
         OnTrapsChanged?.Invoke();
         UpdateTrapsUI();
 
         ShowTrapMessage("Has usado Norma del dealer: el dealer se planta aunque tenga menos de 17.");
     }
 
-
-
     public void OnClick_MiraAlli()
     {
         if (!TryUseTrap(TrapType.MiraAlli)) return;
 
         if (blackjackTable != null)
-        {
-            // Activa modo “Mira allí”: los jugadores se distraen durante X segundos
-            // Dentro de BlackjackTable, controla el tiempo y penalización si hay cartas mal.
             blackjackTable.StartMiraAlliMode();
-        }
 
-        ShowTrapMessage("Has usado Mira allí: tienes unos segundos para manipular.");
+        ShowTrapMessage("Has usado Mira alli: tienes unos segundos para manipular.");
     }
 
     // ----------------------------------------------------------------------
@@ -363,70 +393,111 @@ public class TrampasManager : MonoBehaviour
     /// Llamado desde SlotsManager cuando se obtiene una recompensa
     /// de determinada rareza. Devuelve usos de trampas.
     /// </summary>
-    public void RecoverTrap(TrapRarity rarity)
+    public TrapType RecoverTrap(TrapRarity rarity)
     {
+        TrapType rewardedTrap = TrapType.MazoVisible;
+
         switch (rarity)
         {
             case TrapRarity.Comun:
-                // 50/50 entre MazoVisible y NormaDealer
                 if (UnityEngine.Random.value < 0.5f)
                 {
                     usosMazoVisible++;
-                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Mazo Visible (Común).");
+                    rewardedTrap = TrapType.MazoVisible;
+                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Mazo Visible (Comï¿½n).");
                 }
                 else
                 {
                     usosNormaDealer++;
-                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Norma Dealer (Común).");
+                    rewardedTrap = TrapType.NormaDealer;
+                    ShowTrapMessage("La tragaperras te ha dado +1 uso de Norma Dealer (Comï¿½n).");
                 }
                 break;
 
             case TrapRarity.Rara:
                 usosCartaAElegir++;
+                rewardedTrap = TrapType.CartaAElegir;
                 ShowTrapMessage("La tragaperras te ha dado +1 uso de Carta a elegir (Rara).");
                 break;
 
             case TrapRarity.Epica:
                 usosMiraAlli++;
-                ShowTrapMessage("La tragaperras te ha dado +1 uso de Mira allí (Épica).");
+                rewardedTrap = TrapType.MiraAlli;
+                ShowTrapMessage("La tragaperras te ha dado +1 uso de Mira allï¿½ (ï¿½pica).");
                 break;
 
             case TrapRarity.Legendaria:
                 usosLlamadaSeguridad++;
+                rewardedTrap = TrapType.LlamadaSeguridad;
                 ShowTrapMessage("La tragaperras te ha dado +1 uso de Llamada de seguridad (Legendaria).");
                 break;
         }
 
         OnTrapsChanged?.Invoke();
         UpdateTrapsUI();
+
+        return rewardedTrap;
     }
 
+
+
     // ----------------------------------------------------------------------
-    // MENSAJES
+    // MENSAJES (DOBLE UI)
     // ----------------------------------------------------------------------
 
     private void ShowTrapMessage(string msg)
     {
-        if (txtMensajeTrampas != null)
-            txtMensajeTrampas.text = msg;
+        // Mensaje en ambas manos (si existe)
+        for (int i = 0; i < handUI.Length; i++)
+        {
+            var h = handUI[i];
+            if (h != null && h.txtMensajeTrampas != null)
+                h.txtMensajeTrampas.text = msg;
+        }
 
-        // También puedes mandar el mensaje a UIManager si quieres algo global:
+        // Opcional: mensaje global
         if (uiManager != null)
         {
-            // Por ejemplo, reutilizando messageText general si lo tienes público.
-            // uiManager.ShowCustomMessage(msg);
+            // Si tu UIManager tiene un metodo para mensajes globales, llamalo aqui.
+            // uiManager.ShowMessage(msg);
         }
 
         Debug.Log("[TrampasManager] " + msg);
     }
+
     public void LogUsosActuales()
     {
-        Debug.Log($"[DEBUG] Usos actuales de trampas:");
-        Debug.Log($"MazoVisible: {usosMazoVisible}");
-        Debug.Log($"CartaAElegir: {usosCartaAElegir}");
-        Debug.Log($"LlamadaSeguridad: {usosLlamadaSeguridad}");
-        Debug.Log($"NormaDealer: {usosNormaDealer}");
-        Debug.Log($"MiraAlli: {usosMiraAlli}");
+        Debug.Log("[DEBUG] Usos actuales de trampas:");
+        Debug.Log("MazoVisible: " + usosMazoVisible);
+        Debug.Log("CartaAElegir: " + usosCartaAElegir);
+        Debug.Log("LlamadaSeguridad: " + usosLlamadaSeguridad);
+        Debug.Log("NormaDealer: " + usosNormaDealer);
+        Debug.Log("MiraAlli: " + usosMiraAlli);
     }
 
+    // ----------------------------------------------------------------------
+    // AUTOBIND DE BOTONES (DOBLE UI)
+    // ----------------------------------------------------------------------
+
+    private void AutoBindButtons()
+    {
+        for (int i = 0; i < handUI.Length; i++)
+        {
+            var h = handUI[i];
+            if (h == null) continue;
+
+            Bind(h.btnMazoVisible, OnClick_MazoVisible);
+            Bind(h.btnCartaAElegir, OnClick_CartaAElegir);
+            Bind(h.btnLlamadaSeguridad, OnClick_LlamadaSeguridad);
+            Bind(h.btnNormaDealer, OnClick_NormaDealer);
+            Bind(h.btnMiraAlli, OnClick_MiraAlli);
+        }
+    }
+
+    private void Bind(Button b, UnityEngine.Events.UnityAction action)
+    {
+        if (b == null) return;
+        b.onClick.RemoveListener(action);
+        b.onClick.AddListener(action);
+    }
 }
