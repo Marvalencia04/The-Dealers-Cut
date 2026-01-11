@@ -268,10 +268,8 @@ public class RondaManager : MonoBehaviour
         // 2) Resetear mesa para nueva ronda
         tableFlow?.ResetForNewRound();
 
-        // 3) UI ronda (si la tienes)
-        uiManager?.ShowRoundIntro(currentRound, totalRounds);
 
-        // 4) Volver a Apuestas
+        // 3) Volver a Apuestas
         GoToPhase(BlackjackPhase.Apuestas);
     }
 
