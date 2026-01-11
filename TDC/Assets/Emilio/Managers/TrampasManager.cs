@@ -321,6 +321,7 @@ public class TrampasManager : MonoBehaviour
 
     public void OnClick_NormaDealer()
     {
+        Debug.Log("NorMa Dealer Activada");
         // NormaDealer: valida fase/usos, ejecuta, si no se aplica NO consume.
         if (!IsTrapAllowedInCurrentPhase(TrapType.NormaDealer))
         {
