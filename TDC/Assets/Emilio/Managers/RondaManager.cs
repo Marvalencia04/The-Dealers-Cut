@@ -56,6 +56,11 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private float minResultsTimeBeforeAutoNext = 0.5f; // evita saltar instantaneo por error
     private Coroutine waitClearRoutine;
 
+    [Header("End of Day / Teleport")]
+    [SerializeField] private Transform endOfDayTeleportTarget;
+    [SerializeField] private Transform playerRoot;
+
+
 
     public BlackjackPhase CurrentPhase => currentPhase;
 
@@ -183,6 +188,22 @@ public class RondaManager : MonoBehaviour
                 // 1) Resolver pagos
                 tableFlow?.ResolveRoundPayouts();
 
+                if (IsLastRoundOfDay())
+                {
+                    Debug.Log("aaaaaaaaaaaaaaaaa");
+                    StopAllCoroutines();
+
+                    // (Opcional) Bloquear recoger cartas / interacciones si quieres
+                    // interactionGate?.ApplyPhase(BlackjackPhase.Resultados); // si esto habilita recoger, mejor no llamarlo o añade un modo "ResultsLocked"
+                    // Si ya estás en Resultados y el gate pone Collect=true, puedes desactivar collectors manualmente (te lo pongo abajo).
+
+                    if (gameManager != null)
+                        gameManager.OnDayFinished(); // aqui se decide derrota/victoria segun cuota
+
+                    // Importante: NO arrancar la espera de limpiar mesa
+                    return;
+                }
+
                 // 2) Esperar a que el jugador recoja cartas
                 if (waitClearRoutine != null) StopCoroutine(waitClearRoutine);
                 waitClearRoutine = StartCoroutine(WaitForTableClearThenNextRound());
@@ -265,10 +286,11 @@ public class RondaManager : MonoBehaviour
         // 1) Incrementar ronda
         currentRound++;
 
-        // Si tienes fin de dia / max rondas, aqui es donde lo compruebas.
-        // Ejemplo:
-        // if (currentRound > totalRounds) { EndDayOrGame(); return; }
-
+        if (currentRound > totalRoundsPerDay)
+        {
+            EndDayAndTeleport();
+            return;
+        }
         // 2) Resetear mesa para nueva ronda
         tableFlow?.ResetForNewRound();
 
@@ -276,6 +298,98 @@ public class RondaManager : MonoBehaviour
         // 3) Volver a Apuestas
         GoToPhase(BlackjackPhase.Apuestas);
     }
+
+    private void EndDayAndTeleport()
+    {
+        Debug.Log("[RondaManager] Día completado. Teletransportando jugador.");
+
+        if (playerRoot != null && endOfDayTeleportTarget != null)
+        {
+            playerRoot.position = endOfDayTeleportTarget.position;
+            playerRoot.rotation = endOfDayTeleportTarget.rotation;
+        }
+
+        else
+        {
+            Debug.LogWarning("[RondaManager] Falta asignar playerRoot o endOfDayTeleportTarget.");
+        }
+    }
+
+    private bool IsLastRoundOfDay()
+    {
+        // Si tu dia tiene totalRoundsPerDay, esto es lo normal:
+        return currentRound >= totalRoundsPerDay;
+    }
+
+
+    // ----------------------------------------------------------------------
+    // DEBUG: avanzar ronda con tecla L
+    // ----------------------------------------------------------------------
+
+    [SerializeField] private bool enableDebugAdvanceRoundWithL = true;
+
+    private void Update()
+    {
+        if (!enableDebugAdvanceRoundWithL) return;
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log("[RondaManager] DEBUG: Tecla L pulsada -> avanzar ronda.");
+            DebugAdvanceRound();
+        }
+    }
+
+    /// <summary>
+    /// Fuerza el avance a la siguiente ronda como si se hubieran recogido cartas.
+    /// Usa esto solo para debug.
+    /// </summary>
+    private void DebugAdvanceRound()
+    {
+        // 1) Detener coroutines de espera (reparto/resultados/etc.)
+        StopAllCoroutines();
+
+        // 2) (Opcional pero recomendado) Resetea mesa logica para evitar estados raros
+        // Si tu BlackjackTable tiene ResetForNewRound/ResetTableForNewRound usa el que tengas:
+        if (tableFlow != null)
+            tableFlow.ResetForNewRound();
+
+        // 3) Incrementar ronda y comprobar fin de dia
+        currentRound++;
+
+        // IMPORTANTE: usa tu variable real del total (por ejemplo totalRoundsPerDay / roundsPerDay)
+        if (currentRound > totalRoundsPerDay)
+        {
+            // Llama a tu funcion de fin de dia/teleport
+            EndDayAndTeleport();
+            return;
+        }
+
+        // 4) Volver a Apuestas (esto ya debe actualizar UI y generar apuestas si lo tienes asi)
+        GoToPhase(BlackjackPhase.Apuestas);
+    }
+
+    public void ResetForNewDay()
+    {
+        // parar esperas de reparto/resultados/etc.
+        StopAllCoroutines();
+
+        // Reiniciar contador de rondas
+        currentRound = 1;
+
+        // Reset mesa
+        if (tableFlow != null)
+            tableFlow.ResetForNewRound();
+
+        // Volver a fase apuestas (tu GoToPhase ya actualiza UI y genera apuestas)
+        GoToPhase(BlackjackPhase.Apuestas);
+
+        // UI de ronda (ajusta el nombre de tu variable total rounds)
+        if (uiManager != null)
+            uiManager.ShowRoundIntro(currentRound, totalRoundsPerDay);
+
+        Debug.Log("[RondaManager] ResetForNewDay -> currentRound=1 y vuelta a Apuestas");
+    }
+
 
 
     // ----------------------------------------------------------------------

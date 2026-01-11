@@ -34,8 +34,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Número de rondas de blackjack por día.")]
     [SerializeField] private int roundsPerDay = 5;
 
-    [Tooltip("Cuota base del Día 1. A partir de aquí puedes escalar por día.")]
-    [SerializeField] private int baseQuotaDay1 = 1000;
+    [Header("Cuotas por dia (exactamente 3)")]
+    [Tooltip("Indice 0 = Dia 1, 1 = Dia 2, 2 = Dia 3")]
+    [SerializeField] private int[] quotasByDay = new int[3] { 2000, 3000, 4000 };
 
     [Tooltip("Curva opcional para calcular la cuota según el día (si está vacía, se usa fórmula simple). X = día, Y = cuota.")]
     [SerializeField] private AnimationCurve quotaByDayCurve;
@@ -83,6 +84,15 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         SetGameState(GameState.MainMenu);
+
+        if (rondaManager == null) rondaManager = RondaManager.Instance;
+        if (uiManager == null) uiManager = UIManager.Instance;
+
+        // Inicializar cuota del dia actual
+        currentQuota = GetQuotaForDay(currentDay);
+
+        if (uiManager != null)
+            uiManager.ShowDayIntro(currentDay, currentQuota);
     }
 
     // ----------------------------------------------------------------------
@@ -272,26 +282,109 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ----------------------------------------------------------------------
-    //                          CUOTAS
-    // ----------------------------------------------------------------------
-
-    /// <summary>
-    /// Calcula la cuota necesaria para un día concreto.
-    /// Puedes modificar esta lógica más adelante.
-    /// </summary>
-    private int GetQuotaForDay(int day)
+    public void AdvanceToNextDay()
     {
-        if (quotaByDayCurve != null && quotaByDayCurve.length > 0)
+        Debug.Log("[GameManager] Avanzado al Dia " + currentDay + " | Cuota: " + currentQuota);
+
+        // Si ya estabas en el dia 3 y se intenta "pasar", victoria
+        if (currentDay >= 3)
         {
-            float value = quotaByDayCurve.Evaluate(day);
-            int quotaFromCurve = Mathf.Max(0, Mathf.RoundToInt(value));
-            if (quotaFromCurve > 0)
-                return quotaFromCurve;
+            TriggerVictory();
+            return;
         }
 
-        // Fórmula simple: cuota base * día (ej: Día 1 -> 1000, Día 2 -> 2000...)
-        return baseQuotaDay1 * day;
+        // Avanzar dia
+        currentDay++;
+
+        // Si por cualquier razon se pasara de 3, victoria
+        if (currentDay > 3)
+        {
+            TriggerVictory();
+            return;
+        }
+
+        // Actualizar cuota del nuevo dia
+        currentQuota = GetQuotaForDay(currentDay);
+
+        // Reset rondas + volver a apuestas
+        if (rondaManager != null)
+            rondaManager.ResetForNewDay();
+
+        // UI de dia
+        if (uiManager != null)
+            uiManager.ShowDayIntro(currentDay, currentQuota);
+
+        
+    }
+
+    private void TriggerVictory()
+    {
+        Debug.Log("[GameManager] Victoria! Fin del Dia 3.");
+
+        // Parar el juego
+        Time.timeScale = 0f;
+
+        // Mostrar pantalla de victoria
+        // Asumo que tu UIManager ya maneja GameState.Victory y enseña victoryPanel
+        if (uiManager != null)
+            uiManager.UpdateStateUI(GameState.Victory);
+
+        // Si tienes eventos o estados:
+        // SetState(GameState.Victory);
+    }
+
+    public void OnDayFinished()
+    {
+        int money = (MoneyManager.Instance != null) ? MoneyManager.Instance.CurrentMoney : 0;
+        int quota = CurrentQuota;
+
+        Debug.Log("[GameManager] Fin de dia " + currentDay + " | Dinero=" + money + " | Cuota=" + quota);
+
+        if (money < quota)
+        {
+            TriggerDefeat();
+            return;
+        }
+
+        // Dia superado (si es el dia 3, victoria final; si no, te quedas en el "hub" para avanzar)
+        if (currentDay >= 3)
+        {
+            TriggerVictory();
+        }
+        else
+        {
+            // Aqui puedes mostrar un panel/mensaje de "Dia completado"
+            // y dejar al jugador pulsar el boton "Siguiente dia".
+            if (uiManager != null)
+                uiManager.ShowDayCompleted(currentDay);
+        }
+    }
+
+    private void TriggerDefeat()
+    {
+        Debug.Log("[GameManager] Derrota! No se alcanzo la cuota del dia.");
+
+        Time.timeScale = 0f;
+
+        if (uiManager != null)
+            uiManager.UpdateStateUI(GameState.Defeat);
+    }
+
+
+
+    public int GetQuotaForDay(int day)
+    {
+        // day 1..3
+        day = Mathf.Clamp(day, 1, 3);
+
+        if (quotasByDay == null || quotasByDay.Length < 3)
+        {
+            Debug.LogWarning("[GameManager] quotasByDay no esta bien configurado. Usando fallback 2000/3000/4000.");
+            int[] fallback = { 2000, 3000, 4000 };
+            return fallback[day - 1];
+        }
+
+        return Mathf.Max(0, quotasByDay[day - 1]);
     }
 
     // ----------------------------------------------------------------------

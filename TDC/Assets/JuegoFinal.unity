@@ -1295,7 +1295,7 @@ MonoBehaviour:
   currentDay: 1
   currentQuota: 0
   roundsPerDay: 3
-  baseQuotaDay1: 2000
+  quotasByDay: d0070000b80b0000a00f0000
   quotaByDayCurve:
     serializedVersion: 2
     m_Curve: []
@@ -2432,6 +2432,9 @@ MonoBehaviour:
   autoSkipRevealDelay: 0.05
   pollClearTableInterval: 0.2
   minResultsTimeBeforeAutoNext: 0.5
+  endOfDayTeleportTarget: {fileID: 1819194286}
+  playerRoot: {fileID: 1777176065}
+  enableDebugAdvanceRoundWithL: 1
 --- !u!4 &154869320
 Transform:
   m_ObjectHideFlags: 0
@@ -20155,6 +20158,37 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1819194285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1819194286}
+  m_Layer: 0
+  m_Name: TPTRagaperras
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1819194286
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819194285}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.216, y: 1.1745164, z: 8.455}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1858869153 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fd31094faeaf7ef4db30111958dec97e,
@@ -23027,6 +23061,8 @@ MonoBehaviour:
     messageText: {fileID: 0}
   gameManager: {fileID: 98883284}
   moneyManager: {fileID: 709494675}
+  globalVictoryPanel: {fileID: 176274571}
+  globalDefeatPanel: {fileID: 635739676}
 --- !u!4 &2145258771
 Transform:
   m_ObjectHideFlags: 0
