@@ -215,6 +215,28 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
     private void ApplyDealerTurnRules()
     {
+        if (ignoreDealerRulesThisRound)
+        {
+            // Mientras la trampa esta activa, no aplicamos la norma 17.
+            // Solo cerramos si bust / 21.
+            int scoreTrap = GetZoneScoreFromSnapZone(dealerZone);
+            if (scoreTrap >= 21)
+            {
+                dealerZone.SetCanReceiveNewCards(false);
+                dealerZone.SetMaxCards(2);
+                if (rondaManager != null && rondaManager.CurrentPhase == BlackjackPhase.TurnoDealer)
+                    rondaManager.OnDealerTurnCompleted();
+            }
+            else
+            {
+                // Mantener abierto para que el jugador decida robar o no
+                dealerZone.SetCanReceiveNewCards(true);
+                dealerZone.SetMaxCards(dealerZone.slots.Length);
+            }
+            return;
+        }
+
+
         if (dealerZone == null) return;
 
         int score = GetZoneScoreFromSnapZone(dealerZone);
@@ -253,6 +275,48 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             //----------------------------------------------------------------------------
         }
     }
+
+    public bool ApplyNormaDealer_ForceStandNow()
+    {
+        if (rondaManager == null)
+        {
+            Debug.LogError("[BlackjackTable] rondaManager missing.");
+            return false;
+        }
+
+        // Solo tiene sentido durante TurnoDealer
+        if (rondaManager.CurrentPhase != BlackjackPhase.TurnoDealer)
+        {
+            Debug.Log("[BlackjackTable] NormaDealer ignored: not in TurnoDealer.");
+            return false;
+        }
+
+        if (dealerZone == null)
+        {
+            Debug.LogError("[BlackjackTable] dealerZone missing.");
+            return false;
+        }
+
+        int dealerScore = GetZoneScoreFromSnapZone(dealerZone);
+
+        // La trampa permite plantarse si el dealer tiene MENOS de 17
+        if (dealerScore >= 17)
+        {
+            Debug.Log($"[BlackjackTable] NormaDealer cannot be used: dealerScore={dealerScore} (>=17).");
+            return false;
+        }
+
+        // 1) Cerrar el dealer: no mas cartas y apagar slots extra
+        dealerZone.SetCanReceiveNewCards(false);
+        dealerZone.SetMaxCards(2);
+
+        // 2) Saltar directamente a Resultados
+        rondaManager.OnDealerTurnCompleted();
+
+        Debug.Log($"[BlackjackTable] NormaDealer used: force stand at score={dealerScore}. Going to Results.");
+        return true;
+    }
+
 
 
     private bool IsZoneBust(CardSnapZone zone) => GetZoneScoreFromSnapZone(zone) > 21;

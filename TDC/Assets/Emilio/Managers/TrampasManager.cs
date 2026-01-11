@@ -79,6 +79,10 @@ public class TrampasManager : MonoBehaviour
     [Header("UI - Mensajes")]
     [SerializeField] private Text txtMensajeTrampas;
 
+    [Header("Trap Scripts (solo funcionalidad)")]
+    [SerializeField] private DealerNormaTrap normaDealerTrap;
+
+
     // Evento opcional para cuando cambian usos (otras UI pueden escuchar)
     public event Action OnTrapsChanged;
 
@@ -298,16 +302,44 @@ public class TrampasManager : MonoBehaviour
 
     public void OnClick_NormaDealer()
     {
-        if (!TryUseTrap(TrapType.NormaDealer)) return;
-
-        if (blackjackTable != null)
+        // 1) Validar fase y usos, PERO NO consumimos aun
+        if (!IsTrapAllowedInCurrentPhase(TrapType.NormaDealer))
         {
-            // El dealer puede ignorar las reglas de robar/pararse esta ronda
-            blackjackTable.EnableIgnoreDealerRulesForThisRound();
+            ShowTrapMessage("No puedes usar esta trampa en esta fase.");
+            return;
         }
 
-        ShowTrapMessage("Has alterado la norma del dealer para esta ronda.");
+        if (usosNormaDealer <= 0)
+        {
+            ShowTrapMessage("No te quedan usos de Norma del dealer.");
+            return;
+        }
+
+        // 2) Ejecutar efecto
+        bool applied = false;
+
+        // Si has añadido la referencia al script (recomendado)
+        if (normaDealerTrap != null)
+            applied = normaDealerTrap.Apply();
+        else if (blackjackTable != null)
+            applied = blackjackTable.ApplyNormaDealer_ForceStandNow();
+
+        // 3) Si se aplico, consumimos uso. Si no, no consumimos.
+        if (!applied)
+        {
+            ShowTrapMessage("No se puede usar: el dealer ya tiene 17 o mas.");
+            return;
+        }
+
+        usosNormaDealer--;
+
+        OnTrapsChanged?.Invoke();
+        UpdateTrapsUI();
+
+        ShowTrapMessage("Has usado Norma del dealer: el dealer se planta aunque tenga menos de 17.");
     }
+
+
 
     public void OnClick_MiraAlli()
     {
