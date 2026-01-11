@@ -24,6 +24,10 @@ public class Distraction : MonoBehaviour
     private List<GameObject> activeExclamations = new List<GameObject>();
 
     // ==========================
+    [Header("Referencias")]
+    public BlackjackTable blackjackTable;
+
+    // ==========================
     // INICIO DE LA TRAMPA
     // ==========================
     public void StartDistraction()
@@ -99,7 +103,7 @@ public class Distraction : MonoBehaviour
         if (distractionMenu != null)
             distractionMenu.SetActive(false);
 
-        DestroyExclamations(); // Eliminar indicadores
+        DestroyExclamations();
 
         bool allCorrect = true;
 
@@ -116,25 +120,24 @@ public class Distraction : MonoBehaviour
                 Debug.LogWarning($"{zone.name} tiene un número incorrecto de cartas: tiene {current}, debería tener {initial}");
             }
 
-            // Bloquear interacción de cartas
             zone.SetCanGrabFromZone(false);
         }
 
-        if (allCorrect)
+        if (!allCorrect)
         {
-            Debug.Log("Todo Correcto");
+            // ⚠️ Activar penalización de Mira Allí directamente en BlackjackTable
+            if (blackjackTable != null)
+            {
+                blackjackTable.TriggerMiraAlliPenalty();
+                Debug.Log("⚠️ Mira Allí: penalización activada, los jugadores ganaran esta ronda.");
+            }
         }
         else
         {
-            // ❌ Activar penalización de Mira Allí
-            var rondaManager = FindObjectOfType<RondaManager>(); // O guarda referencia directa
-            if (rondaManager != null)
-            {
-                rondaManager.TriggerMiraAlliPenalty();
-                Debug.Log("⚠️ Mira Allí: penalización activada, los jugadores perderán esta ronda.");
-            }
+            Debug.Log("Todo Correcto");
         }
     }
+
 
 
     // ==========================
