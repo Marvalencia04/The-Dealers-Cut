@@ -51,6 +51,12 @@ public class RondaManager : MonoBehaviour
 
     [SerializeField] private float autoSkipRevealDelay = 0.05f; // pequeno delay para que UI se refresque
 
+    [Header("Resultados - Limpieza de mesa")]
+    [SerializeField] private float pollClearTableInterval = 0.2f;
+    [SerializeField] private float minResultsTimeBeforeAutoNext = 0.5f; // evita saltar instantaneo por error
+    private Coroutine waitClearRoutine;
+
+
     public BlackjackPhase CurrentPhase => currentPhase;
 
     public int CurrentRound => currentRound;
@@ -170,7 +176,12 @@ public class RondaManager : MonoBehaviour
                 break;
 
             case BlackjackPhase.Resultados:
-                tableFlow?.ResolveRoundPayouts(); // dentro llamas a ResolveResultsFromZonesAndPayout()
+                // 1) Resolver pagos
+                tableFlow?.ResolveRoundPayouts();
+
+                // 2) Esperar a que el jugador recoja cartas
+                if (waitClearRoutine != null) StopCoroutine(waitClearRoutine);
+                waitClearRoutine = StartCoroutine(WaitForTableClearThenNextRound());
                 break;
 
 
@@ -225,7 +236,44 @@ public class RondaManager : MonoBehaviour
         GoToPhase(BlackjackPhase.Resultados);
     }
 
+    private System.Collections.IEnumerator WaitForTableClearThenNextRound()
+    {
+        // Evita que por algun bug la mesa se considere vacia en el primer frame
+        yield return new WaitForSeconds(minResultsTimeBeforeAutoNext);
 
+        while (currentPhase == BlackjackPhase.Resultados)
+        {
+            // Necesitamos BlackjackTable real para saber si esta vacia
+            BlackjackTable table = tableFlow as BlackjackTable;
+
+            if (table != null && table.AreAllZonesEmpty())
+            {
+                AdvanceToNextRoundFromResults();
+                yield break;
+            }
+
+            yield return new WaitForSeconds(pollClearTableInterval);
+        }
+    }
+
+    private void AdvanceToNextRoundFromResults()
+    {
+        // 1) Incrementar ronda
+        currentRound++;
+
+        // Si tienes fin de dia / max rondas, aqui es donde lo compruebas.
+        // Ejemplo:
+        // if (currentRound > totalRounds) { EndDayOrGame(); return; }
+
+        // 2) Resetear mesa para nueva ronda
+        tableFlow?.ResetForNewRound();
+
+        // 3) UI ronda (si la tienes)
+        uiManager?.ShowRoundIntro(currentRound, totalRounds);
+
+        // 4) Volver a Apuestas
+        GoToPhase(BlackjackPhase.Apuestas);
+    }
 
 
     // ----------------------------------------------------------------------
