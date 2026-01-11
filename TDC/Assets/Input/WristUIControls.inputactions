@@ -1,0 +1,103 @@
+{
+    "version": 1,
+    "name": "WristUIControls",
+    "maps": [
+        {
+            "name": "WristUI",
+            "id": "8e81fefc-8fab-4fe8-b2fa-2e889933fdde",
+            "actions": [
+                {
+                    "name": "LeftTopButton",
+                    "type": "Button",
+                    "id": "6fa3ebab-7b5c-42ad-943a-5327d656a7b1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightTopButton",
+                    "type": "Button",
+                    "id": "bb9325a5-a2c6-4fd7-8e1b-949150aa52ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f06d61c9-7903-4a00-aa41-ff9259d77457",
+                    "path": "<XRController>{LeftHand}/secondaryButton ",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftTopButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f166c3fa-2946-41a2-8277-17524b7932fe",
+                    "path": "<XRController>{RightHand}/secondaryButton ",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightTopButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "WristUI-Oculus",
+            "id": "380fed08-7a0d-4ec2-9a30-a6d82c5ae559",
+            "actions": [
+                {
+                    "name": "LeftTopButton",
+                    "type": "Button",
+                    "id": "087e24af-db5f-49e5-b4bb-99f359550fab",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightTopButton",
+                    "type": "Button",
+                    "id": "2275df17-98b1-4d4e-9ac8-9805d7e1f117",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7878c047-7a48-4a03-8ed8-6e842df69c38",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton ",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftTopButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fcc3f894-0f24-4cb0-b493-8c9594ae9108",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton ",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightTopButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
