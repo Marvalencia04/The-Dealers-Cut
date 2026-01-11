@@ -1528,7 +1528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5703039fc66746740983dda3b80ebcf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distractionTime: 60
+  distractionTime: 10
   distractionMenu: {fileID: 432183858}
   timerText: {fileID: 1836325242}
   allZones:
@@ -1536,6 +1536,12 @@ MonoBehaviour:
   - {fileID: 1041141651}
   - {fileID: 874326465}
   - {fileID: 1634311007}
+  exclamationPrefab: {fileID: 5098168015392794946, guid: 71644858d2b66e94aa9a18a2bcd268ce,
+    type: 3}
+  exclamationPositions:
+  - {fileID: 1150110119}
+  - {fileID: 1417849075}
+  - {fileID: 1138534134}
 --- !u!1 &970823830
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,6 +2199,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 221feb3b2fdb66a4aadb5edfd6bc1379, type: 3}
+--- !u!4 &1138534134 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 289445423846436545, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+    type: 3}
+  m_PrefabInstance: {fileID: 1138534133}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1150110118
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2277,6 +2289,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 221feb3b2fdb66a4aadb5edfd6bc1379, type: 3}
+--- !u!4 &1150110119 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 289445423846436545, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+    type: 3}
+  m_PrefabInstance: {fileID: 1150110118}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1167386443
 GameObject:
   m_ObjectHideFlags: 0
@@ -2628,6 +2646,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 221feb3b2fdb66a4aadb5edfd6bc1379, type: 3}
+--- !u!4 &1417849075 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 289445423846436545, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
+    type: 3}
+  m_PrefabInstance: {fileID: 1417849074}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1509829009
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6512,7 +6536,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8522992255005614509
 RectTransform:
   m_ObjectHideFlags: 0

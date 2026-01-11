@@ -15,9 +15,17 @@ public class Distraction : MonoBehaviour
     [Header("Cartas")]
     public List<CardSnapZone> allZones;
 
+    [Header("Indicadores visuales")]
+    public GameObject exclamationPrefab; // Prefab de la exclamación
+    public Transform[] exclamationPositions; // Deben ser 3
+
     private Dictionary<CardSnapZone, int> initialCounts = new Dictionary<CardSnapZone, int>();
     private Coroutine distractionCoroutine;
+    private List<GameObject> activeExclamations = new List<GameObject>();
 
+    // ==========================
+    // INICIO DE LA TRAMPA
+    // ==========================
     public void StartDistraction()
     {
         if (distractionCoroutine != null)
@@ -39,9 +47,14 @@ public class Distraction : MonoBehaviour
                 zone.SetCanGrabFromZone(true);
         }
 
+        SpawnExclamations(); // Aparece indicador visual
+
         distractionCoroutine = StartCoroutine(DistractionTimer());
     }
 
+    // ==========================
+    // COROUTINE DEL TEMPORIZADOR
+    // ==========================
     private IEnumerator DistractionTimer()
     {
         float elapsed = 0f;
@@ -50,7 +63,6 @@ public class Distraction : MonoBehaviour
         {
             elapsed += Time.deltaTime;
 
-            // Mostrar temporizador en UI
             if (timerText != null)
                 timerText.text = $"Tiempo: {Mathf.Ceil(distractionTime - elapsed)}";
 
@@ -60,11 +72,9 @@ public class Distraction : MonoBehaviour
         EndDistraction();
     }
 
-    private void EndDistraction()
-    {
-        CompleteDistraction();
-    }
-
+    // ==========================
+    // CANCELAR TRAMPA
+    // ==========================
     public void CancelDistraction()
     {
         if (distractionCoroutine != null)
@@ -73,13 +83,23 @@ public class Distraction : MonoBehaviour
         CompleteDistraction();
     }
 
-    /// <summary>
-    /// Código común para finalizar la distracción
-    /// </summary>
+    // ==========================
+    // FINALIZAR TRAMPA
+    // ==========================
+    private void EndDistraction()
+    {
+        CompleteDistraction();
+    }
+
+    // ==========================
+    // CÓDIGO COMÚN PARA FINALIZAR
+    // ==========================
     private void CompleteDistraction()
     {
         if (distractionMenu != null)
             distractionMenu.SetActive(false);
+
+        DestroyExclamations(); // Eliminar indicadores
 
         bool allCorrect = true;
 
@@ -102,5 +122,33 @@ public class Distraction : MonoBehaviour
 
         if (allCorrect)
             Debug.Log("Todo Correcto");
+    }
+
+    // ==========================
+    // VISUAL: EXCLAMACIONES
+    // ==========================
+    private void SpawnExclamations()
+    {
+        if (exclamationPrefab == null || exclamationPositions == null) return;
+
+        DestroyExclamations(); // Limpiar por si quedaba alguna
+
+        foreach (var pos in exclamationPositions)
+        {
+            if (pos == null) continue;
+
+            GameObject exclamation = Instantiate(exclamationPrefab, pos.position, pos.rotation, pos);
+            activeExclamations.Add(exclamation);
+        }
+    }
+
+    private void DestroyExclamations()
+    {
+        foreach (var e in activeExclamations)
+        {
+            if (e != null)
+                Destroy(e);
+        }
+        activeExclamations.Clear();
     }
 }

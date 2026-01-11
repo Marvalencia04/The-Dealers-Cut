@@ -100,28 +100,36 @@ public class PreviewNextCards : MonoBehaviour
     private IEnumerator FlipCard(GameObject card)
     {
         float time = 0f;
+        if (card == null) yield break; // <-- evitar errores si ya fue destruida
+
         Quaternion startRot = card.transform.rotation;
         Quaternion endRot = startRot * Quaternion.Euler(flipAngleX, flipAngleY, flipAngleZ);
 
         while (time < flipDuration)
         {
+            if (card == null) yield break; // <-- chequeo en cada frame
             card.transform.rotation = Quaternion.Slerp(startRot, endRot, time / flipDuration);
             time += Time.deltaTime;
             yield return null;
         }
 
-        card.transform.rotation = endRot;
+        if (card != null)
+            card.transform.rotation = endRot;
     }
+
 
     /// <summary>
     /// Borra todas las cartas actuales.
     /// </summary>
     public void ClearPreview()
     {
+        StopAllCoroutines(); // Detener animaciones activas
+
         foreach (var c in previewedCards)
             if (c != null)
                 Destroy(c);
 
         previewedCards.Clear();
     }
+
 }
