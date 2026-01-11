@@ -133,26 +133,42 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         if (rondaManager == null) return;
 
-        // Solo reaccionamos durante TurnoJugadores
-        if (rondaManager.CurrentPhase != BlackjackPhase.TurnoJugadores)
-            return;
-
-        int idx = GetPlayerZoneIndex(zone);
-        if (idx < 0) return; // no es una zona de NPC
-
-        int score = GetZoneScoreFromSnapZone(zone);
-
-        if (score >= 21)
+        // 1) TurnoJugadores: NPCs
+        if (rondaManager.CurrentPhase == BlackjackPhase.TurnoJugadores)
         {
-            zone.SetCanReceiveNewCards(false);
+            int idx = GetPlayerZoneIndex(zone);
+            if (idx >= 0)
+            {
+                int score = GetZoneScoreFromSnapZone(zone);
 
-            // Si quieres que deje de mostrar slots extra y no acepte mas
-            zone.SetMaxCards(2); // o zone.GetOccupiedCount() si prefieres exactitud
+                if (score >= 21)
+                {
+                    zone.SetCanReceiveNewCards(false);
+                    zone.SetMaxCards(2);
+                }
+
+                ApplyNPCDecisions();
+            }
+            return;
         }
 
-        // Reaplicar decisiones para abrir/cerrar segun la situacion nueva
-        ApplyNPCDecisions();
+        // 2) TurnoDealer: Dealer
+        if (rondaManager.CurrentPhase == BlackjackPhase.TurnoDealer)
+        {
+            if (zone == dealerZone)
+            {
+                ApplyDealerTurnRules();
+            }
+            return;
+        }
     }
+
+    public void StartDealerTurnXR()
+    {
+        ApplyDealerTurnRules();
+    }
+
+
 
     private int GetPlayerZoneIndex(CardSnapZone zone)
     {
@@ -195,6 +211,155 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         }
 
         return total;
+    }
+
+    private void ApplyDealerTurnRules()
+    {
+        if (dealerZone == null) return;
+
+        int score = GetZoneScoreFromSnapZone(dealerZone);
+
+        // Si bust o 21 -> cerrar
+        if (score >= 21)
+        {
+            dealerZone.SetCanReceiveNewCards(false);
+            dealerZone.SetMaxCards(2);
+
+            //----------------------------------------------------------------------------
+            // Cambios: fin automatico del turno del dealer
+            //----------------------------------------------------------------------------
+            if (rondaManager != null && rondaManager.CurrentPhase == BlackjackPhase.TurnoDealer)
+                rondaManager.OnDealerTurnCompleted();
+            //----------------------------------------------------------------------------
+            return;
+        }
+
+        // Regla pedida:
+        if (score <= 17)
+        {
+            dealerZone.SetCanReceiveNewCards(true);
+            dealerZone.SetMaxCards(dealerZone.slots.Length);
+        }
+        else
+        {
+            dealerZone.SetCanReceiveNewCards(false);
+            dealerZone.SetMaxCards(2);
+
+            //----------------------------------------------------------------------------
+            // Cambios: fin automatico del turno del dealer
+            //----------------------------------------------------------------------------
+            if (rondaManager != null && rondaManager.CurrentPhase == BlackjackPhase.TurnoDealer)
+                rondaManager.OnDealerTurnCompleted();
+            //----------------------------------------------------------------------------
+        }
+    }
+
+
+    private bool IsZoneBust(CardSnapZone zone) => GetZoneScoreFromSnapZone(zone) > 21;
+
+    private bool IsZoneBlackjack(CardSnapZone zone)
+    {
+        if (zone == null) return false;
+        if (zone.GetOccupiedCount() != 2) return false;
+        return GetZoneScoreFromSnapZone(zone) == 21;
+    }
+
+
+    public void ResolveResultsFromZonesAndPayout()
+    {
+        if (moneyManager == null) moneyManager = MoneyManager.Instance;
+
+        int dealerScore = GetZoneScoreFromSnapZone(dealerZone);
+        bool dealerBust = dealerScore > 21;
+        bool dealerBJ = IsZoneBlackjack(dealerZone);
+
+        Log($"[RESULTS] Dealer score={dealerScore} bust={dealerBust} blackjack={dealerBJ}");
+
+        foreach (var npc in npcManager.GetNPCs())
+        {
+            int id = npc.Id;
+
+            // Si fue expulsado por seguridad, su mano se anula (no se paga nada)
+            if (npc.IsRemovedBySecurity)
+            {
+                Log($"[RESULTS] NPC {id} removed by security -> skip.");
+                continue;
+            }
+
+            // Apuesta
+            int bet = 0;
+            currentBets.TryGetValue(id, out bet);
+            if (bet <= 0)
+            {
+                Log($"[RESULTS] NPC {id} bet=0 -> skip.");
+                continue;
+            }
+
+            // Zona del NPC por ID (asumimos playerZones[id] corresponde a ese NPC)
+            if (id < 0 || id >= playerZones.Length || playerZones[id] == null)
+            {
+                Debug.LogWarning($"[BlackjackTable] Missing playerZone for NPC id={id}");
+                continue;
+            }
+
+            CardSnapZone zone = playerZones[id];
+
+            int playerScore = GetZoneScoreFromSnapZone(zone);
+            bool playerBust = playerScore > 21;
+            bool playerBJ = IsZoneBlackjack(zone);
+
+            Log($"[RESULTS] NPC {id}: score={playerScore} bust={playerBust} blackjack={playerBJ} bet={bet}");
+
+            // 1) Si el jugador se pasa -> la casa gana
+            if (playerBust)
+            {
+                moneyManager.DealerWins(bet);
+                continue;
+            }
+
+            // 2) Blackjack rules
+            if (playerBJ && !dealerBJ)
+            {
+                // NPC blackjack gana
+                moneyManager.DealerPaysBlackjack(bet); // paga 3x segun tu MoneyManager
+                continue;
+            }
+            if (dealerBJ && !playerBJ)
+            {
+                // Dealer blackjack gana: en tu diseño era DealerWins(bet*2) (ojo, esto es muy agresivo)
+                // Para mantener coherencia con lo anterior:
+                moneyManager.DealerWins(bet);
+                continue;
+            }
+            if (dealerBJ && playerBJ)
+            {
+                // Push
+                continue;
+            }
+
+            // 3) Dealer bust -> pagan todos los que no se pasen
+            if (dealerBust)
+            {
+                moneyManager.DealerPaysWin(bet);
+                continue;
+            }
+
+            // 4) Comparación normal
+            if (playerScore > dealerScore)
+            {
+                moneyManager.DealerPaysWin(bet);
+            }
+            else if (playerScore < dealerScore)
+            {
+                moneyManager.DealerWins(bet);
+            }
+            else
+            {
+                // Push: no pasa nada
+            }
+        }
+
+        Log("[RESULTS] Payout complete.");
     }
 
 
@@ -748,8 +913,9 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
     public void ResolveRoundPayouts()
     {
-        ResolveBetsAndPayouts();
+        ResolveResultsFromZonesAndPayout();
     }
+
 
 
     // ============================================================

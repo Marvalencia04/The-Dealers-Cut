@@ -65,12 +65,17 @@ public class BlackjackInteractionGateXR : MonoBehaviour
                 break;
 
             case BlackjackPhase.TurnoDealer:
-                // Dealer juega manual: habilitar deck, permitir coger cartas
                 SetDeck(true);
+
+                // No tocar manos de NPCs en turno del dealer
+                SetAllZonesCanGrab(false);
+                SetAllZonesCanReceive(false);
                 SetAllZonesReadOnly(false);
-                SetAllZonesCanReceive(true);
-                SetAllZonesCanGrab(true);
+
+                // Solo el dealer zone queda controlado por BlackjackTable.ApplyDealerTurnRules()
+                // asi que no lo forces aqui.
                 break;
+
 
             case BlackjackPhase.Resultados:
                 // Bloquear cartas y mostrar botón para resolver
