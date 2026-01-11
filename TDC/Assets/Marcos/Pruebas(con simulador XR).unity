@@ -433,7 +433,7 @@ PrefabInstance:
     - target: {fileID: 7162214248566776577, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7507108353313618363, guid: d725b5e21a5779a43ac7ff75a182415a,
         type: 3}
@@ -499,6 +499,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8561898892816934452, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
+      propertyPath: moneyManager
+      value: 
+      objectReference: {fileID: 1675610849}
+    - target: {fileID: 8561898892816934452, guid: d725b5e21a5779a43ac7ff75a182415a,
+        type: 3}
+      propertyPath: guaranteedEvery
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3068,8 +3078,9 @@ GameObject:
   - component: {fileID: 1675610848}
   - component: {fileID: 1675610847}
   - component: {fileID: 1675610846}
+  - component: {fileID: 1675610849}
   m_Layer: 0
-  m_Name: Trampas Manager
+  m_Name: Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3136,6 +3147,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1675610849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675610845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1039feef9f9530a48807b388ff727743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingMoney: 1000
+  baseMinBetDay1: 100
+  minBetByDayCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  currentMoney: 0
 --- !u!1001 &1718960205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4130,9 +4162,9 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9088633072957584783}
-  m_LocalRotation: {x: -0, y: 0.6513029, z: -0, w: 0.758818}
-  m_LocalPosition: {x: 0, y: 0, z: -106.4}
-  m_LocalScale: {x: 0.5868944, y: 0.27199998, z: 0.27199998}
+  m_LocalRotation: {x: -0, y: -0.36602724, z: -0, w: 0.9306042}
+  m_LocalPosition: {x: 0, y: 0, z: 3.4942575}
+  m_LocalScale: {x: 0.0029344722, y: 0.0013599999, z: 0.0013599999}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8423377070888259164}
@@ -4141,12 +4173,12 @@ RectTransform:
   - {fileID: 5061849241235690486}
   - {fileID: 346136537442296380}
   - {fileID: 6305393871649503108}
-  m_Father: {fileID: 6964310039874684285}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 81.28, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 116.6, y: -21.2}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -28309.436, y: 16544.979}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &491649618922305029
 GameObject:
@@ -5982,7 +6014,6 @@ RectTransform:
   - {fileID: 432183859}
   - {fileID: 9035083283018833603}
   - {fileID: 6326175433728043403}
-  - {fileID: 369243373814642930}
   m_Father: {fileID: 335371835}
   m_LocalEulerAnglesHint: {x: 0, y: -124.221, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6838,3 +6869,4 @@ SceneRoots:
   - {fileID: 1138534133}
   - {fileID: 335371835}
   - {fileID: 99346036}
+  - {fileID: 369243373814642930}
