@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Controla la palanca del slot en VR.
-/// Se activa por rayo VR, reproduce animación
-/// y lanza el giro al terminar.
-/// </summary>
 public class SlotLeverVR : MonoBehaviour
 {
     [Header("Referencias")]
@@ -22,25 +17,25 @@ public class SlotLeverVR : MonoBehaviour
             leverAnimator = GetComponent<Animator>();
     }
 
-    // ==========================================================
-    // 🎯 LLAMADO DESDE EL RAYO VR
-    // ==========================================================
-    public void OnRayInteract()
+    // ==========================
+    // 🔘 XR ACTIVATE
+    // ==========================
+    public void OnActivate()
     {
         if (isBusy) return;
 
         isBusy = true;
         leverAnimator.SetTrigger(triggerPull);
 
-        Debug.Log("🕹 Palanca activada (animación)");
+        Debug.Log("🕹 Palanca activada");
     }
 
-    // ==========================================================
-    // 🎰 LLAMADO DESDE LA ANIMACIÓN (Animation Event)
-    // ==========================================================
+    // ==========================
+    // 🎰 EVENTO DE ANIMACIÓN
+    // ==========================
     public void OnLeverAnimationFinished()
     {
-        Debug.Log("🎰 Animación terminada → iniciar giro");
+        Debug.Log("🎰 Animación terminada → giro");
 
         if (giro != null)
             giro.IntentarGiro();
