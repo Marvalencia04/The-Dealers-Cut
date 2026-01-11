@@ -40,6 +40,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private MoneyManager moneyManager;
 
+    [Header("Global Screens (NOT hands)")]
+    [SerializeField] private GameObject globalVictoryPanel;
+    [SerializeField] private GameObject globalDefeatPanel;
+
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -198,7 +203,47 @@ public class UIManager : MonoBehaviour
     public void UpdateStateUI(GameState state)
     {
         UpdateStateTextAllHands(state);
-        ShowOnlyPanelAllHands(state);
+
+        switch (state)
+        {
+            case GameState.MainMenu:
+            case GameState.PlayingBlackjack:
+            case GameState.PlayingSlots:
+            case GameState.Pause:
+                ShowOnlyPanelAllHands(state);
+                HideGlobalScreens();
+                break;
+
+            case GameState.Victory:
+                
+                ShowGlobalVictory();
+                break;
+
+            case GameState.Defeat:
+                
+                ShowGlobalDefeat();
+                break;
+        }
+    }
+
+    private void HideGlobalScreens()
+    {
+        if (globalVictoryPanel != null) globalVictoryPanel.SetActive(false);
+        if (globalDefeatPanel != null) globalDefeatPanel.SetActive(false);
+    }
+
+    private void ShowGlobalVictory()
+    {
+        HideGlobalScreens();
+        if (globalVictoryPanel != null)
+            globalVictoryPanel.SetActive(true);
+    }
+
+    private void ShowGlobalDefeat()
+    {
+        HideGlobalScreens();
+        if (globalDefeatPanel != null)
+            globalDefeatPanel.SetActive(true);
     }
 
     // ----------------------------------------------------------------------

@@ -7559,21 +7559,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c810e309a1477094baaaec97d7e446ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuPanel: {fileID: 893160720}
-  blackjackHUDPanel: {fileID: 1590208841}
-  slotsHUDPanel: {fileID: 0}
-  pausePanel: {fileID: 0}
-  victoryPanel: {fileID: 0}
-  defeatPanel: {fileID: 0}
-  dayText: {fileID: 0}
-  quotaText: {fileID: 1584435995}
-  moneyText: {fileID: 2002533871}
-  roundText: {fileID: 1650092312}
-  phaseText: {fileID: 642442842}
-  stateText: {fileID: 578908316}
-  messageText: {fileID: 609529320}
+  hands:
+  - mainMenuPanel: {fileID: 0}
+    blackjackHUDPanel: {fileID: 0}
+    slotsHUDPanel: {fileID: 0}
+    pausePanel: {fileID: 0}
+    victoryPanel: {fileID: 1863622692}
+    defeatPanel: {fileID: 0}
+    dayText: {fileID: 609529320}
+    quotaText: {fileID: 1584435995}
+    moneyText: {fileID: 2002533871}
+    roundText: {fileID: 1650092312}
+    phaseText: {fileID: 0}
+    stateText: {fileID: 0}
+    messageText: {fileID: 0}
+  - mainMenuPanel: {fileID: 0}
+    blackjackHUDPanel: {fileID: 0}
+    slotsHUDPanel: {fileID: 0}
+    pausePanel: {fileID: 0}
+    victoryPanel: {fileID: 0}
+    defeatPanel: {fileID: 0}
+    dayText: {fileID: 0}
+    quotaText: {fileID: 0}
+    moneyText: {fileID: 0}
+    roundText: {fileID: 0}
+    phaseText: {fileID: 0}
+    stateText: {fileID: 0}
+    messageText: {fileID: 0}
   gameManager: {fileID: 624917975}
   moneyManager: {fileID: 1577552890}
+  globalVictoryPanel: {fileID: 1863622692}
+  globalDefeatPanel: {fileID: 701855879}
 --- !u!4 &525672806
 Transform:
   m_ObjectHideFlags: 0
@@ -8497,9 +8513,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentDay: 1
-  currentQuota: 0
-  roundsPerDay: 3
-  baseQuotaDay1: 2000
+  currentQuota: 1000
+  roundsPerDay: 5
+  quotasByDay: d007000094110000204e0000
   quotaByDayCurve:
     serializedVersion: 2
     m_Curve: []
@@ -8509,6 +8525,37 @@ MonoBehaviour:
   moneyManager: {fileID: 1577552890}
   rondaManager: {fileID: 1577566419}
   uiManager: {fileID: 525672805}
+--- !u!1 &637764144
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 637764145}
+  m_Layer: 0
+  m_Name: TPTragperras
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &637764145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637764144}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.162861, y: 0.93, z: 9.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &642442840
 GameObject:
   m_ObjectHideFlags: 0
@@ -16161,20 +16208,34 @@ MonoBehaviour:
   usosInicialLlamadaSeguridad: 1
   usosInicialNormaDealer: 1
   usosInicialMiraAlli: 1
+  trapSprites: []
   blackjackTable: {fileID: 27430041}
   uiManager: {fileID: 525672805}
-  btnMazoVisible: {fileID: 2119176355}
-  btnCartaAElegir: {fileID: 1498741975}
-  btnLlamadaSeguridad: {fileID: 490547275}
-  btnNormaDealer: {fileID: 1656753474}
-  btnMiraAlli: {fileID: 869845914}
-  txtMazoVisibleUsos: {fileID: 2122701426}
-  txtCartaAElegirUsos: {fileID: 735899463}
-  txtLlamadaSeguridadUsos: {fileID: 1386471296}
-  txtNormaDealerUsos: {fileID: 753876068}
-  txtMiraAlliUsos: {fileID: 1433876564}
-  txtMensajeTrampas: {fileID: 0}
   normaDealerTrap: {fileID: 2012445048}
+  handUI:
+  - btnMazoVisible: {fileID: 0}
+    btnCartaAElegir: {fileID: 0}
+    btnLlamadaSeguridad: {fileID: 0}
+    btnNormaDealer: {fileID: 0}
+    btnMiraAlli: {fileID: 0}
+    txtMazoVisibleUsos: {fileID: 0}
+    txtCartaAElegirUsos: {fileID: 0}
+    txtLlamadaSeguridadUsos: {fileID: 0}
+    txtNormaDealerUsos: {fileID: 0}
+    txtMiraAlliUsos: {fileID: 0}
+    txtMensajeTrampas: {fileID: 0}
+  - btnMazoVisible: {fileID: 0}
+    btnCartaAElegir: {fileID: 0}
+    btnLlamadaSeguridad: {fileID: 0}
+    btnNormaDealer: {fileID: 0}
+    btnMiraAlli: {fileID: 0}
+    txtMazoVisibleUsos: {fileID: 0}
+    txtCartaAElegirUsos: {fileID: 0}
+    txtLlamadaSeguridadUsos: {fileID: 0}
+    txtNormaDealerUsos: {fileID: 0}
+    txtMiraAlliUsos: {fileID: 0}
+    txtMensajeTrampas: {fileID: 0}
+  autoBindButtonsOnAwake: 1
 --- !u!4 &1337061970
 Transform:
   m_ObjectHideFlags: 0
@@ -18657,6 +18718,11 @@ MonoBehaviour:
   autoAdvanceAfterBets: 1
   autoSkipRevealDealerSecondCard: 1
   autoSkipRevealDelay: 0.05
+  pollClearTableInterval: 0.2
+  minResultsTimeBeforeAutoNext: 0.5
+  endOfDayTeleportTarget: {fileID: 637764145}
+  playerRoot: {fileID: 782556361}
+  enableDebugAdvanceRoundWithL: 1
 --- !u!4 &1577566420
 Transform:
   m_ObjectHideFlags: 0
@@ -24789,7 +24855,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2119176356}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 624917975}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: AdvanceToNextDay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2119176356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25545,3 +25623,4 @@ SceneRoots:
   - {fileID: 1241450134}
   - {fileID: 39998324}
   - {fileID: 2012445049}
+  - {fileID: 637764145}
