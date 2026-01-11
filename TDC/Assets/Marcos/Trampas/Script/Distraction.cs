@@ -1,22 +1,22 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro; // Solo si quieres mostrar temporizador en UI
 
 public class Distraction : MonoBehaviour
 {
-    [Header("Configuraci�n")]
+    [Header("Configuración")]
     public float distractionTime = 5f;
 
     [Header("UI")]
     public GameObject distractionMenu;
-    public TMP_Text timerText; // opcional, para mostrar cuenta atr�s
+    public TMP_Text timerText; // opcional, para mostrar cuenta atrás
 
     [Header("Cartas")]
     public List<CardSnapZone> allZones;
 
     [Header("Indicadores visuales")]
-    public GameObject exclamationPrefab; // Prefab de la exclamaci�n
+    public GameObject exclamationPrefab; // Prefab de la exclamación
     public Transform[] exclamationPositions; // Deben ser 3
 
     private Dictionary<CardSnapZone, int> initialCounts = new Dictionary<CardSnapZone, int>();
@@ -92,7 +92,7 @@ public class Distraction : MonoBehaviour
     }
 
     // ==========================
-    // C�DIGO COM�N PARA FINALIZAR
+    // CÓDIGO COMÚN PARA FINALIZAR
     // ==========================
     private void CompleteDistraction()
     {
@@ -113,16 +113,29 @@ public class Distraction : MonoBehaviour
             if (current != initial)
             {
                 allCorrect = false;
-                Debug.LogWarning($"{zone.name} tiene un n�mero incorrecto de cartas: tiene {current}, deber�a tener {initial}");
+                Debug.LogWarning($"{zone.name} tiene un número incorrecto de cartas: tiene {current}, debería tener {initial}");
             }
 
-            // Bloquear interacci�n de cartas
+            // Bloquear interacción de cartas
             zone.SetCanGrabFromZone(false);
         }
 
         if (allCorrect)
+        {
             Debug.Log("Todo Correcto");
+        }
+        else
+        {
+            // ❌ Activar penalización de Mira Allí
+            var rondaManager = FindObjectOfType<RondaManager>(); // O guarda referencia directa
+            if (rondaManager != null)
+            {
+                rondaManager.TriggerMiraAlliPenalty();
+                Debug.Log("⚠️ Mira Allí: penalización activada, los jugadores perderán esta ronda.");
+            }
+        }
     }
+
 
     // ==========================
     // VISUAL: EXCLAMACIONES

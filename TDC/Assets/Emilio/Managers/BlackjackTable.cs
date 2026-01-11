@@ -347,7 +347,15 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         return GetZoneScoreFromSnapZone(zone) == 21;
     }
 
-
+    /// <summary>
+    /// Activa el efecto de “Mira Allí”: todos los jugadores ganan instantáneamente.
+    /// </summary>
+    public void TriggerMiraAlliPenalty()
+    {
+        miraAlliPenaltyTriggered = true;
+        Debug.Log("[RondaManager] Penalización 'Mira Allí' activada: los jugadores ganaran automáticamente esta ronda.");
+        ResolveBetsAndPayouts();
+    }
     public void ResolveResultsFromZonesAndPayout()
     {
         if (moneyManager == null) moneyManager = MoneyManager.Instance;
