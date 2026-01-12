@@ -10774,6 +10774,46 @@ PrefabInstance:
       propertyPath: slotMachine
       value: 
       objectReference: {fileID: 1015541810}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1015541811}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSelectEntered
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SlotLeverVR, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719076264907409484, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3868119471576174232, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -10850,6 +10890,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adc14307a058070408aa2a1b68c5a6c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1015541811 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1756423887497497677, guid: 5ae2aaaf397bfb646b8ed667f7a81f16,
+    type: 3}
+  m_PrefabInstance: {fileID: 1015541808}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14a11b5f797048f488c6e1b6e878b36c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1017485724
@@ -15039,7 +15091,7 @@ PrefabInstance:
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
