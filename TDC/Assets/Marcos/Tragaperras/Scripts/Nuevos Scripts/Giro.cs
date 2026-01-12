@@ -39,8 +39,8 @@ public class Giro : MonoBehaviour
     private void Update()
     {
         // Giro normal
-        if (Input.GetKeyDown(KeyCode.Space))
-            IntentarGiro();
+        /*if (Input.GetKeyDown(KeyCode.Space))
+            IntentarGiro();*/
 
         // Forzar triples
         if (Input.GetKeyDown(KeyCode.Alpha1)) ForceTriple(0); // Triple 7
