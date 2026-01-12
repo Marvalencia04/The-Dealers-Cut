@@ -11,67 +11,77 @@ public class AudioSettingsManager : MonoBehaviour
     public Slider masterSlider;
     public Slider musicSlider;
     public Slider sfxSlider;
+    public Slider ambientSlider;
 
-    // ±©Â¶²ÎÊýÃû£¬ÒªÓë AudioMixer ÖÐ±©Â¶µÄÃû×ÖÒ»ÖÂ
+    // ParÃ¡metros expuestos en el AudioMixer
     private const string MASTER_PARAM = "MasterVolume";
-    private const string MUSIC_PARAM = "MusicVolume";
-    private const string SFX_PARAM = "SFXVolume";
+    private const string MUSIC_PARAM  = "MusicVolume";
+    private const string SFX_PARAM    = "SFXVolume";
+    private const string AMBIENT_PARAM = "AmbientVolume";
 
-    // ÓÃÓÚ±£´æµ½ PlayerPrefs µÄ¼ü
-    private const string MASTER_KEY = "MasterVolumeValue";
-    private const string MUSIC_KEY = "MusicVolumeValue";
-    private const string SFX_KEY = "SFXVolumeValue";
+    // Claves PlayerPrefs
+    private const string MASTER_KEY  = "MasterVolumeValue";
+    private const string MUSIC_KEY   = "MusicVolumeValue";
+    private const string SFX_KEY     = "SFXVolumeValue";
+    private const string AMBIENT_KEY = "AmbientVolumeValue";
 
     private void Start()
     {
-        // 1. ¶ÁÈ¡±¾µØ±£´æµÄÒôÁ¿£¨Èç¹ûÓÐ£©
-        float master = PlayerPrefs.GetFloat(MASTER_KEY, 1f);
-        float music = PlayerPrefs.GetFloat(MUSIC_KEY, 1f);
-        float sfx = PlayerPrefs.GetFloat(SFX_KEY, 1f);
+        // 1. Cargar valores guardados (0â€“1)
+        float master  = PlayerPrefs.GetFloat(MASTER_KEY, 1f);
+        float music   = PlayerPrefs.GetFloat(MUSIC_KEY, 1f);
+        float sfx     = PlayerPrefs.GetFloat(SFX_KEY, 1f);
+        float ambient = PlayerPrefs.GetFloat(AMBIENT_KEY, 1f);
 
-        // 2. ÉèÖÃ Slider ³õÊ¼Öµ£¨0~1£©
-        if (masterSlider != null) masterSlider.value = master;
-        if (musicSlider != null) musicSlider.value = music;
-        if (sfxSlider != null) sfxSlider.value = sfx;
+        // 2. Asignar sliders
+        if (masterSlider  != null) masterSlider.value  = master;
+        if (musicSlider   != null) musicSlider.value   = music;
+        if (sfxSlider     != null) sfxSlider.value     = sfx;
+        if (ambientSlider != null) ambientSlider.value = ambient;
 
-        // 3. °Ñ Slider µ±Ç°ÖµÓ¦ÓÃµ½ AudioMixer
+        // 3. Aplicar volÃºmenes al mixer
         SetMasterVolume(master);
         SetMusicVolume(music);
         SetSFXVolume(sfx);
+        SetAmbientVolume(ambient);
 
-        // 4. ×¢²á Slider ¸Ä±äÊÂ¼þ£¨Ò²¿ÉÒÔÔÚ Inspector µÄ OnValueChanged ÊÖ¶¯ÍÏ£©
-        if (masterSlider != null) masterSlider.onValueChanged.AddListener(SetMasterVolume);
-        if (musicSlider != null) musicSlider.onValueChanged.AddListener(SetMusicVolume);
-        if (sfxSlider != null) sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+        // 4. Listeners
+        if (masterSlider  != null) masterSlider.onValueChanged.AddListener(SetMasterVolume);
+        if (musicSlider   != null) musicSlider.onValueChanged.AddListener(SetMusicVolume);
+        if (sfxSlider     != null) sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+        if (ambientSlider != null) ambientSlider.onValueChanged.AddListener(SetAmbientVolume);
     }
 
-    // °Ñ 0~1 µÄÖµ×ª»»Îª AudioMixer µÄ dB£¨Ò»°ã -80dB ~ 0dB£©
+    // Convierte 0â€“1 a dB (-80 a 0)
     private float LinearToDecibel(float value)
     {
         if (value <= 0.0001f)
-            return -80f; // ¾²Òô
+            return -80f;
 
-        return Mathf.Log10(value) * 20f;  // ±ê×¼¹«Ê½
+        return Mathf.Log10(value) * 20f;
     }
 
     public void SetMasterVolume(float value)
     {
-        float dB = LinearToDecibel(value);
-        mainMixer.SetFloat(MASTER_PARAM, dB);
+        mainMixer.SetFloat(MASTER_PARAM, LinearToDecibel(value));
         PlayerPrefs.SetFloat(MASTER_KEY, value);
     }
 
     public void SetMusicVolume(float value)
     {
-        float dB = LinearToDecibel(value);
-        mainMixer.SetFloat(MUSIC_PARAM, dB);
+        mainMixer.SetFloat(MUSIC_PARAM, LinearToDecibel(value));
         PlayerPrefs.SetFloat(MUSIC_KEY, value);
     }
 
     public void SetSFXVolume(float value)
     {
-        float dB = LinearToDecibel(value);
-        mainMixer.SetFloat(SFX_PARAM, dB);
+        mainMixer.SetFloat(SFX_PARAM, LinearToDecibel(value));
         PlayerPrefs.SetFloat(SFX_KEY, value);
+    }
+
+    public void SetAmbientVolume(float value)
+    {
+        mainMixer.SetFloat(AMBIENT_PARAM, LinearToDecibel(value));
+        PlayerPrefs.SetFloat(AMBIENT_KEY, value);
     }
 }
