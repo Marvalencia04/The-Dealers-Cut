@@ -20,7 +20,7 @@ public class RondaManager : MonoBehaviour
 {
     public static RondaManager Instance { get; private set; }
 
-    [Header("Rondas por día")]
+    [Header("Rondas por dï¿½a")]
     [SerializeField] private int defaultRoundsPerDay = 5;
 
     [Header("Referencias")]
@@ -28,16 +28,16 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [SerializeField] private TrampasManager trampasManager;
 
-    [Tooltip("Gate que habilita/bloquea interacciones VR según fase (DeckXR, recoger, zonas...).")]
+    [Tooltip("Gate que habilita/bloquea interacciones VR segï¿½n fase (DeckXR, recoger, zonas...).")]
     [SerializeField] private BlackjackInteractionGateXR interactionGate;
 
-    [Tooltip("Mesa XR o controlador de blackjack que hace cálculos internos (apuestas, resultados, revelar carta...).")]
+    [Tooltip("Mesa XR o controlador de blackjack que hace cï¿½lculos internos (apuestas, resultados, revelar carta...).")]
     [SerializeField] private MonoBehaviour blackjackTableComponent;
 
     // Si tu mesa implementa estas funciones (las que venimos usando)
     private IBlackjackTableFlow tableFlow;
 
-    // Estado de día
+    // Estado de dï¿½a
     [SerializeField] private int totalRoundsPerDay;
     [SerializeField] private int currentRound;
 
@@ -88,13 +88,13 @@ public class RondaManager : MonoBehaviour
         tableFlow = blackjackTableComponent as IBlackjackTableFlow;
         if (blackjackTableComponent != null && tableFlow == null)
         {
-            Debug.LogWarning("[RondaManager] blackjackTableComponent no implementa IBlackjackTableFlow. " +
-                             "Podrás cambiar fases, pero no ejecutar cálculos de apuestas/resultados.");
+            //Debug.LogWarning("[RondaManager] blackjackTableComponent no implementa IBlackjackTableFlow. " +
+                            // "Podrï¿½s cambiar fases, pero no ejecutar cï¿½lculos de apuestas/resultados.");
         }
     }
 
     // ----------------------------------------------------------------------
-    // Configuración por día (llamado por GameManager)
+    // Configuraciï¿½n por dï¿½a (llamado por GameManager)
     // ----------------------------------------------------------------------
 
     public void SetupForNewDay(int rounds)
@@ -103,7 +103,7 @@ public class RondaManager : MonoBehaviour
         currentRound = 0;
         currentPhase = BlackjackPhase.None;
 
-        Debug.Log($"[RondaManager] Nuevo día configurado. Rondas: {totalRoundsPerDay}");
+        //Debug.Log($"[RondaManager] Nuevo dï¿½a configurado. Rondas: {totalRoundsPerDay}");
     }
 
     public void StartFirstRound()
@@ -117,12 +117,12 @@ public class RondaManager : MonoBehaviour
 
         if (currentRound > totalRoundsPerDay)
         {
-            Debug.Log("[RondaManager] Día terminado: todas las rondas completadas.");
+            //Debug.Log("[RondaManager] Dï¿½a terminado: todas las rondas completadas.");
             gameManager?.OnAllRoundsFinished();
             return;
         }
 
-        Debug.Log($"[RondaManager] Ronda {currentRound}/{totalRoundsPerDay} iniciada.");
+        //Debug.Log($"[RondaManager] Ronda {currentRound}/{totalRoundsPerDay} iniciada.");
 
         // Reseteo interno de la mesa (cartas, estados, etc.)
         tableFlow?.ResetForNewRound();
@@ -132,12 +132,12 @@ public class RondaManager : MonoBehaviour
 
         OnRoundStarted?.Invoke(currentRound);
 
-        // Entramos en apuestas (cálculo interno + permisos)
+        // Entramos en apuestas (cï¿½lculo interno + permisos)
         GoToPhase(BlackjackPhase.Apuestas);
     }
 
     // ----------------------------------------------------------------------
-    // Cambio de fase (solo aquí se cambia)
+    // Cambio de fase (solo aquï¿½ se cambia)
     // ----------------------------------------------------------------------
 
     public void GoToPhase(BlackjackPhase newPhase)
@@ -190,12 +190,12 @@ public class RondaManager : MonoBehaviour
 
                 if (IsLastRoundOfDay())
                 {
-                    Debug.Log("aaaaaaaaaaaaaaaaa");
+                    //Debug.Log("aaaaaaaaaaaaaaaaa");
                     StopAllCoroutines();
 
                     // (Opcional) Bloquear recoger cartas / interacciones si quieres
-                    // interactionGate?.ApplyPhase(BlackjackPhase.Resultados); // si esto habilita recoger, mejor no llamarlo o añade un modo "ResultsLocked"
-                    // Si ya estás en Resultados y el gate pone Collect=true, puedes desactivar collectors manualmente (te lo pongo abajo).
+                    // interactionGate?.ApplyPhase(BlackjackPhase.Resultados); // si esto habilita recoger, mejor no llamarlo o aï¿½ade un modo "ResultsLocked"
+                    // Si ya estï¿½s en Resultados y el gate pone Collect=true, puedes desactivar collectors manualmente (te lo pongo abajo).
 
                     if (gameManager != null)
                         gameManager.OnDayFinished(); // aqui se decide derrota/victoria segun cuota
@@ -301,7 +301,7 @@ public class RondaManager : MonoBehaviour
 
     private void EndDayAndTeleport()
     {
-        Debug.Log("[RondaManager] Día completado. Teletransportando jugador.");
+        //Debug.Log("[RondaManager] Dï¿½a completado. Teletransportando jugador.");
 
         if (playerRoot != null && endOfDayTeleportTarget != null)
         {
@@ -311,7 +311,7 @@ public class RondaManager : MonoBehaviour
 
         else
         {
-            Debug.LogWarning("[RondaManager] Falta asignar playerRoot o endOfDayTeleportTarget.");
+            //Debug.LogWarning("[RondaManager] Falta asignar playerRoot o endOfDayTeleportTarget.");
         }
     }
 
@@ -334,7 +334,7 @@ public class RondaManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            Debug.Log("[RondaManager] DEBUG: Tecla L pulsada -> avanzar ronda.");
+            //Debug.Log("[RondaManager] DEBUG: Tecla L pulsada -> avanzar ronda.");
             DebugAdvanceRound();
         }
     }
@@ -387,13 +387,13 @@ public class RondaManager : MonoBehaviour
         if (uiManager != null)
             uiManager.ShowRoundIntro(currentRound, totalRoundsPerDay);
 
-        Debug.Log("[RondaManager] ResetForNewDay -> currentRound=1 y vuelta a Apuestas");
+        //Debug.Log("[RondaManager] ResetForNewDay -> currentRound=1 y vuelta a Apuestas");
     }
 
 
 
     // ----------------------------------------------------------------------
-    // Métodos que llamará EL JUGADOR (botones/acciones)
+    // Mï¿½todos que llamarï¿½ EL JUGADOR (botones/acciones)
     // ----------------------------------------------------------------------
 
     /// <summary>Apuestas -> Reparto</summary>
@@ -435,8 +435,8 @@ public class RondaManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Resultados: hace cálculos de ganancia/pérdida con MoneyManager.
-    /// NO pasa de ronda automáticamente: el jugador decide cuándo.
+    /// Resultados: hace cï¿½lculos de ganancia/pï¿½rdida con MoneyManager.
+    /// NO pasa de ronda automï¿½ticamente: el jugador decide cuï¿½ndo.
     /// </summary>
     public void PlayerResolveResults()
     {
@@ -444,9 +444,9 @@ public class RondaManager : MonoBehaviour
 
         tableFlow?.ResolveRoundPayouts();
 
-        Debug.Log("[RondaManager] Resultados resueltos. Esperando a que el jugador pase a la siguiente ronda.");
+        //Debug.Log("[RondaManager] Resultados resueltos. Esperando a que el jugador pase a la siguiente ronda.");
 
-        // Aquí puedes mostrar un mensaje en UI si quieres
+        // Aquï¿½ puedes mostrar un mensaje en UI si quieres
         // uiManager?.ShowCustomMessage("Resultados aplicados. Limpia la mesa y pulsa 'Siguiente Ronda'.");
     }
 
@@ -463,8 +463,8 @@ public class RondaManager : MonoBehaviour
     }
 
     // ----------------------------------------------------------------------
-    // Compatibilidad: si algún código viejo llama a esto (NPCs), lo mantenemos.
-    // Ahora NO auto-avanza, solo sirve para que tú uses ese evento si quieres.
+    // Compatibilidad: si algï¿½n cï¿½digo viejo llama a esto (NPCs), lo mantenemos.
+    // Ahora NO auto-avanza, solo sirve para que tï¿½ uses ese evento si quieres.
     // ----------------------------------------------------------------------
 
     public void OnPlayersTurnCompleted()
@@ -472,13 +472,13 @@ public class RondaManager : MonoBehaviour
         if (currentPhase != BlackjackPhase.TurnoJugadores) return;
         GoToPhase(BlackjackPhase.RevelarSegundaCarta);
 
-        Debug.Log("[RondaManager] OnPlayersTurnCompleted recibido (no cambia fase automáticamente).");
+        //Debug.Log("[RondaManager] OnPlayersTurnCompleted recibido (no cambia fase automï¿½ticamente).");
     }
 }
 
 /// <summary>
-/// Interfaz de "flujo lógico" de mesa para que el RondaManager haga cálculos internos
-/// sin controlar acciones físicas del dealer.
+/// Interfaz de "flujo lï¿½gico" de mesa para que el RondaManager haga cï¿½lculos internos
+/// sin controlar acciones fï¿½sicas del dealer.
 /// </summary>
 public interface IBlackjackTableFlow
 {
@@ -487,10 +487,10 @@ public interface IBlackjackTableFlow
     // Apuestas
     void ComputeBetsForThisRound();
 
-    // NPC turn (si automático)
+    // NPC turn (si automï¿½tico)
     void StartNPCDecisionTurn();
 
-    // Dealer reveal (interno, no físico)
+    // Dealer reveal (interno, no fï¿½sico)
     void RevealDealerSecondCardInternal();
 
     // Payouts

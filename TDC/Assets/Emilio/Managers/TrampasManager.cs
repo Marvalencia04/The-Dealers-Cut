@@ -257,7 +257,7 @@ public class TrampasManager : MonoBehaviour
                 return data.sprite;
         }
 
-        Debug.LogWarning($"[TrampasManager] No hay sprite asignado para {type}");
+        //Debug.LogWarning($"[TrampasManager] No hay sprite asignado para {type}");
         return null;
     }
     // ----------------------------------------------------------------------
@@ -361,7 +361,7 @@ public class TrampasManager : MonoBehaviour
 
     public void OnClick_NormaDealer()
     {
-        Debug.Log("NorMa Dealer Activada");
+        //Debug.Log("NorMa Dealer Activada");
         // NormaDealer: valida fase/usos, ejecuta, si no se aplica NO consume.
         if (!IsTrapAllowedInCurrentPhase(TrapType.NormaDealer))
         {
@@ -501,7 +501,7 @@ public class TrampasManager : MonoBehaviour
             // uiManager.ShowMessage(msg);
         }
 
-        Debug.Log("[TrampasManager] " + msg);
+        //Debug.Log("[TrampasManager] " + msg);
     }
 
     public void LogUsosActuales()

@@ -280,20 +280,20 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         if (rondaManager == null)
         {
-            Debug.LogError("[BlackjackTable] rondaManager missing.");
+            //Debug.LogError("[BlackjackTable] rondaManager missing.");
             return false;
         }
 
         // Solo tiene sentido durante TurnoDealer
         if (rondaManager.CurrentPhase != BlackjackPhase.TurnoDealer)
         {
-            Debug.Log("[BlackjackTable] NormaDealer ignored: not in TurnoDealer.");
+            //Debug.Log("[BlackjackTable] NormaDealer ignored: not in TurnoDealer.");
             return false;
         }
 
         if (dealerZone == null)
         {
-            Debug.LogError("[BlackjackTable] dealerZone missing.");
+            //Debug.LogError("[BlackjackTable] dealerZone missing.");
             return false;
         }
 
@@ -302,7 +302,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         // La trampa permite plantarse si el dealer tiene MENOS de 17
         if (dealerScore >= 17)
         {
-            Debug.Log($"[BlackjackTable] NormaDealer cannot be used: dealerScore={dealerScore} (>=17).");
+           // Debug.Log($"[BlackjackTable] NormaDealer cannot be used: dealerScore={dealerScore} (>=17).");
             return false;
         }
 
@@ -313,7 +313,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         // 2) Saltar directamente a Resultados
         rondaManager.OnDealerTurnCompleted();
 
-        Debug.Log($"[BlackjackTable] NormaDealer used: force stand at score={dealerScore}. Going to Results.");
+       // Debug.Log($"[BlackjackTable] NormaDealer used: force stand at score={dealerScore}. Going to Results.");
         return true;
     }
 
@@ -361,12 +361,12 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     }
 
     /// <summary>
-    /// Activa el efecto de “Mira Allí”: todos los jugadores ganan instantáneamente.
+    /// Activa el efecto de ï¿½Mira Allï¿½: todos los jugadores ganan instantï¿½neamente.
     /// </summary>
     public void TriggerMiraAlliPenalty()
     {
         miraAlliPenaltyTriggered = true;
-        Debug.Log("[RondaManager] Penalización 'Mira Allí' activada: los jugadores ganaran automáticamente esta ronda.");
+       // Debug.Log("[RondaManager] Penalizaciï¿½n 'Mira Allï¿½' activada: los jugadores ganaran automï¿½ticamente esta ronda.");
         ResolveBetsAndPayouts();
     }
     public void ResolveResultsFromZonesAndPayout()
@@ -377,7 +377,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         bool dealerBust = dealerScore > 21;
         bool dealerBJ = IsZoneBlackjack(dealerZone);
 
-        Log($"[RESULTS] Dealer score={dealerScore} bust={dealerBust} blackjack={dealerBJ}");
+        //Log($"[RESULTS] Dealer score={dealerScore} bust={dealerBust} blackjack={dealerBJ}");
 
         foreach (var npc in npcManager.GetNPCs())
         {
@@ -386,7 +386,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             // Si fue expulsado por seguridad, su mano se anula (no se paga nada)
             if (npc.IsRemovedBySecurity)
             {
-                Log($"[RESULTS] NPC {id} removed by security -> skip.");
+                //Log($"[RESULTS] NPC {id} removed by security -> skip.");
                 continue;
             }
 
@@ -395,14 +395,14 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             currentBets.TryGetValue(id, out bet);
             if (bet <= 0)
             {
-                Log($"[RESULTS] NPC {id} bet=0 -> skip.");
+                //Log($"[RESULTS] NPC {id} bet=0 -> skip.");
                 continue;
             }
 
             // Zona del NPC por ID (asumimos playerZones[id] corresponde a ese NPC)
             if (id < 0 || id >= playerZones.Length || playerZones[id] == null)
             {
-                Debug.LogWarning($"[BlackjackTable] Missing playerZone for NPC id={id}");
+                //Debug.LogWarning($"[BlackjackTable] Missing playerZone for NPC id={id}");
                 continue;
             }
 
@@ -412,7 +412,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             bool playerBust = playerScore > 21;
             bool playerBJ = IsZoneBlackjack(zone);
 
-            Log($"[RESULTS] NPC {id}: score={playerScore} bust={playerBust} blackjack={playerBJ} bet={bet}");
+            //Log($"[RESULTS] NPC {id}: score={playerScore} bust={playerBust} blackjack={playerBJ} bet={bet}");
 
             // 1) Si el jugador se pasa -> la casa gana
             if (playerBust)
@@ -430,7 +430,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             }
             if (dealerBJ && !playerBJ)
             {
-                // Dealer blackjack gana: en tu diseño era DealerWins(bet*2) (ojo, esto es muy agresivo)
+                // Dealer blackjack gana: en tu diseï¿½o era DealerWins(bet*2) (ojo, esto es muy agresivo)
                 // Para mantener coherencia con lo anterior:
                 moneyManager.DealerWins(bet);
                 continue;
@@ -448,7 +448,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 continue;
             }
 
-            // 4) Comparación normal
+            // 4) Comparaciï¿½n normal
             if (playerScore > dealerScore)
             {
                 moneyManager.DealerPaysWin(bet);
@@ -463,7 +463,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             }
         }
 
-        Log("[RESULTS] Payout complete.");
+        //Log("[RESULTS] Payout complete.");
     }
 
 
@@ -506,7 +506,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 bt?.Clear();
         }
 
-        Log("Table reset for new round.");
+        //Log("Table reset for new round.");
     }
 
     // Phase 1: Bets (random with minimum)
@@ -514,7 +514,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         if (npcManager == null)
         {
-            Debug.LogError("[BlackjackTable] npcManager is missing.");
+            //Debug.LogError("[BlackjackTable] npcManager is missing.");
             return;
         }
 
@@ -525,7 +525,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             currentBets[npc.Id] = npc.CurrentBet;
         }
 
-        Log("Bets generated.");
+        //Log("Bets generated.");
     }
 
     // Phase 2: Initial deal (2 cards each player + dealer)
@@ -545,7 +545,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         DrawToDealer(); // hidden until phase 4
         dealerSecondCardHidden = true;
 
-        Log("Initial cards dealt.");
+        //Log("Initial cards dealt.");
     }
 
     // Phase 3: Players turn (NPC hit/stand)
@@ -553,7 +553,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         if (npcManager == null)
         {
-            Debug.LogError("[BlackjackTable] npcManager is missing.");
+            //Debug.LogError("[BlackjackTable] npcManager is missing.");
             return;
         }
 
@@ -561,7 +561,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         npcManager.OnAllNPCsFinishedTurn += HandleNPCsFinishedTurn;
 
         npcManager.StartNPCsTurn();
-        Log("NPCs turn started.");
+        //Log("NPCs turn started.");
     }
 
     private void HandleNPCsFinishedTurn()
@@ -571,14 +571,14 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         if (rondaManager != null)
             rondaManager.OnPlayersTurnCompleted();
 
-        Log("NPCs turn finished.");
+        //Log("NPCs turn finished.");
     }
 
     // Phase 4: Reveal dealer second card
     public void RevealDealerSecondCard()
     {
         dealerSecondCardHidden = false;
-        Log("Dealer reveals second card.");
+        //Log("Dealer reveals second card.");
     }
 
     // Phase 5: Dealer turn (normal vs trap)
@@ -593,7 +593,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 DrawToDealer();
             }
 
-            Log("Dealer turn ended (normal). Score=" + dealerHand.Score);
+            //Log("Dealer turn ended (normal). Score=" + dealerHand.Score);
             return;
         }
 
@@ -609,7 +609,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         }
 
         ignoreDealerRulesThisRound = false;
-        Log("Dealer turn ended (DealerRule trap). Score=" + dealerHand.Score);
+        //Log("Dealer turn ended (DealerRule trap). Score=" + dealerHand.Score);
     }
 
     // Phase 6: Resolve results and payouts
@@ -628,7 +628,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             }
 
             EndRound();
-            Log("MiraAlli penalty: instant win for all players.");
+            //Log("MiraAlli penalty: instant win for all players.");
             return;
         }
 
@@ -688,7 +688,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         }
 
         EndRound();
-        Log("Results resolved.");
+        //Log("Results resolved.");
     }
 
     private void EndRound()
@@ -698,7 +698,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
     public void ComputeBetsForThisRound()
     {
-        Debug.Log("ComputeBetsForThisRound called!");
+        //Debug.Log("ComputeBetsForThisRound called!");
 
         // 1) Generar apuestas (aqui se asigna npc.CurrentBet)
         npcManager.GenerateBetsForCurrentRound();
@@ -741,7 +741,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         Card[] peek = deck.PeekNext(3);
         OnNextThreeCardsShown?.Invoke(peek);
 
-        Log("VisibleDeck: " + string.Join(", ", peek.Select(c => c.ToShortString())));
+        //Log("VisibleDeck: " + string.Join(", ", peek.Select(c => c.ToShortString())));
     }
 
     // Trap: Choose a card - draw 3 options, choose one to force next draw
@@ -750,7 +750,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         cartaElegirOptions = deck.DrawMany(3);
         OnCartaAElegirPresented?.Invoke(cartaElegirOptions);
 
-        Log("ChooseCard options: " + string.Join(", ", cartaElegirOptions.Select(c => c.ToShortString())));
+        //Log("ChooseCard options: " + string.Join(", ", cartaElegirOptions.Select(c => c.ToShortString())));
     }
 
     // Called from UI when the player picks an option
@@ -766,13 +766,13 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         {
             forcedTarget = ForcedDrawTarget.Dealer;
             forcedPlayerId = -1;
-            Log("ChooseCard forced for DEALER: " + forcedCard.ToShortString());
+            //Log("ChooseCard forced for DEALER: " + forcedCard.ToShortString());
         }
         else
         {
             forcedTarget = ForcedDrawTarget.Player;
             forcedPlayerId = playerIdIfNotDealer;
-            Log("ChooseCard forced for player " + forcedPlayerId + ": " + forcedCard.ToShortString());
+            //Log("ChooseCard forced for player " + forcedPlayerId + ": " + forcedCard.ToShortString());
         }
 
         cartaElegirOptions = null; // other 2 are discarded
@@ -786,7 +786,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         var ids = npcManager.GetNPCs().Select(n => n.Id).ToList();
         OnSecurityTargetSelectionRequested?.Invoke(ids);
 
-        Log("SecurityCall: waiting for selection (call ChooseSecurityTarget).");
+       // Log("SecurityCall: waiting for selection (call ChooseSecurityTarget).");
     }
 
     // Called from UI when a target is selected
@@ -799,14 +799,14 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
         playersRemovedBySecurity.Add(npcId);
 
-        Log("Security removed player " + npcId + ". Stolen bet=" + stolenBet + ". Hand void.");
+        //Log("Security removed player " + npcId + ". Stolen bet=" + stolenBet + ". Hand void.");
     }
 
     // Trap: Dealer rule - ignore dealer mandatory hit/stand for this round
     public void EnableIgnoreDealerRulesForThisRound()
     {
         ignoreDealerRulesThisRound = true;
-        Log("DealerRule trap enabled for this round.");
+        //Log("DealerRule trap enabled for this round.");
     }
 
     // Trap: MiraAlli - simplified mode (manual end)
@@ -818,7 +818,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         miraAlliPenaltyTriggered = false;
 
         tableIntegrityStartCount = GetTotalCardsOnTable();
-        Log("MiraAlli started.");
+        //Log("MiraAlli started.");
     }
 
     public void EndMiraAlliMode()
@@ -831,11 +831,11 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         if (endCount != tableIntegrityStartCount)
         {
             miraAlliPenaltyTriggered = true;
-            Log("MiraAlli penalty: card count mismatch.");
+            //Log("MiraAlli penalty: card count mismatch.");
         }
         else
         {
-            Log("MiraAlli ended without penalty.");
+           // Log("MiraAlli ended without penalty.");
         }
     }
 
@@ -886,7 +886,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         if (npcManager == null)
         {
-            Debug.LogError("[BlackjackTable] npcManager missing.");
+            //Debug.LogError("[BlackjackTable] npcManager missing.");
             return;
         }
 
@@ -1041,7 +1041,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     {
         Card c = DrawCardConsideringForced(ForcedDrawTarget.Player, playerId);
         playerHands[playerId].Add(c);
-        Log("Player " + playerId + " draws " + c.ToShortString() + " (score=" + playerHands[playerId].Score + ")");
+        //Log("Player " + playerId + " draws " + c.ToShortString() + " (score=" + playerHands[playerId].Score + ")");
     }
 
     private void DrawToDealer()
@@ -1130,7 +1130,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
     private void Log(string msg)
     {
-        Debug.Log("[BlackjackTable] " + msg);
+        //Debug.Log("[BlackjackTable] " + msg);
         OnTableLog?.Invoke(msg);
     }
 
@@ -1141,18 +1141,18 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
         if (dealerZone == null)
         {
-            Debug.LogError("[BlackjackTable] dealerZone is NULL");
+            //Debug.LogError("[BlackjackTable] dealerZone is NULL");
             return false;
         }
 
         if (playerZones == null || playerZones.Length == 0)
         {
-            Debug.LogError("[BlackjackTable] playerZones is NULL or empty");
+            //Debug.LogError("[BlackjackTable] playerZones is NULL or empty");
             return false;
         }
 
         int dealerCount = dealerZone.GetOccupiedCount();
-        Debug.Log($"Dealer: {dealerCount}/{requiredCardsPerHand}");
+        //Debug.Log($"Dealer: {dealerCount}/{requiredCardsPerHand}");
 
         if (dealerCount < requiredCardsPerHand)
             return false;
@@ -1161,17 +1161,17 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         {
             if (playerZones[i] == null)
             {
-                Debug.LogError($"PlayerZone {i} is NULL");
+                //Debug.LogError($"PlayerZone {i} is NULL");
                 return false;
             }
 
             int count = playerZones[i].GetOccupiedCount();
-            Debug.Log($"PlayerZone {i}: {count}/{requiredCardsPerHand}");
+            //Debug.Log($"PlayerZone {i}: {count}/{requiredCardsPerHand}");
 
             if (count < requiredCardsPerHand)
                 return false;
         }
-        Debug.Log("AreInitialHandsComplete = TRUE");
+        //Debug.Log("AreInitialHandsComplete = TRUE");
         return true;
     }
 

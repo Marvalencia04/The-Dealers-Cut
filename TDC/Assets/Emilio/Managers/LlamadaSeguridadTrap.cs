@@ -82,7 +82,7 @@ public class LlamadaSeguridadTrap : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[LlamadaSeguridadTrap] playerZones not configured or id out of range.");
+            //Debug.LogWarning("[LlamadaSeguridadTrap] playerZones not configured or id out of range.");
         }
 
         // 5) Sumar dinero inmediatamente (robas su apuesta)

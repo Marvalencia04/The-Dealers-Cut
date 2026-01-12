@@ -25,6 +25,17 @@ public class DeckXR : MonoBehaviour
     [Tooltip("Material que se usa para ocultar las cartas (Joker).")]
     public Material jokerMaterial;
 
+    [Header("FX - Sonido")]
+    [Tooltip("AudioSource para efectos (NO música)")]
+    [SerializeField] private AudioSource fxSource;
+
+    [Tooltip("Sonidos al sacar una carta del mazo")]
+    [SerializeField] private List<AudioClip> drawCardFX = new();
+
+    [Range(0f, 1f)]
+    [SerializeField] private float fxVolume = 1f;
+
+
 
     private List<GameObject> runtimeDeck = new List<GameObject>();
 
@@ -108,7 +119,8 @@ public class DeckXR : MonoBehaviour
         }
 
         GameObject cardObj = Instantiate(prefab, pos, rot);
-
+        PlayDrawFX();
+        
         Card cardComp = cardObj.GetComponent<Card>();
         if (cardComp != null)
         {
@@ -132,6 +144,16 @@ public class DeckXR : MonoBehaviour
         if (interactionManager != null)
             interactionManager.SelectEnter(interactor, grab);
     }
+
+    private void PlayDrawFX()
+    {
+        if (fxSource == null || drawCardFX == null || drawCardFX.Count == 0)
+            return;
+
+        int index = Random.Range(0, drawCardFX.Count);
+        fxSource.PlayOneShot(drawCardFX[index], fxVolume);
+    }
+
 
     // ===============================
     // DEVOLVER CARTAS

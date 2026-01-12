@@ -33,7 +33,7 @@ public class StartMenuEmilio : MonoBehaviour
 
     public void Salir()
     {
-        Debug.Log("Salir del juego...");
+        //Debug.Log("Salir del juego...");
         Application.Quit();
     }
 }

@@ -12,13 +12,24 @@ public class CardCollector : MonoBehaviour
     [Header("Permitir que este jugador recoja cartas")]
     public bool canCollectCards = true;
 
-    //  OPTIMIZACIÓN: Cachear componentes Card
+    //  OPTIMIZACIï¿½N: Cachear componentes Card
     private Dictionary<Collider, Card> colliderToCardCache = new Dictionary<Collider, Card>();
 
-    //  OPTIMIZACIÓN: Cooldown para evitar procesar la misma carta múltiples veces
+    //  OPTIMIZACIï¿½N: Cooldown para evitar procesar la misma carta mï¿½ltiples veces
     private HashSet<Card> processedCards = new HashSet<Card>();
     private float lastClearTime = 0f;
     private const float CLEAR_INTERVAL = 0.5f;
+
+    [Header("FX - Recoger cartas")]
+    [SerializeField] private AudioSource fxSource;
+
+    [SerializeField] private List<AudioClip> collectFX = new();
+
+    [Range(0f, 1f)]
+    [SerializeField] private float fxVolume = 1f;
+
+    [SerializeField] private Vector2 pitchRange = new Vector2(0.95f, 1.05f);
+
 
     private void Start()
     {
@@ -29,7 +40,7 @@ public class CardCollector : MonoBehaviour
             collectCollider.enabled = false;
     }
 
-    //  OPTIMIZACIÓN: Limpiar periódicamente el set de cartas procesadas
+    //  OPTIMIZACIï¿½N: Limpiar periï¿½dicamente el set de cartas procesadas
     private void Update()
     {
         if (Time.time - lastClearTime > CLEAR_INTERVAL)
@@ -38,6 +49,19 @@ public class CardCollector : MonoBehaviour
             lastClearTime = Time.time;
         }
     }
+
+    private void PlayCollectFX()
+    {
+        if (fxSource == null || collectFX == null || collectFX.Count == 0) return;
+
+        int index = Random.Range(0, collectFX.Count);
+
+        float oldPitch = fxSource.pitch;
+        fxSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
+        fxSource.PlayOneShot(collectFX[index], fxVolume);
+        fxSource.pitch = oldPitch;
+    }
+
 
     public void StartCollecting()
     {
@@ -56,13 +80,13 @@ public class CardCollector : MonoBehaviour
         {
             collectCollider.enabled = false;
             processedCards.Clear(); // Limpiar al dejar de recoger
-            colliderToCardCache.Clear(); // Limpiar caché
+            colliderToCardCache.Clear(); // Limpiar cachï¿½
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        //  OPTIMIZACIÓN: Cachear en OnTriggerEnter
+        //  OPTIMIZACIï¿½N: Cachear en OnTriggerEnter
         if (!colliderToCardCache.ContainsKey(other))
         {
             Card card = other.GetComponentInParent<Card>();
@@ -75,7 +99,7 @@ public class CardCollector : MonoBehaviour
         TryCollect(other);
     }
 
-    //  OPTIMIZACIÓN: OnTriggerStay es muy costoso, considerar eliminarlo
+    //  OPTIMIZACIï¿½N: OnTriggerStay es muy costoso, considerar eliminarlo
     // Si necesitas que funcione mientras mantienes el grip, usa un timer en Update
     private void OnTriggerStay(Collider other)
     {
@@ -84,7 +108,7 @@ public class CardCollector : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        // Limpiar caché cuando sale
+        // Limpiar cachï¿½ cuando sale
         if (colliderToCardCache.TryGetValue(other, out Card card))
         {
             colliderToCardCache.Remove(other);
@@ -99,13 +123,13 @@ public class CardCollector : MonoBehaviour
         if (collectCollider == null || !collectCollider.enabled)
             return;
 
-        //  OPTIMIZACIÓN: Usar caché en lugar de GetComponentInParent
+        //  OPTIMIZACIï¿½N: Usar cachï¿½ en lugar de GetComponentInParent
         if (!colliderToCardCache.TryGetValue(other, out Card card))
             return;
 
         if (card == null) return;
 
-        //  OPTIMIZACIÓN: Evitar procesar la misma carta múltiples veces
+        //  OPTIMIZACIï¿½N: Evitar procesar la misma carta mï¿½ltiples veces
         if (processedCards.Contains(card))
             return;
 
@@ -114,6 +138,7 @@ public class CardCollector : MonoBehaviour
         // Sacarla de cualquier zona antes de devolverla
         if (card.currentZone != null)
             card.currentZone.RemoveCard(card);
+        PlayCollectFX();
 
         deck.ReturnToBottom(card);
     }

@@ -2,24 +2,24 @@ using UnityEngine;
 using System;
 
 /// <summary>
-/// MoneyManager: única fuente de verdad para el dinero del jugador/casino.
-/// Nadie más debería modificar el dinero directamente.
+/// MoneyManager: ï¿½nica fuente de verdad para el dinero del jugador/casino.
+/// Nadie mï¿½s deberï¿½a modificar el dinero directamente.
 /// </summary>
 public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Instance { get; private set; }
 
-    // ==== CONFIGURACIÓN GENERAL ====
+    // ==== CONFIGURACIï¿½N GENERAL ====
 
-    [Header("Configuración inicial")]
+    [Header("Configuraciï¿½n inicial")]
     [Tooltip("Dinero inicial al empezar una nueva partida.")]
     [SerializeField] private int startingMoney = 0;
 
-    [Header("Apuestas mínimas")]
-    [Tooltip("Apuesta mínima base del día 1.")]
+    [Header("Apuestas mï¿½nimas")]
+    [Tooltip("Apuesta mï¿½nima base del dï¿½a 1.")]
     [SerializeField] private int baseMinBetDay1 = 100;
 
-    [Tooltip("Curva opcional para calcular la apuesta mínima según el día (X = día, Y = min bet).")]
+    [Tooltip("Curva opcional para calcular la apuesta mï¿½nima segï¿½n el dï¿½a (X = dï¿½a, Y = min bet).")]
     [SerializeField] private AnimationCurve minBetByDayCurve;
 
     // ==== ESTADO ACTUAL ====
@@ -39,7 +39,7 @@ public class MoneyManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton clásico
+        // Singleton clï¿½sico
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -65,23 +65,23 @@ public class MoneyManager : MonoBehaviour
     public void SetMoney(int amount)
     {
         currentMoney = Mathf.Max(0, amount);
-        Debug.Log($"[MoneyManager] Dinero seteado a: {currentMoney}");
+        //Debug.Log($"[MoneyManager] Dinero seteado a: {currentMoney}");
         OnMoneyChanged?.Invoke(currentMoney);
     }
 
     /// <summary>
-    /// Añade dinero (puede ser negativo, pero nunca baja de 0).
+    /// Aï¿½ade dinero (puede ser negativo, pero nunca baja de 0).
     /// </summary>
     public void AddMoney(int amount)
     {
         int newValue = currentMoney + amount;
         currentMoney = Mathf.Max(0, newValue);
-        Debug.Log($"[MoneyManager] Dinero modificado en {amount}. Nuevo total: {currentMoney}");
+        //Debug.Log($"[MoneyManager] Dinero modificado en {amount}. Nuevo total: {currentMoney}");
         OnMoneyChanged?.Invoke(currentMoney);
     }
 
     // ----------------------------------------------------------------------
-    //                          CONSULTAS BÁSICAS
+    //                          CONSULTAS Bï¿½SICAS
     // ----------------------------------------------------------------------
 
     /// <summary>
@@ -99,22 +99,22 @@ public class MoneyManager : MonoBehaviour
     {
         if (!CanAfford(amount))
         {
-            Debug.Log($"[MoneyManager] No se puede gastar {amount}, dinero actual: {currentMoney}");
+            //Debug.Log($"[MoneyManager] No se puede gastar {amount}, dinero actual: {currentMoney}");
             return false;
         }
 
         currentMoney -= amount;
-        Debug.Log($"[MoneyManager] Gasto de {amount}. Nuevo total: {currentMoney}");
+        //Debug.Log($"[MoneyManager] Gasto de {amount}. Nuevo total: {currentMoney}");
         OnMoneyChanged?.Invoke(currentMoney);
         return true;
     }
 
     // ----------------------------------------------------------------------
-    //                          APUESTAS MÍNIMAS
+    //                          APUESTAS Mï¿½NIMAS
     // ----------------------------------------------------------------------
 
     /// <summary>
-    /// Devuelve la apuesta mínima para un día concreto.
+    /// Devuelve la apuesta mï¿½nima para un dï¿½a concreto.
     /// Se usa para Blackjack y para el coste de tirada de tragaperras.
     /// </summary>
     public int GetMinBetForDay(int day)
@@ -129,7 +129,7 @@ public class MoneyManager : MonoBehaviour
                 return betFromCurve;
         }
 
-        // Fórmula simple: base * día (ej: Día 1: 100, Día 2: 200, Día 3: 300...)
+        // Fï¿½rmula simple: base * dï¿½a (ej: Dï¿½a 1: 100, Dï¿½a 2: 200, Dï¿½a 3: 300...)
         return Mathf.Max(1, baseMinBetDay1 * day);
     }
 
@@ -138,8 +138,8 @@ public class MoneyManager : MonoBehaviour
     // ----------------------------------------------------------------------
 
     /// <summary>
-    /// Coste de una tirada de tragaperras para un día concreto.
-    /// Por diseño: igual a la apuesta mínima de ese día.
+    /// Coste de una tirada de tragaperras para un dï¿½a concreto.
+    /// Por diseï¿½o: igual a la apuesta mï¿½nima de ese dï¿½a.
     /// </summary>
     public int GetSlotSpinCost(int day)
     {
@@ -147,7 +147,7 @@ public class MoneyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Intenta pagar el coste de una tirada de tragaperras del día indicado.
+    /// Intenta pagar el coste de una tirada de tragaperras del dï¿½a indicado.
     /// Devuelve true si se ha podido pagar.
     /// </summary>
     public bool TryPaySlotSpin(int day)
@@ -157,30 +157,30 @@ public class MoneyManager : MonoBehaviour
     }
 
     // ----------------------------------------------------------------------
-    //                          LÓGICA DE BLACKJACK
+    //                          Lï¿½GICA DE BLACKJACK
     // ----------------------------------------------------------------------
 
     /// <summary>
     /// Llamar cuando el jugador (la casa) acepta una apuesta de un jugador IA.
     /// Normalmente, la apuesta de la IA no afecta al dinero del casino hasta el resultado,
-    /// así que este método puede ser NO-OP. Lo dejo por si quieres registrar algo.
+    /// asï¿½ que este mï¿½todo puede ser NO-OP. Lo dejo por si quieres registrar algo.
     /// </summary>
     public void OnPlayerPlacedBet(int betAmount)
     {
-        // En este juego, el dinero que está en juego es el de los jugadores IA,
-        // así que normalmente NO restas nada al casino aquí.
-        // Este método está por si quieres loguear o llevar estadísticas.
-        Debug.Log($"[MoneyManager] Jugador IA apuesta {betAmount} (no afecta al dinero del casino de momento).");
+        // En este juego, el dinero que estï¿½ en juego es el de los jugadores IA,
+        // asï¿½ que normalmente NO restas nada al casino aquï¿½.
+        // Este mï¿½todo estï¿½ por si quieres loguear o llevar estadï¿½sticas.
+        //Debug.Log($"[MoneyManager] Jugador IA apuesta {betAmount} (no afecta al dinero del casino de momento).");
     }
 
     /// <summary>
     /// Llamar cuando la casa (dealer) gana una apuesta de 'betAmount' de un jugador IA.
-    /// La casa gana 'betAmount' (o lo que tú quieras, aquí asumo igual que lo apostado).
+    /// La casa gana 'betAmount' (o lo que tï¿½ quieras, aquï¿½ asumo igual que lo apostado).
     /// </summary>
     public void DealerWins(int betAmount)
     {
         AddMoney(betAmount);
-        Debug.Log($"[MoneyManager] La casa gana {betAmount} de un jugador. Total: {currentMoney}");
+        //Debug.Log($"[MoneyManager] La casa gana {betAmount} de un jugador. Total: {currentMoney}");
     }
 
     /// <summary>
@@ -191,8 +191,8 @@ public class MoneyManager : MonoBehaviour
     public void DealerPaysWin(int betAmount)
     {
         int payout = betAmount * 2;
-        TrySpend(payout); // si por diseño la casa jamás se queda a 0, puedes usar AddMoney(-payout)
-        Debug.Log($"[MoneyManager] La casa paga {payout} a un jugador (victoria normal). Total: {currentMoney}");
+        TrySpend(payout); // si por diseï¿½o la casa jamï¿½s se queda a 0, puedes usar AddMoney(-payout)
+        //Debug.Log($"[MoneyManager] La casa paga {payout} a un jugador (victoria normal). Total: {currentMoney}");
     }
 
     /// <summary>
@@ -203,18 +203,18 @@ public class MoneyManager : MonoBehaviour
     {
         int payout = betAmount * 3;
         TrySpend(payout);
-        Debug.Log($"[MoneyManager] La casa paga {payout} a un jugador (BLACKJACK). Total: {currentMoney}");
+        //Debug.Log($"[MoneyManager] La casa paga {payout} a un jugador (BLACKJACK). Total: {currentMoney}");
     }
 
     /// <summary>
-    /// Si quieres un método genérico de pago (normal o blackjack),
+    /// Si quieres un mï¿½todo genï¿½rico de pago (normal o blackjack),
     /// puedes usar este y pasarle el multiplicador.
     /// </summary>
     public void DealerPays(int betAmount, int multiplier)
     {
         int payout = betAmount * multiplier;
         TrySpend(payout);
-        Debug.Log($"[MoneyManager] La casa paga {payout} (x{multiplier}) a un jugador. Total: {currentMoney}");
+        //Debug.Log($"[MoneyManager] La casa paga {payout} (x{multiplier}) a un jugador. Total: {currentMoney}");
     }
 
     // ----------------------------------------------------------------------
@@ -222,7 +222,7 @@ public class MoneyManager : MonoBehaviour
     // ----------------------------------------------------------------------
 
 #if UNITY_EDITOR
-    [ContextMenu("Debug/Añadir 1000 de dinero")]
+    [ContextMenu("Debug/Aï¿½adir 1000 de dinero")]
     private void Debug_AddMoney()
     {
         AddMoney(1000);

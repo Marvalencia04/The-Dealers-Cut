@@ -264,12 +264,12 @@ public class UIManager : MonoBehaviour
 
     public void OnClick_RestartGame()
     {
-        Debug.Log("[UIManager] OnClick_RestartGame llamado (implementa recarga de escena aqui).");
+        //Debug.Log("[UIManager] OnClick_RestartGame llamado (implementa recarga de escena aqui).");
     }
 
     public void OnClick_QuitGame()
     {
-        Debug.Log("[UIManager] Saliendo del juego...");
+        //Debug.Log("[UIManager] Saliendo del juego...");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

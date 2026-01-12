@@ -622,6 +622,10 @@ MonoBehaviour:
   collectCollider: {fileID: 158452512}
   deck: {fileID: 0}
   canCollectCards: 1
+  fxSource: {fileID: 0}
+  collectFX: []
+  fxVolume: 1
+  pitchRange: {x: 0.95, y: 1.05}
 --- !u!135 &158452512
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2017,7 +2021,7 @@ PrefabInstance:
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.461
+      value: -0.168
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
@@ -5095,6 +5099,9 @@ MonoBehaviour:
   interactionManager: {fileID: 287513663}
   canDrawCards: 1
   jokerMaterial: {fileID: 0}
+  fxSource: {fileID: 0}
+  drawCardFX: []
+  fxVolume: 1
 --- !u!1 &1675610845
 GameObject:
   m_ObjectHideFlags: 0
@@ -5933,6 +5940,10 @@ MonoBehaviour:
   collectCollider: {fileID: 1944164034}
   deck: {fileID: 0}
   canCollectCards: 1
+  fxSource: {fileID: 0}
+  collectFX: []
+  fxVolume: 1
+  pitchRange: {x: 0.95, y: 1.05}
 --- !u!135 &1944164034
 SphereCollider:
   m_ObjectHideFlags: 0

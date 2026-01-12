@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ce9c604b0d66a24abd11c927baded1c, type: 3}
+  m_Name: 04
+  m_EditorClassIdentifier: 
+  image: {fileID: 21300000, guid: f6952797db23fb6449e6ddd329431718, type: 3}
+  text: "Una vez repartidas todas las cartas, los jugadores que quieran mas tendr\xE1n
+    un slot amarillo indicando que piden una carta."

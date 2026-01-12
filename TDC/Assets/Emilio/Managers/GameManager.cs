@@ -15,30 +15,30 @@ public enum GameState
 }
 
 /// <summary>
-/// GameManager: controla días, cuotas, estados y flujo general.
+/// GameManager: controla dï¿½as, cuotas, estados y flujo general.
 /// Haz que exista solo uno en la escena (singleton).
 /// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // ==== CONFIGURACIÓN GENERAL ====
+    // ==== CONFIGURACIï¿½N GENERAL ====
 
-    [Header("Configuración de partida")]
-    [Tooltip("Día actual de la partida (empieza en 1).")]
+    [Header("Configuraciï¿½n de partida")]
+    [Tooltip("Dï¿½a actual de la partida (empieza en 1).")]
     [SerializeField] private int currentDay = 1;
 
-    [Tooltip("Cuota de dinero que hay que alcanzar en el día actual.")]
+    [Tooltip("Cuota de dinero que hay que alcanzar en el dï¿½a actual.")]
     [SerializeField] private int currentQuota = 0;
 
-    [Tooltip("Número de rondas de blackjack por día.")]
+    [Tooltip("Nï¿½mero de rondas de blackjack por dï¿½a.")]
     [SerializeField] private int roundsPerDay = 5;
 
     [Header("Cuotas por dia (exactamente 3)")]
     [Tooltip("Indice 0 = Dia 1, 1 = Dia 2, 2 = Dia 3")]
     [SerializeField] private int[] quotasByDay = new int[3] { 2000, 3000, 4000 };
 
-    [Tooltip("Curva opcional para calcular la cuota según el día (si está vacía, se usa fórmula simple). X = día, Y = cuota.")]
+    [Tooltip("Curva opcional para calcular la cuota segï¿½n el dï¿½a (si estï¿½ vacï¿½a, se usa fï¿½rmula simple). X = dï¿½a, Y = cuota.")]
     [SerializeField] private AnimationCurve quotaByDayCurve;
 
 
@@ -54,8 +54,8 @@ public class GameManager : MonoBehaviour
     [Header("Referencias (asignar en el Inspector)")]
     [SerializeField] private MoneyManager moneyManager;
     [SerializeField] private RondaManager rondaManager;
-    //[SerializeField] private SlotsManager slotsManager; // opcional si aún no lo tienes
-    [SerializeField] private UIManager uiManager;       // UI principal (HUD, menús, etc.)
+    //[SerializeField] private SlotsManager slotsManager; // opcional si aï¿½n no lo tienes
+    [SerializeField] private UIManager uiManager;       // UI principal (HUD, menï¿½s, etc.)
 
     // ==== EVENTOS OPCIONALES ====
 
@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton clásico
+        // Singleton clï¿½sico
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     // ----------------------------------------------------------------------
 
     /// <summary>
-    /// Llamar cuando quieras iniciar la partida desde el menú principal.
+    /// Llamar cuando quieras iniciar la partida desde el menï¿½ principal.
     /// </summary>
     public void StartGame()
     {
@@ -118,19 +118,19 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Inicia un nuevo día: calcula cuota, prepara rondas y avisa a la UI.
+    /// Inicia un nuevo dï¿½a: calcula cuota, prepara rondas y avisa a la UI.
     /// </summary>
     public void StartNewDay()
     {
         if (moneyManager == null || rondaManager == null)
         {
-            Debug.LogError("[GameManager] Falta asignar MoneyManager o RondaManager en el Inspector.");
+            //Debug.LogError("[GameManager] Falta asignar MoneyManager o RondaManager en el Inspector.");
             return;
         }
 
         currentQuota = GetQuotaForDay(currentDay);
 
-        Debug.Log($"[GameManager] Comienza el día {currentDay}. Cuota: {currentQuota}");
+        //Debug.Log($"[GameManager] Comienza el dï¿½a {currentDay}. Cuota: {currentQuota}");
 
         // Avisar a la UI (si existe)
         if (uiManager != null)
@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
             uiManager.ShowDayIntro(currentDay, currentQuota);
         }
 
-        // Configurar rondas del día
+        // Configurar rondas del dï¿½a
         rondaManager.SetupForNewDay(roundsPerDay);
 
         // Empezar primera ronda
@@ -146,22 +146,22 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Llamado por el RondaManager cuando se han jugado todas las rondas del día.
+    /// Llamado por el RondaManager cuando se han jugado todas las rondas del dï¿½a.
     /// </summary>
     public void OnAllRoundsFinished()
     {
         if (moneyManager == null)
         {
-            Debug.LogError("[GameManager] MoneyManager no asignado.");
+            //Debug.LogError("[GameManager] MoneyManager no asignado.");
             return;
         }
 
         int money = moneyManager.CurrentMoney;
-        Debug.Log($"[GameManager] Fin del día {currentDay}. Dinero actual: {money}. Cuota: {currentQuota}");
+        //Debug.Log($"[GameManager] Fin del dï¿½a {currentDay}. Dinero actual: {money}. Cuota: {currentQuota}");
 
         if (money >= currentQuota)
         {
-            // Día superado
+            // Dï¿½a superado
             DayCompleted();
         }
         else
@@ -172,28 +172,28 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Llamado cuando el jugador ha superado la cuota del día.
+    /// Llamado cuando el jugador ha superado la cuota del dï¿½a.
     /// </summary>
     private void DayCompleted()
     {
-        Debug.Log($"[GameManager] Día {currentDay} COMPLETADO.");
+        //Debug.Log($"[GameManager] Dï¿½a {currentDay} COMPLETADO.");
 
         if (uiManager != null)
         {
             uiManager.ShowDayCompleted(currentDay);
         }
 
-        // A partir del Día 2 la tragaperras está disponible.
+        // A partir del Dï¿½a 2 la tragaperras estï¿½ disponible.
         //bool slotsAvailable = (slotsManager != null && currentDay >= 2);
         bool slotsAvailable = ( currentDay >= 2);
         if (slotsAvailable)
         {
             SetGameState(GameState.PlayingSlots);
-            //slotsManager.EnableSlots(true, currentDay); // método sugerido
+            //slotsManager.EnableSlots(true, currentDay); // mï¿½todo sugerido
         }
         else
         {
-            // Si aún no hay tragaperras, pasamos directamente al siguiente día.
+            // Si aï¿½n no hay tragaperras, pasamos directamente al siguiente dï¿½a.
             GoToNextDay();
         }
     }
@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void DayFailed()
     {
-        Debug.Log($"[GameManager] Día {currentDay} FRACASADO. Partida terminada.");
+        //Debug.Log($"[GameManager] Dï¿½a {currentDay} FRACASADO. Partida terminada.");
 
         SetGameState(GameState.Defeat);
 
@@ -217,16 +217,16 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Llamar desde SlotsManager cuando el jugador termine con la tragaperras
-    /// y quiera pasar al siguiente día.
+    /// y quiera pasar al siguiente dï¿½a.
     /// </summary>
     public void OnSlotsFinished()
     {
-        Debug.Log("[GameManager] Slots terminadas. Pasando al siguiente día.");
+        //Debug.Log("[GameManager] Slots terminadas. Pasando al siguiente dï¿½a.");
         GoToNextDay();
     }
 
     /// <summary>
-    /// Incrementa el día y comienza un nuevo ciclo de Blackjack.
+    /// Incrementa el dï¿½a y comienza un nuevo ciclo de Blackjack.
     /// </summary>
     private void GoToNextDay()
     {
@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
             return;
 
         CurrentState = newState;
-        Debug.Log($"[GameManager] Estado cambiado a: {CurrentState}");
+        //Debug.Log($"[GameManager] Estado cambiado a: {CurrentState}");
 
         // Avisar a otros sistemas
         OnGameStateChanged?.Invoke(CurrentState);
@@ -256,7 +256,7 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateStateUI(CurrentState);
         }
 
-        // Comportamientos típicos según estado
+        // Comportamientos tï¿½picos segï¿½n estado
         switch (CurrentState)
         {
             case GameState.Pause:
@@ -273,7 +273,7 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState == GameState.Pause)
         {
-            // Volver al estado de juego anterior (aquí simplificamos y lo ponemos en Blackjack)
+            // Volver al estado de juego anterior (aquï¿½ simplificamos y lo ponemos en Blackjack)
             SetGameState(GameState.PlayingBlackjack);
         }
         else
@@ -284,7 +284,7 @@ public class GameManager : MonoBehaviour
 
     public void AdvanceToNextDay()
     {
-        Debug.Log("[GameManager] Avanzado al Dia " + currentDay + " | Cuota: " + currentQuota);
+        //Debug.Log("[GameManager] Avanzado al Dia " + currentDay + " | Cuota: " + currentQuota);
 
         // Si ya estabas en el dia 3 y se intenta "pasar", victoria
         if (currentDay >= 3)
@@ -319,13 +319,13 @@ public class GameManager : MonoBehaviour
 
     private void TriggerVictory()
     {
-        Debug.Log("[GameManager] Victoria! Fin del Dia 3.");
+        //Debug.Log("[GameManager] Victoria! Fin del Dia 3.");
 
         // Parar el juego
         Time.timeScale = 0f;
 
         // Mostrar pantalla de victoria
-        // Asumo que tu UIManager ya maneja GameState.Victory y enseña victoryPanel
+        // Asumo que tu UIManager ya maneja GameState.Victory y enseï¿½a victoryPanel
         if (uiManager != null)
             uiManager.UpdateStateUI(GameState.Victory);
 
@@ -338,7 +338,7 @@ public class GameManager : MonoBehaviour
         int money = (MoneyManager.Instance != null) ? MoneyManager.Instance.CurrentMoney : 0;
         int quota = CurrentQuota;
 
-        Debug.Log("[GameManager] Fin de dia " + currentDay + " | Dinero=" + money + " | Cuota=" + quota);
+        //Debug.Log("[GameManager] Fin de dia " + currentDay + " | Dinero=" + money + " | Cuota=" + quota);
 
         if (money < quota)
         {
@@ -362,7 +362,7 @@ public class GameManager : MonoBehaviour
 
     private void TriggerDefeat()
     {
-        Debug.Log("[GameManager] Derrota! No se alcanzo la cuota del dia.");
+        //Debug.Log("[GameManager] Derrota! No se alcanzo la cuota del dia.");
 
         Time.timeScale = 0f;
 
@@ -379,7 +379,7 @@ public class GameManager : MonoBehaviour
 
         if (quotasByDay == null || quotasByDay.Length < 3)
         {
-            Debug.LogWarning("[GameManager] quotasByDay no esta bien configurado. Usando fallback 2000/3000/4000.");
+            //Debug.LogWarning("[GameManager] quotasByDay no esta bien configurado. Usando fallback 2000/3000/4000.");
             int[] fallback = { 2000, 3000, 4000 };
             return fallback[day - 1];
         }
