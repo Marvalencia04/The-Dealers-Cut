@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+
+// IMPORTANTE: para poder referenciar XRGrabInteractable aqu铆
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class PreviewNextCards : MonoBehaviour
 {
@@ -10,36 +14,38 @@ public class PreviewNextCards : MonoBehaviour
     [Header("Transform donde colocar cada carta")]
     public Transform[] previewSlots; // Deben ser 3
 
-    [Header("Tiempo entre aparici髇 de cartas")]
+    [Header("Tiempo entre aparici贸n de cartas")]
     public float delayBetweenCards = 0.5f;
 
-    [Header("Animaci髇 de girar carta (opcional)")]
-    public float flipDuration = 1f; // duraci髇 del giro
+    [Header("Animaci贸n de girar carta (opcional)")]
+    public float flipDuration = 1f; // duraci贸n del giro
 
-    [Header("羘gulo de giro de la carta (grados X)")]
+    [Header("脕ngulo de giro de la carta (grados X)")]
     public float flipAngleX = 180f;
-    [Header("羘gulo de giro de la carta (grados Y)")]
-    public float flipAngleY = 180f; 
-    [Header("羘gulo de giro de la carta (grados Z)")]
-    public float flipAngleZ = 180f; 
+    [Header("脕ngulo de giro de la carta (grados Y)")]
+    public float flipAngleY = 180f;
+    [Header("脕ngulo de giro de la carta (grados Z)")]
+    public float flipAngleZ = 180f;
 
     private List<GameObject> previewedCards = new List<GameObject>();
 
     /// <summary>
-    /// Activa la aparici髇 secuencial de las siguientes 3 cartas.
+    /// Activa la aparici贸n secuencial de las siguientes 3 cartas.
     /// </summary>
     public void ShowNextThreeSequential()
     {
         ClearPreview();
 
-        if (deck == null || previewSlots.Length < 3)
+        if (deck == null || previewSlots == null || previewSlots.Length < 3)
         {
             Debug.LogWarning("Falta configurar deck o previewSlots.");
             return;
         }
 
+        // Acceder al runtimeDeck (privado) por reflection
         var runtimeDeckField = typeof(DeckXR).GetField("runtimeDeck",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            BindingFlags.NonPublic | BindingFlags.Instance);
+
         if (runtimeDeckField == null)
         {
             Debug.LogError("No se pudo acceder a runtimeDeck");
@@ -49,7 +55,7 @@ public class PreviewNextCards : MonoBehaviour
         List<GameObject> runtimeDeck = runtimeDeckField.GetValue(deck) as List<GameObject>;
         if (runtimeDeck == null || runtimeDeck.Count == 0)
         {
-            Debug.LogWarning("Mazo vac韔");
+            Debug.LogWarning("Mazo vac铆o");
             return;
         }
 
@@ -68,22 +74,28 @@ public class PreviewNextCards : MonoBehaviour
 
             GameObject cardObj = Instantiate(prefab, previewSlots[i].position, previewSlots[i].rotation);
 
-            // Configurar visual
+            // >>> PREVIEW: desactivar interacci贸n (XR + colliders + f铆sicas)
+            DisablePreviewInteraction(cardObj);
+
+            // Configurar visual / referencias de Card
             Card instanceCard = cardObj.GetComponent<Card>() ?? cardObj.GetComponentInChildren<Card>();
             if (instanceCard != null)
             {
                 instanceCard.deck = deck;
                 instanceCard.prefabReference = prefab;
+
                 if (deck.jokerMaterial != null)
                 {
                     instanceCard.jokerMaterial = deck.jokerMaterial;
+
+                    // En tu l贸gica: SetHidden(false) = mostrar / no ocultar
                     instanceCard.SetHidden(false);
                 }
             }
 
             previewedCards.Add(cardObj);
 
-            // Animaci髇 de girar la carta
+            // Animaci贸n de girar la carta
             if (flipDuration > 0f)
             {
                 yield return StartCoroutine(FlipCard(cardObj));
@@ -95,19 +107,51 @@ public class PreviewNextCards : MonoBehaviour
     }
 
     /// <summary>
-    /// Gira la carta en Y seg鷑 el 醤gulo configurado.
+    /// Desactiva toda interacci贸n para que la carta sea solo "preview".
+    /// </summary>
+    private void DisablePreviewInteraction(GameObject cardObj)
+    {
+        if (cardObj == null) return;
+
+        // 1) Desactivar XRGrabInteractable (en ra铆z y en hijos)
+        var grabs = cardObj.GetComponentsInChildren<XRGrabInteractable>(true);
+        for (int i = 0; i < grabs.Length; i++)
+            grabs[i].enabled = false;
+
+        // 2) Desactivar colliders (evita raycasts/choques/trigger)
+        var colliders = cardObj.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < colliders.Length; i++)
+            colliders[i].enabled = false;
+
+        // 3) Asegurar que no haga f铆sicas
+        var rbs = cardObj.GetComponentsInChildren<Rigidbody>(true);
+        for (int i = 0; i < rbs.Length; i++)
+        {
+            rbs[i].isKinematic = true;
+            rbs[i].detectCollisions = false;
+            rbs[i].useGravity = false;
+        }
+
+        // (Opcional) Evita que el XR Ray Interactor lo "vea" aunque tuviera collider:
+        // cardObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+        // foreach (Transform t in cardObj.GetComponentsInChildren<Transform>(true))
+        //     t.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+    }
+
+    /// <summary>
+    /// Gira la carta seg煤n el 谩ngulo configurado.
     /// </summary>
     private IEnumerator FlipCard(GameObject card)
     {
         float time = 0f;
-        if (card == null) yield break; // <-- evitar errores si ya fue destruida
+        if (card == null) yield break;
 
         Quaternion startRot = card.transform.rotation;
         Quaternion endRot = startRot * Quaternion.Euler(flipAngleX, flipAngleY, flipAngleZ);
 
         while (time < flipDuration)
         {
-            if (card == null) yield break; // <-- chequeo en cada frame
+            if (card == null) yield break;
             card.transform.rotation = Quaternion.Slerp(startRot, endRot, time / flipDuration);
             time += Time.deltaTime;
             yield return null;
@@ -117,13 +161,12 @@ public class PreviewNextCards : MonoBehaviour
             card.transform.rotation = endRot;
     }
 
-
     /// <summary>
     /// Borra todas las cartas actuales.
     /// </summary>
     public void ClearPreview()
     {
-        StopAllCoroutines(); // Detener animaciones activas
+        StopAllCoroutines();
 
         foreach (var c in previewedCards)
             if (c != null)
@@ -131,5 +174,4 @@ public class PreviewNextCards : MonoBehaviour
 
         previewedCards.Clear();
     }
-
 }

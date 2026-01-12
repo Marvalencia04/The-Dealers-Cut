@@ -20,7 +20,7 @@ public class NPCBetText : MonoBehaviour
 
         betText.text = $"Bet: ${amount}";
         betText.gameObject.SetActive(true);
-        Debug.Log($"NPC {npcId} bet set to {amount}");
+        //Debug.Log($"NPC {npcId} bet set to {amount}");
     }
 
     public void Clear()
