@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ce9c604b0d66a24abd11c927baded1c, type: 3}
-  m_Name: 01
+  m_Name: 06
   m_EditorClassIdentifier: 
-  image: {fileID: 21300000, guid: e6974044b4889ab488c09b08e1610fd3, type: 3}
-  text: "Los slots amarillos son las posiciones en las que hay que colocar las cartas
-    retiradas del mazo hasta un l\xEDmite de 2 por jugador en la primera fase."
+  image: {fileID: 21300000, guid: fef5b1920032acf4d939308f10d4f21f, type: 3}
+  text: Una vez reveladas todas las posiciones, hay que recoger todas las cartas
+    pulsando el boton "grip" del mando.

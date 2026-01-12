@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce9c604b0d66a24abd11c927baded1c, type: 3}
   m_Name: 02
   m_EditorClassIdentifier: 
-  image: {fileID: 0}
-  text: 
+  image: {fileID: 21300000, guid: 4b8d7dc8dc8200f4b99362843607eace, type: 3}
+  text: "Al pulsar el bot\xF3n superior del mando de una mano, se mostrar\xE1 en
+    dicha mano la pantalla con el n\xFAmero de trampas que tienes, el dinero que
+    tienes, en qu\xE9 ronda est\xE1s y cuanto es lo que necesitas para pasar de ronda."

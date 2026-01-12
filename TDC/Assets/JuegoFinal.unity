@@ -2367,9 +2367,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: RUIDO AMBIENTE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1f3127a8dae853e4fb553561617cce0a, type: 2}
-  m_sharedMaterial: {fileID: -1564029777524531763, guid: 1f3127a8dae853e4fb553561617cce0a,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -11412,6 +11411,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 838105130563447282, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 838105130563447282, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_margin.w
+      value: 15.860225
+      objectReference: {fileID: 0}
+    - target: {fileID: 838105130563447282, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_margin.y
+      value: -21.416838
+      objectReference: {fileID: 0}
+    - target: {fileID: 838105130563447282, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 41.806107
+      objectReference: {fileID: 0}
+    - target: {fileID: 838105130563447282, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1255064124539115159, guid: c89e0b8da8a8c184db1c6f89c86f2392,
         type: 3}
       propertyPath: m_Pivot.x
@@ -11575,6 +11599,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 0f13866ed6b27b14d995e483b5c80785,
         type: 3}
+    - target: {fileID: 3524307909657574318, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: ambientSlider
+      value: 
+      objectReference: {fileID: 100617527}
     - target: {fileID: 3715829625097058190, guid: c89e0b8da8a8c184db1c6f89c86f2392,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -11925,6 +11954,21 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 7950615420356629400, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.70110875
+      objectReference: {fileID: 0}
+    - target: {fileID: 7950615420356629400, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.48692578
+      objectReference: {fileID: 0}
+    - target: {fileID: 7950615420356629400, guid: c89e0b8da8a8c184db1c6f89c86f2392,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 15.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8159954410082531321, guid: c89e0b8da8a8c184db1c6f89c86f2392,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -11964,14 +12008,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 1f3127a8dae853e4fb553561617cce0a,
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
         type: 2}
     - target: {fileID: 8763631474547430254, guid: c89e0b8da8a8c184db1c6f89c86f2392,
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -1564029777524531763, guid: 1f3127a8dae853e4fb553561617cce0a,
-        type: 2}
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 8763631474547430254, guid: c89e0b8da8a8c184db1c6f89c86f2392,
         type: 3}
       propertyPath: m_hasFontAssetChanged

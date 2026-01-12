@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ce9c604b0d66a24abd11c927baded1c, type: 3}
-  m_Name: 01
+  m_Name: 05
   m_EditorClassIdentifier: 
-  image: {fileID: 21300000, guid: e6974044b4889ab488c09b08e1610fd3, type: 3}
-  text: "Los slots amarillos son las posiciones en las que hay que colocar las cartas
-    retiradas del mazo hasta un l\xEDmite de 2 por jugador en la primera fase."
+  image: {fileID: 21300000, guid: 09ac1980d0535fe42b08abb8f21b88f9, type: 3}
+  text: "Una vez repartidas todas las cartas a todos los jugadores, toca revelar
+    tu puntuaci\xF3n final. Si tienes 17 o m\xE1s puntos, no podr\xE1s sacar m\xE1s
+    cartas."
