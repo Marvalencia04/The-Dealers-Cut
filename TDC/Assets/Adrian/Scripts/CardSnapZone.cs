@@ -61,6 +61,23 @@ public class CardSnapZone : MonoBehaviour
     private Dictionary<Card, float> lastCheckTime = new Dictionary<Card, float>();
     private const float CHECK_INTERVAL = 0.05f; // Solo chequear cada 50ms
 
+    [Header("FX - Sonido")]
+    [Tooltip("AudioSource para FX de esta zona (snap / pickup).")]
+    [SerializeField] private AudioSource fxSource;
+
+    [Tooltip("Sonidos cuando una carta SNAPEA en el slot.")]
+    [SerializeField] private List<AudioClip> snapFX = new();
+
+    [Tooltip("Sonidos cuando LEVANTAS una carta de la zona.")]
+    [SerializeField] private List<AudioClip> pickupFX = new();
+
+    [Range(0f, 1f)]
+    [SerializeField] private float fxVolume = 1f;
+
+    [Tooltip("Variación de pitch para que no suene repetitivo (1 = sin variación).")]
+    [SerializeField] private Vector2 pitchRange = new Vector2(0.95f, 1.05f);
+
+
     private void Awake()
     {
         occupied = new Card[slots.Length];
@@ -110,6 +127,22 @@ public class CardSnapZone : MonoBehaviour
             }
         }
     }
+
+    private void PlayFX(List<AudioClip> clips)
+    {
+        if (fxSource == null || clips == null || clips.Count == 0) return;
+
+        int index = Random.Range(0, clips.Count);
+
+        float oldPitch = fxSource.pitch;
+        fxSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
+        fxSource.PlayOneShot(clips[index], fxVolume);
+        fxSource.pitch = oldPitch;
+    }
+
+    private void PlaySnapFX() => PlayFX(snapFX);
+    private void PlayPickupFX() => PlayFX(pickupFX);
+
 
     private void OnTriggerStay(Collider other)
     {
@@ -294,6 +327,7 @@ public class CardSnapZone : MonoBehaviour
         t.localScale = card.originalScale;
 
         card.SetHidden(false);
+        PlaySnapFX();
 
         // 🔥 OPTIMIZACIÓN: Usar caché en lugar de GetComponentsInParent
         if (cardGrabCache.TryGetValue(card, out XRGrabInteractable grab))
@@ -318,6 +352,7 @@ public class CardSnapZone : MonoBehaviour
 
         if (card != null && card.currentZone == this)
             card.currentZone = null;
+            PlayPickupFX();
 
         // Limpiar cachés
         lastCheckTime.Remove(card);
