@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 772.8
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Project
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 30126
+  controlID: 59
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 30127
+  controlID: 60
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -170,7 +170,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 30062
+  controlID: 61
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 30063
+  controlID: 51
   draggingID: 0
 --- !u!114 &9
 MonoBehaviour:
@@ -391,7 +391,7 @@ MonoBehaviour:
       y: 21
       width: 811.6
       height: 404.2
-    m_Scale: {x: 1.2874999, y: 1.2874999}
+    m_Scale: {x: 1.25, y: 1.25}
     m_Translation: {x: 405.8, y: 202.1}
     m_MarginLeft: 0
     m_MarginRight: 0
@@ -399,10 +399,10 @@ MonoBehaviour:
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -315.18448
-      y: -156.97089
-      width: 630.36896
-      height: 313.94177
+      x: -324.63998
+      y: -161.68001
+      width: 649.27997
+      height: 323.36002
     m_MinimalGUI: 1
   m_defaultScale: 1
   m_LastWindowPixelSize: {x: 1014.5, y: 531.5}
@@ -454,7 +454,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 92ddf8ff24e7f8ffe8eef8ff46f5f8ff440af9ff2e43f9fff447f9ffbc4cf9ffc04cf9ffda52f9ff6c59f9ffaea2f9ffbcaaf9ffb6caf9ffbecaf9ff3ee1f9ff2403faff7247faff5048fafffa48faff0251faff2e51faff3651faff2a6efaff8a6efaffa277fafff805fbff0206fbffae1ffbffe024fbff8a25fbff123bfbff924bfbffbe4bfbffea4bfbfff24bfbffc459fbff245afbff265afbff384bfcff444bfcffb64dfcffa86dfcffa673fcffcc75fcffdc75fcff6e76fcffba14fdffc614fdffd414fdffa41afdffbe9dfdffa29ffdffaeb7fdffcae7fdff1ee8fdffa6ecfdffbe2cfeffa430feffec35feff7a3afeff84ccfeffe4e0feffe8ecfeff381affffa020ffffea4effffda54ffff5e56ffffae62ffffe863ffff4864ffff5864ffff6464ffff6286ffff28b3fffff8e5ffff1afbffff540401005005010022130100141b01000c1c010098200100ea2001009c2201002a380100b8390100d03a010090880100b48801004ea8010070fa010076fb010002fc01008e410200a44102008c4202009c4202003c5502007ccd0200acce020054cf0200a6cf0200d6cf0200f8200300282203003c2303006a230300762303005e5c03003e5e0300d65e0300065f0300945f03001e60030064520400cc53040004540400625604000e580400525804004059040086590400ceb9040056bb04004ebd040098be0400
+      m_ExpandedIDs: 12ecfdff2aecfdff1cf2fdff462ffeffee3bfeff063cfeffde7cfeff2c7ffeff268cfeff3e8cfeff16cdfeff64cffeff5450ffff6c50ffff7491ffffc293ffffaac2ffffb2c2ffffacddffff64defffff6f2fffffaf2ffff20f7ffff22f7ffff1afbffffd8bc000090bf000090c00000dcc00000d2c100000c8a0100be97010018a90100dafd0100f41e0200b42902000e3b0200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -864,17 +864,17 @@ MonoBehaviour:
       layout: 4
       size: {x: 0, y: 0}
       sizeOverridden: 0
-    - dockPosition: 0
-      containerId: Floating
+    - dockPosition: 1
+      containerId: overlay-toolbar__top
       displayed: 1
       id: AINavigationOverlay
-      index: 2
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Floating":true,"m_FloatingSnapOffset":{"x":-111.2010498046875,"y":-246.4010009765625},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":3,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
-      floating: 1
-      collapsed: 0
-      snapOffset: {x: -111.20105, y: -246.401}
+      index: 0
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":-111.2010498046875,"y":179.19900512695313},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":1,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      floating: 0
+      collapsed: 1
+      snapOffset: {x: -111.20105, y: 179.199}
       snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 3
+      snapCorner: 1
       layout: 4
       size: {x: 0, y: 0}
       sizeOverridden: 0
@@ -1161,7 +1161,7 @@ MonoBehaviour:
       scrollOffset: 0
     m_OverlaysVisible: 1
   m_WindowGUID: 6e00770dd5f4e5b41989d58c412028b4
-  m_Gizmos: 0
+  m_Gizmos: 1
   m_OverrideSceneCullingMask: 6917529027641081856
   m_SceneIsLit: 1
   m_SceneLighting: 1
@@ -1171,9 +1171,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 3.173258, y: 0.31692234, z: 2.306855}
+    m_Target: {x: -1.2694851, y: 1.8019682, z: 12.997673}
     speed: 2
-    m_Value: {x: 3.173258, y: 0.31692234, z: 2.306855}
+    m_Value: {x: -1.2694851, y: 1.8019682, z: 12.997673}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1219,13 +1219,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.115600035, y: -0.88360053, z: 0.34049228, w: -0.30000216}
+    m_Target: {x: -0.0070604295, y: 0.24113852, z: -0.001023188, w: 0.97179925}
     speed: 2
-    m_Value: {x: 0.115600035, y: 0.88360053, z: -0.34049228, w: 0.30000216}
+    m_Value: {x: 0.0070604295, y: -0.24113852, z: 0.001023188, w: -0.97179925}
   m_Size:
-    m_Target: 1.2555962
+    m_Target: 1.3907913
     speed: 2
-    m_Value: 1.2555962
+    m_Value: 1.3907913
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1653,7 +1653,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Adrian/Musica/Musica/Jazz
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1663,16 +1663,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 58
   m_LastFolders:
-  - Assets
+  - Assets/Adrian/Musica/Musica/Jazz
   m_LastFoldersGridSize: 58
-  m_LastProjectPath: C:\xampp\htdocs\The Dealers Cut\TDC
+  m_LastProjectPath: C:\Users\Adria\Desktop\UPV\VR\Sprint3\The-Dealers-Cut\TDC
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 24d10000
-    m_LastClickedID: 53540
-    m_ExpandedIDs: 000000009c0001009e000100a0000100a2000100a4000100
+    m_SelectedIDs: bcac0100
+    m_LastClickedID: 109756
+    m_ExpandedIDs: 00000000b6030100b8030100ba030100bc030100be030100c0030100c2030100c4030100c6030100c8030100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1701,7 +1701,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000009c0001009e000100a0000100a2000100a4000100
+    m_ExpandedIDs: 00000000b6030100b8030100ba030100bc030100be030100c0030100c2030100c4030100c6030100c8030100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1755,7 +1755,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 6.4000244}
+    m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 58
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 207
