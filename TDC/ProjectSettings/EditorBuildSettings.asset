@@ -8,12 +8,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Emilio/EscenarioFinal/EscenarioFinal.unity
     guid: c5adb9bf92cd2f643a20a747051648d6
-  - enabled: 0
-    path: Assets/Emilio/Video360.unity
-    guid: 105d0fd1f35802c42a058117ee053547
   - enabled: 1
     path: Assets/JuegoFinal.unity
     guid: 84d4e67cba5a3f54c835f26ce3a07653
+  - enabled: 1
+    path: Assets/Emilio/Video360.unity
+    guid: 105d0fd1f35802c42a058117ee053547
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 73af9d62cadd97b4687ff83b8caa2883,
       type: 2}
