@@ -118,7 +118,7 @@ public class UIManager : MonoBehaviour
             if (h == null) continue;
 
             if (h.dayText != null) h.dayText.text = $"Dia: {day}";
-            if (h.quotaText != null) h.quotaText.text = $"Cuota del dia: {quota}";
+            if (h.quotaText != null) h.quotaText.text = $"Cuota: {quota}";
             if (h.messageText != null) h.messageText.text = $"Comienza el dia {day}. Alcanza {quota} de dinero!";
         }
 

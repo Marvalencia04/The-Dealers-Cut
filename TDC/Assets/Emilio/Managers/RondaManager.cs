@@ -60,6 +60,10 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private Transform endOfDayTeleportTarget;
     [SerializeField] private Transform playerRoot;
 
+    [Header("End of Day")]
+    [SerializeField] private GameObject endOfDayObjectToActivate;
+
+
 
 
     public BlackjackPhase CurrentPhase => currentPhase;
@@ -306,7 +310,8 @@ public class RondaManager : MonoBehaviour
         if (playerRoot != null && endOfDayTeleportTarget != null)
         {
             playerRoot.position = endOfDayTeleportTarget.position;
-            playerRoot.rotation = endOfDayTeleportTarget.rotation;
+            playerRoot.rotation = endOfDayTeleportTarget.rotation * Quaternion.Euler(0f, 180f, 0f);
+            endOfDayObjectToActivate.SetActive(true);
         }
 
         else

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.LowLevel;
 
 /// <summary>
 /// Estados globales del juego.
@@ -40,6 +41,13 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Curva opcional para calcular la cuota seg�n el d�a (si est� vac�a, se usa f�rmula simple). X = d�a, Y = cuota.")]
     [SerializeField] private AnimationCurve quotaByDayCurve;
+
+    [Header("End of Day / Teleport")]
+    [SerializeField] private Transform endOfDayTeleportTarget;
+    [SerializeField] private Transform playerRoot;
+
+    [Header("End of Day")]
+    [SerializeField] private GameObject endOfDayObjectToActivate;
 
 
 
@@ -110,7 +118,7 @@ public class GameManager : MonoBehaviour
 
         if (moneyManager != null)
         {
-            moneyManager.SetMoney(0);
+            moneyManager.SetMoney(1000);
         }
 
         SetGameState(GameState.PlayingBlackjack);
@@ -315,6 +323,21 @@ public class GameManager : MonoBehaviour
             uiManager.ShowDayIntro(currentDay, currentQuota);
 
         
+    }
+
+    public void TeleportMesaBJ()
+    {
+        if (playerRoot != null && endOfDayTeleportTarget != null)
+        {
+            playerRoot.position = endOfDayTeleportTarget.position;
+            playerRoot.rotation = endOfDayTeleportTarget.rotation * Quaternion.Euler(0f, -90f, 0f);
+            endOfDayObjectToActivate.SetActive(false);
+        }
+
+        else
+        {
+            //Debug.LogWarning("[RondaManager] Falta asignar playerRoot o endOfDayTeleportTarget.");
+        }
     }
 
     private void TriggerVictory()
