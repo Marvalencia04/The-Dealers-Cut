@@ -72,7 +72,13 @@ public class PreviewNextCards : MonoBehaviour
         {
             GameObject prefab = deckList[i];
 
-            GameObject cardObj = Instantiate(prefab, previewSlots[i].position, previewSlots[i].rotation);
+            // Crea las cartas como hijos de los gameobjects
+            GameObject cardObj = Instantiate(prefab, previewSlots[i]);
+
+            cardObj.transform.localPosition = Vector3.zero;
+            cardObj.transform.localRotation = Quaternion.identity;
+            cardObj.transform.localScale = Vector3.one;
+
 
             // >>> PREVIEW: desactivar interacción (XR + colliders + físicas)
             DisablePreviewInteraction(cardObj);
