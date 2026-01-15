@@ -66,11 +66,13 @@ public class RandomCard : MonoBehaviour
             if (cardData != null)
                 Debug.Log($"{cardData.rank} of {cardData.suit}");
 
-            GameObject cardObj = Instantiate(
-                prefab,
-                previewSlots[i].position,
-                previewSlots[i].rotation
-            );
+                // Crea las cartas como hijos de los gameobjects
+                GameObject cardObj = Instantiate(prefab, previewSlots[i]);   
+
+                cardObj.transform.localPosition = Vector3.zero;
+                cardObj.transform.localRotation = Quaternion.identity;
+                cardObj.transform.localScale = Vector3.one;
+
 
             // Asegurar collider
             if (cardObj.GetComponent<Collider>() == null)

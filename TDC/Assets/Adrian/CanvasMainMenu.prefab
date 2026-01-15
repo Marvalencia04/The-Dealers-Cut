@@ -1729,6 +1729,8 @@ MonoBehaviour:
   configPanel: {fileID: 3061984680668690379}
   mainMenuPanel: {fileID: 1257869661991450272}
   gameManager: {fileID: 0}
+  startTeleportTarget: {fileID: 0}
+  playerRoot: {fileID: 0}
 --- !u!1 &1374637105485191278
 GameObject:
   m_ObjectHideFlags: 0
@@ -10553,7 +10555,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &3672668530294661049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10605,6 +10607,8 @@ MonoBehaviour:
   configPanel: {fileID: 3061984680668690379}
   mainMenuPanel: {fileID: 1257869661991450272}
   gameManager: {fileID: 0}
+  startTeleportTarget: {fileID: 0}
+  playerRoot: {fileID: 0}
 --- !u!1 &8162067270272901149
 GameObject:
   m_ObjectHideFlags: 0
