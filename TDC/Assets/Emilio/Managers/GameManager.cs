@@ -46,8 +46,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform endOfDayTeleportTarget;
     [SerializeField] private Transform playerRoot;
 
-    [Header("End of Day")]
-    [SerializeField] private GameObject endOfDayObjectToActivate;
+    [Header("Locomotion")]
+    [SerializeField] private Behaviour locomotionScript;
+
 
 
 
@@ -331,7 +332,7 @@ public class GameManager : MonoBehaviour
         {
             playerRoot.position = endOfDayTeleportTarget.position;
             playerRoot.rotation = endOfDayTeleportTarget.rotation * Quaternion.Euler(0f, -90f, 0f);
-            endOfDayObjectToActivate.SetActive(false);
+            locomotionScript.enabled = false;
         }
 
         else

@@ -102,7 +102,7 @@ public class UIManager : MonoBehaviour
         {
             var h = hands[i];
             if (h != null && h.moneyText != null)
-                h.moneyText.text = $"Dinero: {newMoney}";
+                h.moneyText.text = $"{newMoney}";
         }
     }
 
