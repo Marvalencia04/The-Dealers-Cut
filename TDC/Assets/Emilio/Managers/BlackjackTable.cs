@@ -626,7 +626,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
                 moneyManager?.DealerPaysWin(bet);
             }
-            moneyManager.NotifyRoundEnd();
+            
 
             EndRound();
             //Log("MiraAlli penalty: instant win for all players.");
@@ -687,7 +687,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 }
             }
         }
-
+        
         EndRound();
         //Log("Results resolved.");
     }

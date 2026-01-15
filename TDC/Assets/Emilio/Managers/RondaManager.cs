@@ -63,7 +63,7 @@ public class RondaManager : MonoBehaviour
     [Header("Locomotion")]
     [SerializeField] private Behaviour locomotionScript;
 
-
+    [SerializeField] private MoneyManager moneyManager;
 
 
 
@@ -192,6 +192,7 @@ public class RondaManager : MonoBehaviour
             case BlackjackPhase.Resultados:
                 // 1) Resolver pagos
                 tableFlow?.ResolveRoundPayouts();
+                moneyManager.NotifyRoundEnd();
 
                 if (IsLastRoundOfDay())
                 {
