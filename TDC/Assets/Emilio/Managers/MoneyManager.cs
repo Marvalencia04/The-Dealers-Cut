@@ -22,6 +22,11 @@ public class MoneyManager : MonoBehaviour
     [Tooltip("Curva opcional para calcular la apuesta m�nima seg�n el d�a (X = d�a, Y = min bet).")]
     [SerializeField] private AnimationCurve minBetByDayCurve;
 
+    public event Action<int> OnRoundMoneyResult;
+    private int roundMoneyDelta = 0;
+
+
+
     // ==== ESTADO ACTUAL ====
 
     [SerializeField] private int currentMoney = 0;
@@ -76,6 +81,7 @@ public class MoneyManager : MonoBehaviour
     {
         int newValue = currentMoney + amount;
         currentMoney = Mathf.Max(0, newValue);
+        roundMoneyDelta += amount;
         //Debug.Log($"[MoneyManager] Dinero modificado en {amount}. Nuevo total: {currentMoney}");
         OnMoneyChanged?.Invoke(currentMoney);
     }
@@ -104,9 +110,16 @@ public class MoneyManager : MonoBehaviour
         }
 
         currentMoney -= amount;
+        roundMoneyDelta -= amount;
         //Debug.Log($"[MoneyManager] Gasto de {amount}. Nuevo total: {currentMoney}");
         OnMoneyChanged?.Invoke(currentMoney);
         return true;
+    }
+
+    public void NotifyRoundEnd()
+    {
+        OnRoundMoneyResult?.Invoke(roundMoneyDelta);
+        roundMoneyDelta = 0; // reset para la siguiente ronda
     }
 
     // ----------------------------------------------------------------------
