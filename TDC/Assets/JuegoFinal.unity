@@ -4272,6 +4272,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!4 &338210370 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2722929374814782862, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &341062906 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4946542731778924153, guid: ff322f3d0e475624dace1cb135408c72,
@@ -7482,7 +7488,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deck: {fileID: 246969191}
-  previewSlots:
+  previewSlotsRight:
+  - {fileID: 1719965444}
+  - {fileID: 1165853012}
+  - {fileID: 338210370}
+  previewSlotsLeft:
   - {fileID: 889991280}
   - {fileID: 816547898}
   - {fileID: 818207910}
@@ -7504,11 +7514,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deck: {fileID: 246969191}
-  previewSlots:
+  previewSlotsRight:
+  - {fileID: 2105653477}
+  - {fileID: 893507171}
+  - {fileID: 1940576436}
+  previewSlotsLeft:
   - {fileID: 457185862}
   - {fileID: 1031569946}
   - {fileID: 862504233}
-  selectedCardSlot: {fileID: 1367792763}
+  selectedCardSlotRight: {fileID: 0}
+  selectedCardSlotLeft: {fileID: 0}
   menuRoot: {fileID: 1694210962}
 --- !u!114 &835577350
 MonoBehaviour:
@@ -7922,6 +7937,12 @@ Transform:
 --- !u!1 &891741603 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7751216880443576514, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &893507171 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7685534853654150828, guid: ff322f3d0e475624dace1cb135408c72,
     type: 3}
   m_PrefabInstance: {fileID: 1777176064}
   m_PrefabAsset: {fileID: 0}
@@ -10620,6 +10641,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1003410470178503677, guid: aa46adc8d50b3bf42ab91317db574cfe,
     type: 3}
   m_PrefabInstance: {fileID: 1017485724}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1165853012 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4825964460138067619, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1175663280
 PrefabInstance:
@@ -15668,6 +15695,12 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 308339075}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1719965444 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1999965181266643657, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1720457248 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2888619246065863201, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
@@ -17294,6 +17327,12 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.0440729, z: 1}
   m_Center: {x: 0, y: 0.52203643, z: 0}
+--- !u!4 &1940576436 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1636332814943032910, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1951812479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18474,6 +18513,12 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.03938537, y: 0.04795451, z: 0.072926655}
   m_Center: {x: -2.646978e-23, y: 0, z: 0.0000000018626458}
+--- !u!4 &2105653477 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7683144500441820992, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2121301299 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5343999158037147201, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
@@ -20240,11 +20285,21 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5306404984177935517, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5587933107535833413, guid: 34f9222307093e14e8a44d2f6bd27d50,
         type: 3}
       propertyPath: musicManager
       value: 
       objectReference: {fileID: 238092312}
+    - target: {fileID: 5840834075326997935, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5946756317276131773, guid: 34f9222307093e14e8a44d2f6bd27d50,
         type: 3}
       propertyPath: m_IsActive

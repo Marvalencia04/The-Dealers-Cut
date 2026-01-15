@@ -2,134 +2,132 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-
-// IMPORTANTE: para poder referenciar XRGrabInteractable aquí
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-public class PreviewNextCards : MonoBehaviour
+public class PreviewTopCards : MonoBehaviour
 {
     [Header("Referencia al mazo")]
     public DeckXR deck;
 
-    [Header("Transform donde colocar cada carta")]
-    public Transform[] previewSlots; // Deben ser 3
+    [Header("Preview slots (3 por mano)")]
+    public Transform[] previewSlotsRight; // 3
+    public Transform[] previewSlotsLeft;  // 3
 
     [Header("Tiempo entre aparición de cartas")]
     public float delayBetweenCards = 0.5f;
 
     [Header("Animación de girar carta (opcional)")]
-    public float flipDuration = 1f; // duración del giro
+    public float flipDuration = 1f;
 
-    [Header("Ángulo de giro de la carta (grados X)")]
+    [Header("Ángulo de giro (grados X/Y/Z)")]
     public float flipAngleX = 180f;
-    [Header("Ángulo de giro de la carta (grados Y)")]
     public float flipAngleY = 180f;
-    [Header("Ángulo de giro de la carta (grados Z)")]
     public float flipAngleZ = 180f;
 
-    private List<GameObject> previewedCards = new List<GameObject>();
+    // Guardamos pares (derecha, izquierda)
+    private readonly List<(GameObject right, GameObject left)> previewPairs = new();
 
     /// <summary>
-    /// Activa la aparición secuencial de las siguientes 3 cartas.
+    /// Muestra secuencialmente las siguientes 3 cartas del mazo (misma carta en ambas manos).
     /// </summary>
     public void ShowNextThreeSequential()
     {
         ClearPreview();
 
-        if (deck == null || previewSlots == null || previewSlots.Length < 3)
+        if (deck == null ||
+            previewSlotsRight == null || previewSlotsLeft == null ||
+            previewSlotsRight.Length < 3 || previewSlotsLeft.Length < 3)
         {
-            Debug.LogWarning("Falta configurar deck o previewSlots.");
+            Debug.LogWarning("PreviewNextCards: falta configurar deck o previewSlotsRight/Left (3 por mano).");
             return;
         }
 
-        // Acceder al runtimeDeck (privado) por reflection
         var runtimeDeckField = typeof(DeckXR).GetField("runtimeDeck",
             BindingFlags.NonPublic | BindingFlags.Instance);
 
         if (runtimeDeckField == null)
         {
-            Debug.LogError("No se pudo acceder a runtimeDeck");
+            Debug.LogError("PreviewNextCards: no se pudo acceder a runtimeDeck.");
             return;
         }
 
         List<GameObject> runtimeDeck = runtimeDeckField.GetValue(deck) as List<GameObject>;
         if (runtimeDeck == null || runtimeDeck.Count == 0)
         {
-            Debug.LogWarning("Mazo vacío");
+            Debug.LogWarning("PreviewNextCards: mazo vacío.");
             return;
         }
 
-        int count = Mathf.Min(3, runtimeDeck.Count, previewSlots.Length);
+        int count = Mathf.Min(3, runtimeDeck.Count, previewSlotsRight.Length, previewSlotsLeft.Length);
         StartCoroutine(ShowCardsCoroutine(runtimeDeck, count));
     }
 
-    /// <summary>
-    /// Coroutine que instancia cartas una tras otra con delay.
-    /// </summary>
     private IEnumerator ShowCardsCoroutine(List<GameObject> deckList, int count)
     {
         for (int i = 0; i < count; i++)
         {
             GameObject prefab = deckList[i];
 
-            // Crea las cartas como hijos de los gameobjects
-            GameObject cardObj = Instantiate(prefab, previewSlots[i]);
+            // ✅ HIJOS + localPosition(0,0,0)
+            GameObject cardRight = Instantiate(prefab, previewSlotsRight[i]);
+            ResetLocal(cardRight);
 
-            cardObj.transform.localPosition = Vector3.zero;
-            cardObj.transform.localRotation = Quaternion.identity;
-            cardObj.transform.localScale = Vector3.one;
+            GameObject cardLeft = Instantiate(prefab, previewSlotsLeft[i]);
+            ResetLocal(cardLeft);
 
+            DisablePreviewInteraction(cardRight);
+            DisablePreviewInteraction(cardLeft);
 
-            // >>> PREVIEW: desactivar interacción (XR + colliders + físicas)
-            DisablePreviewInteraction(cardObj);
+            SetupCardInstance(cardRight, prefab);
+            SetupCardInstance(cardLeft, prefab);
 
-            // Configurar visual / referencias de Card
-            Card instanceCard = cardObj.GetComponent<Card>() ?? cardObj.GetComponentInChildren<Card>();
-            if (instanceCard != null)
-            {
-                instanceCard.deck = deck;
-                instanceCard.prefabReference = prefab;
+            previewPairs.Add((cardRight, cardLeft));
 
-                if (deck.jokerMaterial != null)
-                {
-                    instanceCard.jokerMaterial = deck.jokerMaterial;
-
-                    // En tu lógica: SetHidden(false) = mostrar / no ocultar
-                    instanceCard.SetHidden(false);
-                }
-            }
-
-            previewedCards.Add(cardObj);
-
-            // Animación de girar la carta
             if (flipDuration > 0f)
-            {
-                yield return StartCoroutine(FlipCard(cardObj));
-            }
+                yield return StartCoroutine(FlipPairLocal(cardRight, cardLeft));
 
-            // Espera antes de mostrar la siguiente carta
             yield return new WaitForSeconds(delayBetweenCards);
         }
     }
 
-    /// <summary>
-    /// Desactiva toda interacción para que la carta sea solo "preview".
-    /// </summary>
+    private void ResetLocal(GameObject obj)
+    {
+        if (obj == null) return;
+        obj.transform.localPosition = Vector3.zero;        // ✅ (0,0,0)
+        obj.transform.localRotation = Quaternion.identity; // ✅ (0,0,0)
+        obj.transform.localScale = Vector3.one;
+    }
+
+    private void SetupCardInstance(GameObject cardObj, GameObject prefab)
+    {
+        if (cardObj == null) return;
+
+        Card instanceCard = cardObj.GetComponent<Card>() ?? cardObj.GetComponentInChildren<Card>();
+        if (instanceCard != null)
+        {
+            instanceCard.deck = deck;
+            instanceCard.prefabReference = prefab;
+
+            if (deck != null && deck.jokerMaterial != null)
+            {
+                instanceCard.jokerMaterial = deck.jokerMaterial;
+                instanceCard.SetHidden(false);
+            }
+        }
+    }
+
     private void DisablePreviewInteraction(GameObject cardObj)
     {
         if (cardObj == null) return;
 
-        // 1) Desactivar XRGrabInteractable (en raíz y en hijos)
         var grabs = cardObj.GetComponentsInChildren<XRGrabInteractable>(true);
         for (int i = 0; i < grabs.Length; i++)
             grabs[i].enabled = false;
 
-        // 2) Desactivar colliders (evita raycasts/choques/trigger)
         var colliders = cardObj.GetComponentsInChildren<Collider>(true);
         for (int i = 0; i < colliders.Length; i++)
             colliders[i].enabled = false;
 
-        // 3) Asegurar que no haga físicas
         var rbs = cardObj.GetComponentsInChildren<Rigidbody>(true);
         for (int i = 0; i < rbs.Length; i++)
         {
@@ -137,47 +135,46 @@ public class PreviewNextCards : MonoBehaviour
             rbs[i].detectCollisions = false;
             rbs[i].useGravity = false;
         }
-
-        // (Opcional) Evita que el XR Ray Interactor lo "vea" aunque tuviera collider:
-        // cardObj.layer = LayerMask.NameToLayer("Ignore Raycast");
-        // foreach (Transform t in cardObj.GetComponentsInChildren<Transform>(true))
-        //     t.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
     }
 
-    /// <summary>
-    /// Gira la carta según el ángulo configurado.
-    /// </summary>
-    private IEnumerator FlipCard(GameObject card)
+    // ✅ Flip en LOCAL (mejor al ser hijos)
+    private IEnumerator FlipPairLocal(GameObject right, GameObject left)
     {
         float time = 0f;
-        if (card == null) yield break;
 
-        Quaternion startRot = card.transform.rotation;
-        Quaternion endRot = startRot * Quaternion.Euler(flipAngleX, flipAngleY, flipAngleZ);
+        Quaternion startR = right ? right.transform.localRotation : Quaternion.identity;
+        Quaternion startL = left ? left.transform.localRotation : Quaternion.identity;
+
+        Quaternion delta = Quaternion.Euler(flipAngleX, flipAngleY, flipAngleZ);
+        Quaternion endR = startR * delta;
+        Quaternion endL = startL * delta;
 
         while (time < flipDuration)
         {
-            if (card == null) yield break;
-            card.transform.rotation = Quaternion.Slerp(startRot, endRot, time / flipDuration);
+            float t = time / flipDuration;
+
+            if (right) right.transform.localRotation = Quaternion.Slerp(startR, endR, t);
+            if (left)  left.transform.localRotation  = Quaternion.Slerp(startL, endL, t);
+
             time += Time.deltaTime;
             yield return null;
         }
 
-        if (card != null)
-            card.transform.rotation = endRot;
+        if (right) right.transform.localRotation = endR;
+        if (left)  left.transform.localRotation  = endL;
     }
 
-    /// <summary>
-    /// Borra todas las cartas actuales.
-    /// </summary>
     public void ClearPreview()
     {
         StopAllCoroutines();
 
-        foreach (var c in previewedCards)
-            if (c != null)
-                Destroy(c);
+        for (int i = 0; i < previewPairs.Count; i++)
+        {
+            var pair = previewPairs[i];
+            if (pair.right != null) Destroy(pair.right);
+            if (pair.left != null) Destroy(pair.left);
+        }
 
-        previewedCards.Clear();
+        previewPairs.Clear();
     }
 }
