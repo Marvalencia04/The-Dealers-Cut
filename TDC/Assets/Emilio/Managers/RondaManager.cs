@@ -210,12 +210,13 @@ public class RondaManager : MonoBehaviour
                 // 1) Resolver pagos
                 tableFlow?.ResolveRoundPayouts();
                 moneyManager.NotifyRoundEnd();
-                if (colliderSoloEnResultados != null)
-                    colliderSoloEnResultados.enabled = true;
+                
 
                 if (IsLastRoundOfDay())
                 {
-                    
+                    if (colliderSoloEnResultados != null)
+                        colliderSoloEnResultados.enabled = true;
+
                     //Debug.Log("aaaaaaaaaaaaaaaaa");
                     StopAllCoroutines();
 
