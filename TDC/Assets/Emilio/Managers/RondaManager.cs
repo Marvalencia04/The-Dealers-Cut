@@ -206,7 +206,7 @@ public class RondaManager : MonoBehaviour
                         gameManager.OnDayFinished(); // aqui se decide derrota/victoria segun cuota
 
                     // Importante: NO arrancar la espera de limpiar mesa
-                    return;
+                    //return;
                 }
 
                 // 2) Esperar a que el jugador recoja cartas
@@ -288,8 +288,19 @@ public class RondaManager : MonoBehaviour
 
     private void AdvanceToNextRoundFromResults()
     {
+        //Hola, soy Adri, Emilio me ha dicho que pegue esto aquí
+        //Es de una función que hay pa'bajo
+        // 1) Detener coroutines de espera (reparto/resultados/etc.)
+        StopAllCoroutines();
+
+        // 2) (Opcional pero recomendado) Resetea mesa logica para evitar estados raros
+        // Si tu BlackjackTable tiene ResetForNewRound/ResetTableForNewRound usa el que tengas:
+        if (tableFlow != null)
+            tableFlow.ResetForNewRound();
+
         // 1) Incrementar ronda
         currentRound++;
+        Debug.Log(currentRound);
 
         if (currentRound > totalRoundsPerDay)
         {
