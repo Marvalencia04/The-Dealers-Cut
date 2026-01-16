@@ -65,6 +65,25 @@ public class CardSnapZone : MonoBehaviour
     [Tooltip("AudioSource para FX de esta zona (snap / pickup).")]
     [SerializeField] private AudioSource fxSource;
 
+    [Header("FX - Audio NPC")]
+    [Tooltip("AudioSource específico para los NPCs (voces de 'pido carta', etc.)")]
+    [SerializeField] private AudioSource npcVoiceSource;
+
+    [Tooltip("Clips de voz cuando un NPC pide carta ('dame carta', 'otra', 'hit', etc.)")]
+    [SerializeField] private List<AudioClip> npcRequestCardVoices = new List<AudioClip>();
+
+    [Range(0f, 1f)]
+    [SerializeField] private float npcVoiceVolume = 0.8f;
+
+    [Tooltip("ID del NPC asociado a esta zona (-1 si es zona del dealer o jugador)")]
+    [SerializeField] private int npcId = -1;
+
+    // Variable privada para detectar si es zona de NPC
+    private bool IsNPCZone => npcId >= 0;
+
+    // Contador para detectar cuándo se añade una carta nueva
+    private int previousCardCount = 0;
+
     [Tooltip("Sonidos cuando una carta SNAPEA en el slot.")]
     [SerializeField] private List<AudioClip> snapFX = new();
 
@@ -98,6 +117,9 @@ public class CardSnapZone : MonoBehaviour
 
         UpdateSlotVisuals();
         RecalculateScore();
+
+        //Contador de cartas
+        previousCardCount = 0;
     }
 
     // 🔥 OPTIMIZACIÓN: Usar OnTriggerEnter y eventos en lugar de OnTriggerStay
@@ -338,6 +360,9 @@ public class CardSnapZone : MonoBehaviour
         UpdateSlotVisuals();
         RecalculateScore();
 
+        previousCardCount = GetOccupiedCount();
+
+
         //----------------------------------------------------------------------------
         // Cambios Emilio
         //----------------------------------------------------------------------------
@@ -393,6 +418,9 @@ public class CardSnapZone : MonoBehaviour
             }
         }
 
+        // NUEVO: Actualizar contador
+        previousCardCount = GetOccupiedCount();
+
         UpdateSlotVisuals();
         RecalculateScore();
 
@@ -416,6 +444,9 @@ public class CardSnapZone : MonoBehaviour
 
         UpdateSlotVisuals();
         RecalculateScore();
+
+
+        previousCardCount = 0;
     }
 
     private void UpdateSlotVisuals()
@@ -691,5 +722,99 @@ public class CardSnapZone : MonoBehaviour
         return Mathf.Max(1, maxCards);
     }
     //----------------------------------------------------------------------------
+
+    // ========================
+    // AUDIO NPC
+    // ========================
+
+    /// <summary>
+    /// Reproduce un clip de voz aleatorio cuando un NPC pide carta
+    /// </summary>
+    private void PlayNPCRequestCardVoice()
+    {
+        if (npcVoiceSource == null || npcRequestCardVoices == null || npcRequestCardVoices.Count == 0)
+            return;
+
+        StartCoroutine(PlayNPCRequestCardVoiceCoroutine());
+    }
+
+    private System.Collections.IEnumerator PlayNPCRequestCardVoiceCoroutine()
+{
+    int soundsToPlay = Random.Range(2, 6);
+
+    for (int i = 0; i < soundsToPlay; i++)
+    {
+        AudioClip clip = npcRequestCardVoices[Random.Range(0, npcRequestCardVoices.Count)];
+        if (clip == null) continue;
+
+        float oldPitch = npcVoiceSource.pitch;
+        npcVoiceSource.pitch = Random.Range(0.95f, 1.1f);
+
+        npcVoiceSource.PlayOneShot(clip, npcVoiceVolume);
+
+        npcVoiceSource.pitch = oldPitch;
+
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] NPC {npcId} voz rápida ({i + 1}/{soundsToPlay})");
+
+        // 🔥 ESPERA MUY CORTA
+        yield return new WaitForSeconds(Random.Range(0.05f, 0.15f));
+    }
+}
+
+
+
+
+    /// <summary>
+    /// Configura el ID del NPC asociado a esta zona
+    /// </summary>
+    public void SetNPCId(int id)
+    {
+        npcId = id;
+        if (logDebug)
+            Debug.Log($"[CardSnapZone:{name}] Configurado como zona de NPC {id}");
+
+    }
+
+
+    private bool npcRequestVoiceArmed = true;
+
+    // Llamar cuando el NPC empieza a pedir carta (transición a pedir)
+    public void OnNPCBeganRequestingCard()
+    {
+        // Solo si aún hay un slot visual de “pide carta”
+        if (HasActiveSlotVisual() && npcRequestVoiceArmed)
+        {
+            PlayNPCRequestCardVoice();
+            npcRequestVoiceArmed = false;
+        }
+    }
+
+    // Llamar cuando el NPC deja de pedir (stand / bust / 21)
+    public void OnNPCStoppedRequestingCard()
+    {
+        npcRequestVoiceArmed = true;
+    }
+
+
+
+    private bool HasActiveSlotVisual()
+    {
+        if (slotVisuals == null) return false;
+
+        for (int i = 0; i < slotVisuals.Length; i++)
+        {
+            if (slotVisuals[i] != null && slotVisuals[i].enabled)
+                return true;
+        }
+        return false;
+    }
+
+
+    public void RearmNPCRequestVoice()
+    {
+        npcRequestVoiceArmed = true;
+    }
+
 
 }
