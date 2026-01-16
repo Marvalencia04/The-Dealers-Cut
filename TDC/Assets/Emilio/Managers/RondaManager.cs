@@ -76,6 +76,10 @@ public class RondaManager : MonoBehaviour
     public event Action<int> OnRoundEnded;
     private Coroutine dealCheckCoroutine;
 
+    //Para que respawneen NPCs
+    [SerializeField] private RoundObjectRotator roundObjectRotator;
+
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -135,7 +139,7 @@ public class RondaManager : MonoBehaviour
         uiManager?.ShowRoundIntro(currentRound, totalRoundsPerDay);
 
         OnRoundStarted?.Invoke(currentRound);
-
+        
         // Entramos en apuestas (c�lculo interno + permisos)
         GoToPhase(BlackjackPhase.Apuestas);
     }
@@ -165,7 +169,12 @@ public class RondaManager : MonoBehaviour
 
                 if (autoAdvanceAfterBets)
                     StartCoroutine(AutoAdvanceFromBets());
+                //Esto es para lo de los NPCs
+                if (roundObjectRotator != null)
+                    Debug.Log("aaaaaaaaa (pero dentro de RondaManager)");
+                    roundObjectRotator.OnRoundStarted();
                 break;
+
 
             case BlackjackPhase.Reparto:
                 // no mates todas las coroutines del juego
