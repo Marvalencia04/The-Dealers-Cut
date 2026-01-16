@@ -15753,6 +15753,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1469443020}
   m_SourcePrefab: {fileID: 100100000, guid: d5c55daba43146a46a7ca9c4f4025643, type: 3}
+--- !u!1 &1608989075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3773921950860308910, guid: ff322f3d0e475624dace1cb135408c72,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777176064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1621130428 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7001841221489778573, guid: ff322f3d0e475624dace1cb135408c72,
@@ -20523,9 +20529,9 @@ MonoBehaviour:
   canvasToEnable: {fileID: 7529739927597527585}
   xrRig: {fileID: 1777176065}
   teleportTarget: {fileID: 301041698}
-  autoFindMovementComponents: 1
-  locomotionSystem: {fileID: 0}
-  moveProvider: {fileID: 0}
+  unpauseGame: 1
+  locomotionRoot: {fileID: 1608989075}
+  moveProviderToDisable: {fileID: 1381184613}
 --- !u!1001 &657512541986316590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22210,6 +22216,41 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Salir
       objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2145258772}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnButtonPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIButtonTeleportAndFreeze, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5472010750004875070, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5587933107535833413, guid: 34f9222307093e14e8a44d2f6bd27d50,
         type: 3}
       propertyPath: musicManager
@@ -22366,6 +22407,41 @@ PrefabInstance:
       propertyPath: startTeleportTarget
       value: 
       objectReference: {fileID: 1786178066}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2145258772}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnButtonPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIButtonTeleportAndFreeze, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397523501292927985, guid: 34f9222307093e14e8a44d2f6bd27d50,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 9219558492757952855, guid: 34f9222307093e14e8a44d2f6bd27d50,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -22453,12 +22529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67048175dec261243a00414eb9abdad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseMenuPanel: {fileID: 7529739927597527584}
-  mainMenuPanel: {fileID: 7529739927597527585}
-  configPanel: {fileID: 0}
-  pauseButton: 1
-  listenRightHand: 1
-  listenLeftHand: 1
 --- !u!4 &7668498709008478133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9211358991942748949, guid: 206c8d2fc55da974eb06c9eb9513ddd5,

@@ -9,54 +9,47 @@ public class UIButtonTeleportAndFreeze : MonoBehaviour
     [SerializeField] private GameObject canvasToEnable;
 
     [Header("Player XR")]
-    [SerializeField] private Transform xrRig;
+    [SerializeField] private Transform xrRig;          
     [SerializeField] private Transform teleportTarget;
 
-    [Header("Auto-find movement in rig")]
-    [SerializeField] private bool autoFindMovementComponents = true;
+    [Header("Pause")]
+    [SerializeField] private bool unpauseGame = true;
 
-    [Header("Movement Components (optional)")]
-    [SerializeField] private LocomotionSystem locomotionSystem;
-    [SerializeField] private ContinuousMoveProviderBase moveProvider;
+    [Header("Freeze (arrastrar desde Jerarquia)")]
+    [Tooltip("Arrastra aquí el GameObject 'Locomotion' (el hijo que tiene Move/Turn/etc).")]
+    [SerializeField] private GameObject locomotionRoot; // <- TU 'Locomotion'
+
+    [Tooltip("Opcional: si solo quieres quitar el movimiento continuo, arrastra 'Move' (hijo).")]
+    [SerializeField] private Behaviour moveProviderToDisable; // ContinuousMoveProvider (Action-based), etc.
 
     public void OnButtonPressed()
     {
-        // 1️⃣ Desactivar canvas antiguos
+        // 1) Desactivar canvas antiguos
         foreach (var c in canvasesToDisable)
-        {
-            if (c != null)
-                c.SetActive(false);
-        }
+            if (c != null) c.SetActive(false);
 
-        // 2️⃣ Activar nuevo canvas
+        // 2) Activar canvas nuevo
         if (canvasToEnable != null)
             canvasToEnable.SetActive(true);
 
-        // 3️⃣ Despausar juego
-        Time.timeScale = 1f;
+        // 3) Despausar
+        if (unpauseGame)
+            Time.timeScale = 1f;
 
-        // 4️⃣ Teletransportar jugador
+        // 4) Teleport
         if (xrRig != null && teleportTarget != null)
         {
             xrRig.position = teleportTarget.position;
             xrRig.rotation = teleportTarget.rotation;
         }
 
-        // 5️⃣ Buscar componentes de movimiento si hace falta
-        if (autoFindMovementComponents && xrRig != null)
-        {
-            if (locomotionSystem == null)
-                locomotionSystem = xrRig.GetComponentInChildren<LocomotionSystem>(true);
+        // 5) Freeze movimiento
+        // Opción 1: apagar todo el sistema locomotion (recomendado si quieres “quieto total”)
+        if (locomotionRoot != null)
+            locomotionRoot.SetActive(false);
 
-            if (moveProvider == null)
-                moveProvider = xrRig.GetComponentInChildren<ContinuousMoveProviderBase>(true);
-        }
-
-        // 6️⃣ Congelar movimiento
-        if (moveProvider != null)
-            moveProvider.enabled = false;
-
-        if (locomotionSystem != null)
-            locomotionSystem.enabled = false;
+        // Opción 2: apagar SOLO el provider de movimiento (si quieres mantener Turn, Jump, etc.)
+        if (moveProviderToDisable != null)
+            moveProviderToDisable.enabled = false;
     }
 }
