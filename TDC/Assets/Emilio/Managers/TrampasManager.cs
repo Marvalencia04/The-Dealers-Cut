@@ -199,7 +199,11 @@ public class TrampasManager : MonoBehaviour
                 h.btnCartaAElegir.interactable = usosCartaAElegir > 0 && IsTrapAllowedInCurrentPhase(TrapType.CartaAElegir);
 
             if (h.btnLlamadaSeguridad != null)
-                h.btnLlamadaSeguridad.interactable = usosLlamadaSeguridad > 0 && IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad);
+                if (h.btnLlamadaSeguridad != null)
+                    h.btnLlamadaSeguridad.interactable =
+                        usosLlamadaSeguridad > 0 &&
+                        IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad) &&
+                        CanUseLlamadaSeguridadNow();
 
             if (h.btnNormaDealer != null)
                 h.btnNormaDealer.interactable = usosNormaDealer > 0 && IsTrapAllowedInCurrentPhase(TrapType.NormaDealer);
@@ -335,6 +339,19 @@ public class TrampasManager : MonoBehaviour
 
     public void OnClick_LlamadaSeguridad()
     {
+        if (blackjackTable == null)
+        {
+            ShowTrapMessage("BlackjackTable no asignada en TrampasManager.");
+            return;
+        }
+
+        if (!CanUseLlamadaSeguridadNow())
+        {
+            ShowTrapMessage("Aún no: espera a que todos tengan sus 2 cartas iniciales.");
+            return;
+        }
+
+
         // Validar fase/usos, pero NO consumimos aun
         if (!IsTrapAllowedInCurrentPhase(TrapType.LlamadaSeguridad))
         {
@@ -539,4 +556,12 @@ public class TrampasManager : MonoBehaviour
         b.onClick.RemoveListener(action);
         b.onClick.AddListener(action);
     }
+
+    private bool CanUseLlamadaSeguridadNow()
+    {
+        if (blackjackTable == null) return false;
+        return blackjackTable.AreInitialHandsComplete(2);
+    }
+
+
 }
