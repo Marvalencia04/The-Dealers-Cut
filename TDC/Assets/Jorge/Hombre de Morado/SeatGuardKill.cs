@@ -16,6 +16,12 @@ public class SeatGuardKill : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip sfx;
 
+    [Tooltip("Retraso ANTES de reproducir el sonido (segundos)")]
+    [SerializeField] private float soundDelayBeforePlay = 0.5f; // ✅ lo que pedías
+
+    [Tooltip("Si es true, espera a que termine el clip (sfx.length) después de reproducirlo")]
+    [SerializeField] private bool waitForSfxToFinish = false;
+
     private bool running;
 
     private void Reset()
@@ -46,10 +52,21 @@ public class SeatGuardKill : MonoBehaviour
         // Aparece el guardia
         guard.SetActive(true);
 
-        // ✨ SONIDO AL INICIO (en cuanto aparece el guardia)
-        if (audioSource && sfx) audioSource.PlayOneShot(sfx);
+        // ⏳ Delay ANTES del sonido
+        if (soundDelayBeforePlay > 0f)
+            yield return new WaitForSecondsRealtime(soundDelayBeforePlay);
 
-        // Espera en tiempo real
+        // 🔊 Reproducir sonido
+        if (audioSource && sfx)
+        {
+            audioSource.PlayOneShot(sfx);
+
+            // ⏳ Esperar a que termine (opcional)
+            if (waitForSfxToFinish)
+                yield return new WaitForSecondsRealtime(sfx.length);
+        }
+
+        // ⏱️ Tiempo visible del guardia (independiente del sonido)
         float elapsed = 0f;
         while (elapsed < visibleTime)
         {
@@ -70,7 +87,7 @@ public class SeatGuardKill : MonoBehaviour
     {
         if (!Application.isPlaying)
         {
-            Debug.LogWarning("Este test solo funciona en PLAY MODE. Presiona el botón ▶Play primero.");
+            Debug.LogWarning("Este test solo funciona en PLAY MODE. Presiona ▶ Play.");
             return;
         }
         Execute();

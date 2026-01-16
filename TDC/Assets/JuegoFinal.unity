@@ -3636,7 +3636,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'snapFX.Array.data[2]'
       value: 
-      objectReference: {fileID: 8300000, guid: 33f87fd1d8695b543bbca54c2370b3ee, type: 3}
+      objectReference: {fileID: 8300000, guid: bb3a6e0292a868644b06863beb4a193e, type: 3}
     - target: {fileID: 8953081803829274525, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: 'pickupFX.Array.data[0]'
@@ -9761,6 +9761,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2038788325}
     m_Modifications:
+    - target: {fileID: 642536175808488463, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: sfx
+      value: 
+      objectReference: {fileID: 8300000, guid: f8b3aa191ab50b444848efd7257c3c7b, type: 3}
+    - target: {fileID: 642536175808488463, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: soundDelayBeforePlay
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 1124622503934086800, guid: aa46adc8d50b3bf42ab91317db574cfe,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9836,10 +9846,30 @@ PrefabInstance:
       propertyPath: 'npcModels.Array.data[2]'
       value: 
       objectReference: {fileID: 1017485733}
+    - target: {fileID: 1931428796151391801, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: sfx
+      value: 
+      objectReference: {fileID: 8300000, guid: f8b3aa191ab50b444848efd7257c3c7b, type: 3}
+    - target: {fileID: 1931428796151391801, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: soundDelayBeforePlay
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 4045345387894484070, guid: aa46adc8d50b3bf42ab91317db574cfe,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4139135949207344532, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: sfx
+      value: 
+      objectReference: {fileID: 8300000, guid: f8b3aa191ab50b444848efd7257c3c7b, type: 3}
+    - target: {fileID: 4139135949207344532, guid: aa46adc8d50b3bf42ab91317db574cfe,
+        type: 3}
+      propertyPath: soundDelayBeforePlay
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 5799007749005676987, guid: aa46adc8d50b3bf42ab91317db574cfe,
         type: 3}
@@ -17337,7 +17367,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'snapFX.Array.data[2]'
       value: 
-      objectReference: {fileID: 8300000, guid: 33f87fd1d8695b543bbca54c2370b3ee, type: 3}
+      objectReference: {fileID: 8300000, guid: bb3a6e0292a868644b06863beb4a193e, type: 3}
     - target: {fileID: 8953081803829274525, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: 'pickupFX.Array.data[0]'
@@ -20786,6 +20816,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: DealerZone
       objectReference: {fileID: 0}
+    - target: {fileID: 5790202550641433916, guid: 206c8d2fc55da974eb06c9eb9513ddd5,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6053817210067941419, guid: 206c8d2fc55da974eb06c9eb9513ddd5,
+        type: 3}
+      propertyPath: fxSource
+      value: 
+      objectReference: {fileID: 1077222456117510270}
     - target: {fileID: 6053817210067941419, guid: 206c8d2fc55da974eb06c9eb9513ddd5,
         type: 3}
       propertyPath: canGrabAfterSnap
@@ -20845,7 +20885,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'snapFX.Array.data[2]'
       value: 
-      objectReference: {fileID: 8300000, guid: 33f87fd1d8695b543bbca54c2370b3ee, type: 3}
+      objectReference: {fileID: 8300000, guid: bb3a6e0292a868644b06863beb4a193e, type: 3}
     - target: {fileID: 9211358991942748949, guid: 206c8d2fc55da974eb06c9eb9513ddd5,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -20928,6 +20968,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 318a609b56369fb41973af3bce143a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &1077222456117510270 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 5790202550641433916, guid: 206c8d2fc55da974eb06c9eb9513ddd5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1077222456117510268}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1255064123923603633 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 58146331701469081, guid: 34f9222307093e14e8a44d2f6bd27d50,
@@ -21112,7 +21158,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'snapFX.Array.data[2]'
       value: 
-      objectReference: {fileID: 8300000, guid: 33f87fd1d8695b543bbca54c2370b3ee, type: 3}
+      objectReference: {fileID: 8300000, guid: bb3a6e0292a868644b06863beb4a193e, type: 3}
     - target: {fileID: 8953081803829274525, guid: 221feb3b2fdb66a4aadb5edfd6bc1379,
         type: 3}
       propertyPath: 'pickupFX.Array.data[0]'
