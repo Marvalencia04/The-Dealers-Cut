@@ -47,5 +47,10 @@ public class BlackjackNPC
         HasStood = true; // no juega más esta ronda
     }
 
-
+    public void ClearRemovedBySecurityForNewRound()
+    {
+        IsRemovedBySecurity = false;
+        PlaceBet(0);
+        // si tienes mas estado: reset aqui (stand, busted, etc.)
+    }
 }

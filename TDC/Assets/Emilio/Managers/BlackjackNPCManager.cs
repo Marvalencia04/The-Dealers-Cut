@@ -35,6 +35,11 @@ public class BlackjackNPCManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private MonoBehaviour blackjackTableComponent; // debe implementar IBlackjackTable
 
+    [Header("Seats (index = npcId)")]
+    [SerializeField] private NPCGroupSeat[] seats;
+    [SerializeField] private BlackjackNPC[] npcs2;
+
+
     private IBlackjackTable table;
     private readonly List<BlackjackNPC> npcs = new List<BlackjackNPC>();
 
@@ -153,6 +158,27 @@ public class BlackjackNPCManager : MonoBehaviour
 
         // La mesa deber�a tambi�n "anular" su mano visualmente (eso lo haces t� en BlackjackTable)
         return true;
+    }
+
+    public void ReplaceRemovedNPCsForNewRound()
+    {
+        if (npcs == null) return;
+
+        for (int i = 0; i < npcs2.Length; i++)
+        {
+            var npc = npcs[i];
+            if (npc == null) continue;
+
+            if (!npc.IsRemovedBySecurity)
+                continue;
+
+            // 1) Cambiar modelo en el seat
+            if (seats != null && i >= 0 && i < seats.Length && seats[i] != null)
+                seats[i].ActivateNextModel();
+
+            // 2) Reset logico del NPC para que vuelva a jugar en esta nueva ronda
+            npc.ClearRemovedBySecurityForNewRound();
+        }
     }
 
     // ------------------------------------------------------------

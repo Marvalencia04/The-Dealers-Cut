@@ -1,9 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCGroupSeat : MonoBehaviour
 {
     [Header("Los 3 NPCs de este asiento (solo 1 debe estar activo)")]
     [SerializeField] private GameObject[] npcs;
+
+    [Header("Models for this seat (order matters)")]
+    [SerializeField] private List<GameObject> npcModels = new List<GameObject>();
+
+    [SerializeField] private int currentIndex = 0;
 
     public GameObject GetActiveNPC()
     {
@@ -33,5 +39,30 @@ public class NPCGroupSeat : MonoBehaviour
             if (npcs[i])
                 npcs[i].SetActive(i == index);
         }
+    }
+
+    public void ActivateCurrent()
+    {
+        for (int i = 0; i < npcModels.Count; i++)
+            if (npcModels[i] != null)
+                npcModels[i].SetActive(i == currentIndex);
+    }
+
+    public void ActivateNextModel()
+    {
+        if (npcModels == null || npcModels.Count == 0) return;
+
+        // apaga todos
+        for (int i = 0; i < npcModels.Count; i++)
+            if (npcModels[i] != null)
+                npcModels[i].SetActive(false);
+
+        // avanza indice (con loop)
+        currentIndex++;
+        if (currentIndex >= npcModels.Count) currentIndex = 0;
+
+        // enciende el nuevo
+        if (npcModels[currentIndex] != null)
+            npcModels[currentIndex].SetActive(true);
     }
 }

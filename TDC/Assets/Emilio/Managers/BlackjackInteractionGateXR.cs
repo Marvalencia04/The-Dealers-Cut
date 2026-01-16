@@ -43,7 +43,7 @@ public class BlackjackInteractionGateXR : MonoBehaviour
                 SetDeck(true);
                 SetAllZonesReadOnly(false);
                 SetAllZonesCanReceive(true);
-                SetAllZonesCanGrab(true); // para recolocar si cae mal
+                SetAllZonesCanGrab(false); // para recolocar si cae mal
                 break;
 
             case BlackjackPhase.TurnoJugadores:
