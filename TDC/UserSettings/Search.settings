@@ -89,6 +89,7 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
+	"Select"
 	"h: t:TextMeshPro"
 	"p: t:TextMeshPro"
 	""
@@ -107,7 +108,6 @@ recentSearches = [
 	"XRI Default Input Actions"
 	"RightHa"
 	"RightHand Interaction / Select"
-	"XRI LeftHand Interaction"
 ]
 searchItemFavorites = [
 ]
