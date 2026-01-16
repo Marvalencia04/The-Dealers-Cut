@@ -506,6 +506,22 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 bt?.Clear();
         }
 
+        // 1) Antes/Despues del reset del npcManager:
+        npcManager?.ReplaceRemovedNPCsForNewRound();
+
+        // 2) Desbloquear zonas de jugadores (por si quedaron bloqueadas por seguridad)
+        if (playerZones != null)
+        {
+            for (int i = 0; i < playerZones.Length; i++)
+            {
+                if (playerZones[i] == null) continue;
+                playerZones[i].UnlockZone();
+
+                // al iniciar ronda, que vuelvan a max 2 hasta Reparto
+                playerZones[i].SetMaxCards(2);
+            }
+        }
+
         //Log("Table reset for new round.");
     }
 

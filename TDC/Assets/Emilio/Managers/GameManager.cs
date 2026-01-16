@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.LowLevel;
+using System.Collections.Generic;
 
 /// <summary>
 /// Estados globales del juego.
@@ -46,8 +47,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform endOfDayTeleportTarget;
     [SerializeField] private Transform playerRoot;
 
-    [Header("Locomotion")]
-    [SerializeField] private Behaviour locomotionScript;
+
 
 
 
@@ -73,6 +73,32 @@ public class GameManager : MonoBehaviour
     /// Otros scripts pueden suscribirse si lo necesitan.
     /// </summary>
     public event Action<GameState> OnGameStateChanged;
+
+    // --------------------------------------------------------------------
+    // NPC Models Rotation (por asiento)
+    // --------------------------------------------------------------------
+    [System.Serializable]
+    public class SeatNPCModelList
+    {
+        [Tooltip("Solo para identificar en el Inspector (opcional).")]
+        public string seatName;
+
+        [Tooltip("Lista de modelos para este asiento, en orden por día/cambio.")]
+        public List<GameObject> models = new List<GameObject>();
+
+        [Tooltip("Indice actual activo en esta lista.")]
+        public int currentIndex = 0;
+    }
+
+    [Header("NPC Model Sets (3 asientos)")]
+    [SerializeField] private SeatNPCModelList seat1 = new SeatNPCModelList { seatName = "Seat 1" };
+    [SerializeField] private SeatNPCModelList seat2 = new SeatNPCModelList { seatName = "Seat 2" };
+    [SerializeField] private SeatNPCModelList seat3 = new SeatNPCModelList { seatName = "Seat 3" };
+
+    [Header("Opciones")]
+    [Tooltip("Si true: al empezar el juego fuerza el modelo inicial segun currentDay.")]
+    [SerializeField] private bool applyOnStart = true;
+
 
     // ----------------------------------------------------------------------
     //                          CICLO DE VIDA
@@ -102,7 +128,46 @@ public class GameManager : MonoBehaviour
 
         if (uiManager != null)
             uiManager.ShowDayIntro(currentDay, currentQuota);
+
+        if (applyOnStart)
+        {
+            RotateNPCModelsToNext();
+        }
     }
+
+    public void RotateNPCModelsToNext()
+    {
+        RotateSeatNext(seat1);
+        RotateSeatNext(seat2);
+        RotateSeatNext(seat3);
+    }
+
+    private void RotateSeatNext(SeatNPCModelList seat)
+    {
+        if (seat == null || seat.models == null || seat.models.Count == 0)
+            return;
+
+        // Apagar todos (seguro)
+        for (int i = 0; i < seat.models.Count; i++)
+            if (seat.models[i] != null)
+                seat.models[i].SetActive(false);
+
+        // ------------------------------------------------------------
+        // LOOP + seguridad de indice
+        // ------------------------------------------------------------
+        if (seat.currentIndex < 0 || seat.currentIndex >= seat.models.Count)
+            seat.currentIndex = 0;
+
+        seat.currentIndex = (seat.currentIndex + 1) % seat.models.Count;
+        // ------------------------------------------------------------
+
+        // Encender el actual
+        GameObject go = seat.models[seat.currentIndex];
+        if (go != null) go.SetActive(true);
+
+        //Debug.Log($"[GameManager] {seat.seatName}: modelo activo index={seat.currentIndex}/{seat.models.Count}");
+    }
+
 
     // ----------------------------------------------------------------------
     //                          CONTROL PRINCIPAL
@@ -314,6 +379,7 @@ public class GameManager : MonoBehaviour
 
         // Actualizar cuota del nuevo dia
         currentQuota = GetQuotaForDay(currentDay);
+        RotateNPCModelsToNext();
 
         // Reset rondas + volver a apuestas
         if (rondaManager != null)
@@ -332,7 +398,6 @@ public class GameManager : MonoBehaviour
         {
             playerRoot.position = endOfDayTeleportTarget.position;
             playerRoot.rotation = endOfDayTeleportTarget.rotation * Quaternion.Euler(0f, -90f, 0f);
-            locomotionScript.enabled = false;
         }
 
         else

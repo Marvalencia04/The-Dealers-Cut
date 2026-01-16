@@ -60,8 +60,7 @@ public class RondaManager : MonoBehaviour
     [SerializeField] private Transform endOfDayTeleportTarget;
     [SerializeField] private Transform playerRoot;
 
-    [Header("Locomotion")]
-    [SerializeField] private Behaviour locomotionScript;
+
 
     [SerializeField] private MoneyManager moneyManager;
 
@@ -313,7 +312,7 @@ public class RondaManager : MonoBehaviour
         {
             playerRoot.position = endOfDayTeleportTarget.position;
             playerRoot.rotation = endOfDayTeleportTarget.rotation * Quaternion.Euler(0f, 180f, 0f);
-            locomotionScript.enabled = true;
+            
         }
 
         else
