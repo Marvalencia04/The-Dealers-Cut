@@ -80,6 +80,10 @@ public class RondaManager : MonoBehaviour
     public event Action<int> OnRoundEnded;
     private Coroutine dealCheckCoroutine;
 
+    //Para que respawneen NPCs
+    [SerializeField] private RoundObjectRotator roundObjectRotator;
+
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -142,7 +146,7 @@ public class RondaManager : MonoBehaviour
         uiManager?.ShowRoundIntro(currentRound, totalRoundsPerDay);
 
         OnRoundStarted?.Invoke(currentRound);
-
+        
         // Entramos en apuestas (c�lculo interno + permisos)
         GoToPhase(BlackjackPhase.Apuestas);
     }
@@ -174,7 +178,12 @@ public class RondaManager : MonoBehaviour
 
                 if (autoAdvanceAfterBets)
                     StartCoroutine(AutoAdvanceFromBets());
+                //Esto es para lo de los NPCs
+                if (roundObjectRotator != null)
+                    Debug.Log("aaaaaaaaa (pero dentro de RondaManager)");
+                    roundObjectRotator.OnRoundStarted();
                 break;
+
 
             case BlackjackPhase.Reparto:
                 // no mates todas las coroutines del juego
@@ -218,7 +227,7 @@ public class RondaManager : MonoBehaviour
                         gameManager.OnDayFinished(); // aqui se decide derrota/victoria segun cuota
 
                     // Importante: NO arrancar la espera de limpiar mesa
-                    return;
+                    //return;
                 }
 
                 // 2) Esperar a que el jugador recoja cartas
@@ -300,8 +309,19 @@ public class RondaManager : MonoBehaviour
 
     private void AdvanceToNextRoundFromResults()
     {
+        //Hola, soy Adri, Emilio me ha dicho que pegue esto aquí
+        //Es de una función que hay pa'bajo
+        // 1) Detener coroutines de espera (reparto/resultados/etc.)
+        StopAllCoroutines();
+
+        // 2) (Opcional pero recomendado) Resetea mesa logica para evitar estados raros
+        // Si tu BlackjackTable tiene ResetForNewRound/ResetTableForNewRound usa el que tengas:
+        if (tableFlow != null)
+            tableFlow.ResetForNewRound();
+
         // 1) Incrementar ronda
         currentRound++;
+        Debug.Log(currentRound);
 
         if (currentRound > totalRoundsPerDay)
         {

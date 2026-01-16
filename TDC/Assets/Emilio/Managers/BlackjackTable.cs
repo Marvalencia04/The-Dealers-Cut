@@ -98,6 +98,11 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     public event Action<List<int>> OnSecurityTargetSelectionRequested;
     public event Action<string> OnTableLog;
 
+    private bool[] lastWantsHit;
+    private int[] lastZoneCounts;
+
+
+
     private void Awake()
     {
         if (gameManager == null) gameManager = GameManager.Instance;
@@ -139,6 +144,14 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             int idx = GetPlayerZoneIndex(zone);
             if (idx >= 0)
             {
+                // ✅ Detectar si ENTRÓ una carta nueva en esta zona
+                int before = (lastZoneCounts != null && idx < lastZoneCounts.Length) ? lastZoneCounts[idx] : 0;
+                int now = zone.GetOccupiedCount();
+                bool cardAdded = now > before;
+
+                if (lastZoneCounts != null && idx < lastZoneCounts.Length)
+                    lastZoneCounts[idx] = now;
+
                 int score = GetZoneScoreFromSnapZone(zone);
 
                 if (score >= 21)
@@ -147,7 +160,16 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                     zone.SetMaxCards(2);
                 }
 
+                // Mantener tu comportamiento original: siempre re-evaluar
                 ApplyNPCDecisions();
+
+                // ✅ AUDIO: si ha recibido carta Y aún sigue pidiendo, que vuelva a hablar
+                // (lastWantsHit[idx] ya está actualizado por ApplyNPCDecisions)
+                if (cardAdded && lastWantsHit != null && idx < lastWantsHit.Length && lastWantsHit[idx])
+                {
+                    zone.RearmNPCRequestVoice();
+                    zone.OnNPCBeganRequestingCard();
+                }
             }
             return;
         }
@@ -162,6 +184,7 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             return;
         }
     }
+
 
     public void StartDealerTurnXR()
     {
@@ -515,6 +538,12 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             foreach (var bt in npcBetTexts)
                 bt?.Clear();
         }
+
+
+
+        lastWantsHit = new bool[playerZones.Length];
+        for (int i = 0; i < lastWantsHit.Length; i++)
+            lastWantsHit[i] = false;
 
         // 1) Antes/Despues del reset del npcManager:
         npcManager?.ReplaceRemovedNPCsForNewRound();
@@ -925,6 +954,12 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
         }
 
         StopAllCoroutines();
+
+        lastZoneCounts = new int[playerZones.Length];
+        for (int i = 0; i < playerZones.Length; i++)
+            lastZoneCounts[i] = playerZones[i] != null ? playerZones[i].GetOccupiedCount() : 0;
+
+
         StartCoroutine(NPCTurnRoutine());
     }
 
@@ -1005,6 +1040,9 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 // Abrir zona y permitir usar slots extra
                 zone.SetCanReceiveNewCards(true);
                 zone.SetMaxCards(zone.slots.Length); // habilita todos los slots disponibles
+
+                if (!lastWantsHit[i] && zone.GetOccupiedCount() >= 2)
+                    zone.OnNPCBeganRequestingCard();
             }
             else
             {
@@ -1013,7 +1051,11 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
 
                 // Mantener maxCards en 2 para que no muestre slots extra
                 zone.SetMaxCards(2);
+
+                if (lastWantsHit[i])
+                    zone.OnNPCStoppedRequestingCard();
             }
+            lastWantsHit[i] = wantsHit;
         }
     }
 
@@ -1387,4 +1429,40 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
             return arr;
         }
     }
+
+    private void SubscribeZones()
+    {
+        lastZoneCounts = new int[playerZones.Length];
+
+        for (int i = 0; i < playerZones.Length; i++)
+        {
+            int idx = i;
+
+            lastZoneCounts[i] = playerZones[i].GetOccupiedCount();
+
+            playerZones[i].OnZoneChanged += (zone) =>
+            {
+                OnPlayerZoneChanged(idx, zone);
+            };
+        }
+    }
+
+    private void OnPlayerZoneChanged(int i, CardSnapZone zone)
+    {
+        int count = zone.GetOccupiedCount();
+
+        // Si ha recibido una carta nueva
+        if (count > lastZoneCounts[i])
+        {
+            // Rearmar audio para permitir que vuelva a pedir si sigue queriendo carta
+            zone.RearmNPCRequestVoice();
+
+            // Recalcular decisiones de NPCs
+            ApplyNPCDecisions();
+        }
+
+        lastZoneCounts[i] = count;
+    }
+
+
 }
