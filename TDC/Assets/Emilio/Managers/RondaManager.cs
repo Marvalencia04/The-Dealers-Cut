@@ -22,6 +22,10 @@ public class RondaManager : MonoBehaviour
 
     [Header("Rondas por d�a")]
     [SerializeField] private int defaultRoundsPerDay = 5;
+    [Header("Collider que solo se activa en Resultados")]
+    [SerializeField] private Collider colliderSoloEnResultados;
+    [SerializeField] private bool desactivarEnAwake = true;
+
 
     [Header("Referencias")]
     [SerializeField] private GameManager gameManager;
@@ -95,6 +99,9 @@ public class RondaManager : MonoBehaviour
             //Debug.LogWarning("[RondaManager] blackjackTableComponent no implementa IBlackjackTableFlow. " +
                             // "Podr�s cambiar fases, pero no ejecutar c�lculos de apuestas/resultados.");
         }
+        if (colliderSoloEnResultados != null && desactivarEnAwake)
+                colliderSoloEnResultados.enabled = false;
+
     }
 
     // ----------------------------------------------------------------------
@@ -151,6 +158,8 @@ public class RondaManager : MonoBehaviour
         uiManager?.UpdateBlackjackPhase(currentPhase);
         trampasManager?.OnBlackjackPhaseChanged(currentPhase);
         interactionGate?.ApplyPhase(currentPhase);
+        if (colliderSoloEnResultados != null && desactivarEnAwake)
+            colliderSoloEnResultados.enabled = false;
 
         OnPhaseChanged?.Invoke(currentPhase);
 
@@ -192,9 +201,12 @@ public class RondaManager : MonoBehaviour
                 // 1) Resolver pagos
                 tableFlow?.ResolveRoundPayouts();
                 moneyManager.NotifyRoundEnd();
+                if (colliderSoloEnResultados != null)
+                    colliderSoloEnResultados.enabled = true;
 
                 if (IsLastRoundOfDay())
                 {
+                    
                     //Debug.Log("aaaaaaaaaaaaaaaaa");
                     StopAllCoroutines();
 

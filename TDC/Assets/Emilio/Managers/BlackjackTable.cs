@@ -366,7 +366,17 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
     public void TriggerMiraAlliPenalty()
     {
         miraAlliPenaltyTriggered = true;
-       // Debug.Log("[RondaManager] Penalizaci�n 'Mira All�' activada: los jugadores ganaran autom�ticamente esta ronda.");
+
+        // ✅ FORZAR ir a Resultados para que el InteractionGate permita recoger cartas
+        if (rondaManager != null && rondaManager.CurrentPhase != BlackjackPhase.Resultados)
+        {
+            // Si no estás en TurnoDealer, igualmente queremos acabar en Resultados
+            // Para no depender de la condición interna, hacemos GoToPhase directo.
+            rondaManager.GoToPhase(BlackjackPhase.Resultados);
+            return; // MUY IMPORTANTE: porque en Resultados ya se llamará a ResolveRoundPayouts()
+        }
+
+        // Fallback (si ya estabas en Resultados)
         ResolveBetsAndPayouts();
     }
     public void ResolveResultsFromZonesAndPayout()
@@ -521,6 +531,13 @@ public class BlackjackTable : MonoBehaviour, IBlackjackTable, IBlackjackTableFlo
                 playerZones[i].SetMaxCards(2);
             }
         }
+        if (dealerZone != null)
+        {
+            dealerZone.UnlockZone();
+            dealerZone.SetCanReceiveNewCards(true);
+            dealerZone.SetMaxCards(2);
+        }
+
 
         //Log("Table reset for new round.");
     }

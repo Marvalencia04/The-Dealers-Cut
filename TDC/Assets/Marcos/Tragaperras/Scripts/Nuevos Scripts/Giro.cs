@@ -22,7 +22,6 @@ public class Giro : MonoBehaviour
     [SerializeField] private int guaranteedEvery = 10;
     private int spinCounter = 0;
 
-
     public int[] reelOrder = new int[]
     {
         1,2,3, 1,0,2,3, 1,2,3, 1,2,3, 1,2,3
@@ -36,34 +35,33 @@ public class Giro : MonoBehaviour
     [Header("Probabilidades de símbolos")]
     public int[] symbolWeights = new int[4] { 1, 3, 3, 1 };
 
-    private void Update()
-    {
-        // Giro normal
-        /*if (Input.GetKeyDown(KeyCode.Space))
-            IntentarGiro();*/
+    [Header("Bloqueo palanca")]
+    [SerializeField] private Collider leverCollider; // asigna el collider de la palanca aquí
 
-        // Forzar triples
-        if (Input.GetKeyDown(KeyCode.Alpha1)) ForceTriple(0); // Triple 7
-        if (Input.GetKeyDown(KeyCode.Alpha2)) ForceTriple(1); // Triple Campana
-        if (Input.GetKeyDown(KeyCode.Alpha3)) ForceTriple(2); // Triple Cereza
-        if (Input.GetKeyDown(KeyCode.Alpha4)) ForceTriple(3); // Triple BAR
+    private bool isSpinning = false;
+    private Coroutine spinRoutine;
 
-        // Forzar combinación personalizada (ejemplo Ctrl+5)
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Alpha5))
-            ForceResult(0, 1, 2); // 7, Campana, Cereza
-    }
-
-    // ==========================================================
-    // Giro normal
-    // ==========================================================
+    // ✅ ESTE ES EL QUE LLAMA EL ANIMATION EVENT
     public void IntentarGiro()
     {
+        // Si el Animation Event se dispara más de una vez, lo ignoramos
+        if (isSpinning) return;
+
+        isSpinning = true;
+
+        if (leverCollider != null)
+            leverCollider.enabled = false;
+
         if (moneyManager == null)
+        {
+            EndSpin();
             return;
+        }
 
         if (!moneyManager.TryPaySlotSpin(currentDay))
         {
             Debug.Log("💸 No hay dinero suficiente para girar.");
+            EndSpin();
             return;
         }
 
@@ -75,7 +73,6 @@ public class Giro : MonoBehaviour
         {
             result = GenerateGuaranteedTriple();
             spinCounter = 0;
-
             Debug.Log("🎯 TIRADA GARANTIZADA: TRIPLE FIGURA");
         }
         else
@@ -83,15 +80,15 @@ public class Giro : MonoBehaviour
             result = GenerateWeightedArray();
         }
 
-        Debug.Log($"🎰 Tirada {spinCounter}/{guaranteedEvery}");
-        PlayRequested(result);
+        if (spinRoutine != null) StopCoroutine(spinRoutine);
+        spinRoutine = StartCoroutine(SpinAllSequential(result));
     }
+
     private int[] GenerateGuaranteedTriple()
     {
         int symbol = WeightedRandom(symbolWeights);
         return new int[] { symbol, symbol, symbol };
     }
-
 
     public int[] GenerateWeightedArray()
     {
@@ -99,7 +96,6 @@ public class Giro : MonoBehaviour
         for (int i = 0; i < arr.Length; i++)
             arr[i] = WeightedRandom(symbolWeights);
 
-        Debug.Log("Resultado generado: [" + string.Join(", ", arr) + "]");
         return arr;
     }
 
@@ -118,83 +114,38 @@ public class Giro : MonoBehaviour
         return 0;
     }
 
-    // ==========================================================
-    // Forzar resultados
-    // ==========================================================
-
-    /// <summary>
-    /// Fuerza un triple de un mismo símbolo (0..3)
-    /// </summary>
-    public void ForceTriple(int symbol)
-    {
-        int[] forced = new int[3] { symbol, symbol, symbol };
-        Debug.Log($"🎯 Forzando triple: [{symbol},{symbol},{symbol}]");
-        PlayRequested(forced);
-    }
-
-    /// <summary>
-    /// Fuerza un resultado específico de 3 símbolos
-    /// </summary>
-    public void ForceResult(int symbol1, int symbol2, int symbol3)
-    {
-        int[] forced = new int[3] { symbol1, symbol2, symbol3 };
-        Debug.Log($"🎯 Forzando resultado: [{symbol1},{symbol2},{symbol3}]");
-        PlayRequested(forced);
-    }
-
-    // ==========================================================
-    // Animación de rodillos
-    // ==========================================================
-    public void PlayRequested(int[] requestSymbols)
-    {
-        if (requestSymbols == null || requestSymbols.Length != 3)
-        {
-            Debug.LogError("PlayRequested necesita un array de 3 símbolos [0..3].");
-            return;
-        }
-
-        StartCoroutine(SpinAllSequential(requestSymbols));
-    }
-
     IEnumerator SpinAllSequential(int[] req)
+{
+    int idx1 = FindNextIndexForSymbol(r1, req[0], shiftR1);
+    r1.SpinToIndex(idx1);
+    yield return new WaitForSeconds(delayBetweenReels);
+
+    int idx2 = FindNextIndexForSymbol(r2, req[1], shiftR2);
+    r2.SpinToIndex(idx2);
+    yield return new WaitForSeconds(delayBetweenReels);
+
+    int idx3 = FindNextIndexForSymbol(r3, req[2], shiftR3);
+    r3.SpinToIndex(idx3);
+
+    // ✅ Espera fija segura
+    float waitTime = Mathf.Max(r1.spinDuration, r2.spinDuration, r3.spinDuration) + 0.1f;
+    yield return new WaitForSeconds(waitTime);
+
+    if (prizeManager != null)
+        prizeManager.EvaluarResultado(req);
+
+    EndSpin();
+}
+
+
+    private void EndSpin()
     {
-        int idx1 = FindNextIndexForSymbol(r1, req[0], shiftR1);
-        r1.SpinToIndex(idx1);
-        yield return new WaitForSeconds(delayBetweenReels);
+        isSpinning = false;
 
-        int idx2 = FindNextIndexForSymbol(r2, req[1], shiftR2);
-        r2.SpinToIndex(idx2);
-        yield return new WaitForSeconds(delayBetweenReels);
-
-        int idx3 = FindNextIndexForSymbol(r3, req[2], shiftR3);
-        r3.SpinToIndex(idx3);
-
-        float timeout = Mathf.Max(r1.spinDuration, r2.spinDuration, r3.spinDuration) + 2f;
-        float elapsed = 0f;
-
-        /*while ((r1.IsSpinning || r2.IsSpinning || r3.IsSpinning) && elapsed < timeout)
-        {
-            elapsed += Time.deltaTime;
-            yield return null;
-        }*/
-
-        if (elapsed >= timeout)
-            Debug.LogWarning("Timeout esperando rodillos.");
-
-        if (prizeManager != null)
-        {
-            Debug.Log("Evaluando resultado final: [" + string.Join(", ", req) + "]");
-            prizeManager.EvaluarResultado(req);
-        }
-        else
-        {
-            Debug.LogWarning("No hay PrizeManager asignado.");
-        }
+        if (leverCollider != null)
+            leverCollider.enabled = true;
     }
 
-    // ==========================================================
-    // Cálculo del siguiente índice para el rodillo
-    // ==========================================================
     int FindNextIndexForSymbol(ReelSpinner reel, int symbol, int shift)
     {
         int items = Mathf.Max(1, reel.items);
