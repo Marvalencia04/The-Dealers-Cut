@@ -15,11 +15,6 @@ public class UIButtonTeleportAndFreeze : MonoBehaviour
     [Header("Pause")]
     [SerializeField] private bool unpauseGame = true;
 
-    [Header("Freeze (arrastrar desde Jerarquia)")]
-
-    [Tooltip("Opcional: si solo quieres quitar el movimiento continuo, arrastra 'Move' (hijo).")]
-    [SerializeField] private Behaviour moveProviderToDisable; // ContinuousMoveProvider (Action-based), etc.
-
     public void OnButtonPressed()
     {
         // 1) Desactivar canvas antiguos
@@ -41,8 +36,5 @@ public class UIButtonTeleportAndFreeze : MonoBehaviour
             xrRig.rotation = teleportTarget.rotation;
         }
 
-        // Opción 2: apagar SOLO el provider de movimiento (si quieres mantener Turn, Jump, etc.)
-        if (moveProviderToDisable != null)
-            moveProviderToDisable.enabled = false;
     }
 }
