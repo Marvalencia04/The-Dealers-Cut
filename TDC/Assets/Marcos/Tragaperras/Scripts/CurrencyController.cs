@@ -1,12 +1,12 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Controlador de la lógica de monedas y su visualización.
+/// Controlador de la léª»ica de monedas y su visualizacié«‡.
 /// </summary>
 public class CurrencyController : MonoBehaviour
 {
-    [Header("Configuración")]
+    [Header("Configuracié«‡")]
     public SlotCurrencyManager currency = new SlotCurrencyManager();
 
     [Header("UI (opcional)")]
@@ -28,9 +28,9 @@ public class CurrencyController : MonoBehaviour
         return currency.RestarCostoJugada();
     }
 
-    public void AñadirPremio(int cantidad)
+    public void AÃ±adirPremio(int cantidad)
     {
-        currency.AñadirPremio(cantidad);
+        currency.AÃ±adirPremio(cantidad);
     }
 
     public int ObtenerMonedas()

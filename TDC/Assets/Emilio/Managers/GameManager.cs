@@ -57,6 +57,8 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState { get; private set; } = GameState.MainMenu;
     public int CurrentDay => currentDay;
     public int CurrentQuota => currentQuota;
+    private GameState stateBeforePause = GameState.PlayingBlackjack;
+
 
     // ==== REFERENCIAS A OTROS SISTEMAS ====
 
@@ -318,43 +320,48 @@ public class GameManager : MonoBehaviour
         if (CurrentState == newState)
             return;
 
-        CurrentState = newState;
-        //Debug.Log($"[GameManager] Estado cambiado a: {CurrentState}");
+       
+        if (newState == GameState.Pause && CurrentState != GameState.Pause)
+            stateBeforePause = CurrentState;
 
-        // Avisar a otros sistemas
+        CurrentState = newState;
+
         OnGameStateChanged?.Invoke(CurrentState);
 
-        // UI
         if (uiManager != null)
-        {
             uiManager.UpdateStateUI(CurrentState);
-        }
 
-        // Comportamientos t�picos seg�n estado
         switch (CurrentState)
         {
             case GameState.Pause:
                 Time.timeScale = 0f;
                 break;
-
             default:
                 Time.timeScale = 1f;
                 break;
         }
     }
 
+
     public void TogglePause()
     {
         if (CurrentState == GameState.Pause)
         {
-            // Volver al estado de juego anterior (aqu� simplificamos y lo ponemos en Blackjack)
-            SetGameState(GameState.PlayingBlackjack);
+          
+            SetGameState(stateBeforePause);
         }
         else
         {
+           
+            if (CurrentState == GameState.MainMenu ||
+                CurrentState == GameState.Victory ||
+                CurrentState == GameState.Defeat)
+                return;
+
             SetGameState(GameState.Pause);
         }
     }
+
 
     public void AdvanceToNextDay()
     {
