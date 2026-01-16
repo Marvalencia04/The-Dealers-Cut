@@ -15825,12 +15825,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1469443020}
   m_SourcePrefab: {fileID: 100100000, guid: d5c55daba43146a46a7ca9c4f4025643, type: 3}
---- !u!1 &1608989075 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3773921950860308910, guid: ff322f3d0e475624dace1cb135408c72,
-    type: 3}
-  m_PrefabInstance: {fileID: 1777176064}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1621130428 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7001841221489778573, guid: ff322f3d0e475624dace1cb135408c72,
@@ -18297,7 +18291,7 @@ Transform:
   m_GameObject: {fileID: 1786178065}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.308, y: 1.1837287, z: 3.078}
+  m_LocalPosition: {x: 3.308, y: 0.18, z: 3.078}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20602,7 +20596,6 @@ MonoBehaviour:
   xrRig: {fileID: 1777176065}
   teleportTarget: {fileID: 301041698}
   unpauseGame: 1
-  locomotionRoot: {fileID: 1608989075}
   moveProviderToDisable: {fileID: 1381184613}
 --- !u!1001 &657512541986316590
 PrefabInstance:

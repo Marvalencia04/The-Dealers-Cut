@@ -16,8 +16,6 @@ public class UIButtonTeleportAndFreeze : MonoBehaviour
     [SerializeField] private bool unpauseGame = true;
 
     [Header("Freeze (arrastrar desde Jerarquia)")]
-    [Tooltip("Arrastra aquí el GameObject 'Locomotion' (el hijo que tiene Move/Turn/etc).")]
-    [SerializeField] private GameObject locomotionRoot; // <- TU 'Locomotion'
 
     [Tooltip("Opcional: si solo quieres quitar el movimiento continuo, arrastra 'Move' (hijo).")]
     [SerializeField] private Behaviour moveProviderToDisable; // ContinuousMoveProvider (Action-based), etc.
@@ -42,11 +40,6 @@ public class UIButtonTeleportAndFreeze : MonoBehaviour
             xrRig.position = teleportTarget.position;
             xrRig.rotation = teleportTarget.rotation;
         }
-
-        // 5) Freeze movimiento
-        // Opción 1: apagar todo el sistema locomotion (recomendado si quieres “quieto total”)
-        if (locomotionRoot != null)
-            locomotionRoot.SetActive(false);
 
         // Opción 2: apagar SOLO el provider de movimiento (si quieres mantener Turn, Jump, etc.)
         if (moveProviderToDisable != null)
