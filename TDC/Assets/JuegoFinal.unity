@@ -3481,6 +3481,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1.9391012, z: 1}
   m_Center: {x: -0, y: 0.4695506, z: 0}
+--- !u!1 &301041697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 301041698}
+  m_Layer: 0
+  m_Name: TPMainMenu
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &301041698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301041697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.172, y: 0, z: 15.981}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &308339075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20408,6 +20439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2145258771}
   - component: {fileID: 2145258770}
+  - component: {fileID: 2145258772}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -20473,6 +20505,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1022208586}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2145258772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145258769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe67703c31c90e64fb0e0f5961941a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasesToDisable:
+  - {fileID: 4089493237654772120}
+  - {fileID: 3235227358443939595}
+  canvasToEnable: {fileID: 7529739927597527585}
+  xrRig: {fileID: 1777176065}
+  teleportTarget: {fileID: 301041698}
+  autoFindMovementComponents: 1
+  locomotionSystem: {fileID: 0}
+  moveProvider: {fileID: 0}
 --- !u!1001 &657512541986316590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22441,3 +22494,4 @@ SceneRoots:
   - {fileID: 909205837}
   - {fileID: 1786178066}
   - {fileID: 507003747}
+  - {fileID: 301041698}

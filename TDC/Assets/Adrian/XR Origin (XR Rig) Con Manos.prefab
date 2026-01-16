@@ -317,7 +317,6 @@ MonoBehaviour:
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
-  previewNextCards: {fileID: 0}
 --- !u!1 &2640083460088435030
 GameObject:
   m_ObjectHideFlags: 0
